@@ -11,7 +11,7 @@ MECP/0/M01 M07 2pax P05 48.6520,20.1305
 
 | Language | Directory | Dependencies | Test command |
 |----------|-----------|--------------|--------------|
-| Python ≥ 3.9 | [python/](python/) | none | `cd python && PYTHONPATH=src python3 -m unittest discover -s tests` |
+| Python ≥ 3.10 | [python/](python/) | none | `cd python && PYTHONPATH=src python3 -m unittest discover -s tests` |
 | C99 / C++ | [c/](c/) | none; no heap | `cd c && make test` |
 | Rust | [rust/](rust/) | regex-lite (serde_json for tests) | `cd rust && cargo test` |
 | Go | [go/](go/) | standard library | `cd go && go test ./...` |

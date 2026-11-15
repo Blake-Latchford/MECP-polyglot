@@ -182,9 +182,10 @@ fn parse_header(s: &str) -> Header<'_> {
 
 fn extract(text: &str, codes: &[String]) -> Extracted {
     let p = patterns();
-    let mut x = Extracted::default();
-
-    x.count = find(&p.count, text).and_then(to_int);
+    let mut x = Extracted {
+        count: find(&p.count, text).and_then(to_int),
+        ..Default::default()
+    };
     if let Some(c) = p.gps.captures(text) {
         let lat: f64 = c[1].parse().unwrap_or(f64::NAN);
         let lon: f64 = c[2].parse().unwrap_or(f64::NAN);
