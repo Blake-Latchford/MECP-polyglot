@@ -1,0 +1,15 @@
+[package]
+name = "mecp"
+version = "0.1.0"
+edition = "2021"
+rust-version = "1.70"
+license = "MIT"
+description = "MECP (Mesh Emergency Communication Protocol) encoder/decoder"
+repository = "https://github.com/Blake-Latchford/MECP-polyglot"
+keywords = ["mecp", "lora", "mesh", "meshtastic", "meshcore"]
+
+[dependencies]
+regex-lite = "0.1"
+
+[dev-dependencies]
+serde_json = "1"

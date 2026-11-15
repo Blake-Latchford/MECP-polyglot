@@ -1,0 +1,10 @@
+name: mecp
+description: MECP (Mesh Emergency Communication Protocol) encoder/decoder.
+version: 0.1.0
+repository: https://github.com/Blake-Latchford/MECP-polyglot
+
+environment:
+  sdk: ">=3.0.0 <4.0.0"
+
+dev_dependencies:
+  test: ^1.24.0
