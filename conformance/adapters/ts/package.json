@@ -1,0 +1,9 @@
+{
+  "name": "mecp-conformance-ts-adapters",
+  "private": true,
+  "type": "module",
+  "description": "Runs TypeScript MECP clients' own decoder sources in place via tsx.",
+  "devDependencies": {
+    "tsx": "4.19.2"
+  }
+}

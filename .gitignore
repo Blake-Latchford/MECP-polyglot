@@ -5,4 +5,10 @@ rust/target/
 rust/Cargo.lock
 dart/.dart_tool/
 dart/pubspec.lock
-mecp-app/
+MECP/
+conformance/adapters/ts/node_modules/
+conformance/adapters/ts/package-lock.json
+conformance/adapters/meshcore-tak-bridge/build/
+conformance/adapters/meshcore-tak-bridge/.gradle/
+conformance/adapters/meshcore-tak-bridge/.kotlin/
+conformance/adapters/meshcore-one/build/

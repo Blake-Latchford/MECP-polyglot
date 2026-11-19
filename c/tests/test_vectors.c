@@ -1,4 +1,5 @@
-/* Runs the shared conformance vectors against the C implementation.
+/* Runs the shared conformance vectors, and the upstream mecp-org/MECP
+ * freetext cases, against the C implementation.
  * Compiles as C99 and as C++ (to check header compatibility). */
 #include "mecp.h"
 
@@ -9,32 +10,32 @@ typedef struct {
     const char *name;
     const char *input;
     size_t input_len;
+    bool envelope; /* false: upstream case, compare valid and fields only */
     bool valid;
     int severity;
     const char *codes; /* space-joined */
     bool is_drill;
     const char *freetext; /* NULL when absent */
-    bool has_count;
-    long count;
+    bool has_pax;
+    long pax;
     bool has_gps;
     double lat, lon;
-    bool has_eta;
-    long eta;
-    const char *reference, *language, *timestamp, *callsign;
-    const char *warnings; /* comma-joined ids */
+    const char *timestamp, *language, *callsign, *reference;
+    bool has_duration;
+    long duration;
 } decode_vec_t;
 
 #define ENCODE_CODES_CAP 8
+
 typedef struct {
     const char *name;
     int severity;
     const char *codes[ENCODE_CODES_CAP];
     size_t code_count;
     const char *freetext;
-    const char *message;
+    const char *message; /* "" when refused */
     size_t byte_length;
-    bool over_limit;
-    const char *warnings;
+    const char *errors; /* comma-joined ids */
 } encode_vec_t;
 
 typedef struct {
@@ -43,7 +44,6 @@ typedef struct {
     size_t input_len;
     bool valid;
     const char *errors;
-    const char *warnings;
 } validate_vec_t;
 
 #include "vectors.h"
@@ -68,6 +68,8 @@ static void flags_to_ids(uint32_t flags, size_t invalid_codes, char *out, size_t
         {MECP_MISSING_DELIMITER, "missing_delimiter"},
         {MECP_NO_CODES, "no_codes"},
         {MECP_INVALID_CODE, "invalid_code"},
+        {MECP_INVALID_FREETEXT, "invalid_freetext"},
+        {MECP_FORBIDDEN_CHARACTER, "forbidden_character"},
         {MECP_OVER_LIMIT, "over_limit"},
         {MECP_INPUT_TOO_LONG, "input_too_long"},
     };
@@ -85,39 +87,36 @@ static void flags_to_ids(uint32_t flags, size_t invalid_codes, char *out, size_t
 static void run_decode(const decode_vec_t *v)
 {
     static mecp_decoded_t d;
-    char buf[256];
+    static char buf[MECP_MAX_INPUT_BYTES + 1];
 
     mecp_decode(v->input, v->input_len, &d);
-
     CHECK(d.valid == v->valid, v->name, "valid");
-    CHECK(d.severity == v->severity, v->name, "severity");
-
-    buf[0] = '\0';
-    for (size_t i = 0; i < d.code_count; i++) {
-        if (i) strcat(buf, " ");
-        strcat(buf, d.codes[i]);
+    if (v->envelope) {
+        CHECK(d.severity == v->severity, v->name, "severity");
+        buf[0] = '\0';
+        for (size_t i = 0; i < d.code_count; i++) {
+            if (i) strcat(buf, " ");
+            strcat(buf, d.codes[i]);
+        }
+        CHECK(strcmp(buf, v->codes) == 0, v->name, "codes");
+        CHECK(d.is_drill == v->is_drill, v->name, "is_drill");
+        CHECK(d.has_freetext == (v->freetext != NULL), v->name, "has_freetext");
+        if (v->freetext) CHECK(strcmp(d.freetext, v->freetext) == 0, v->name, "freetext");
     }
-    CHECK(strcmp(buf, v->codes) == 0, v->name, "codes");
-    CHECK(d.is_drill == v->is_drill, v->name, "is_drill");
-    CHECK(d.has_freetext == (v->freetext != NULL), v->name, "has_freetext");
-    if (v->freetext) CHECK(strcmp(d.freetext, v->freetext) == 0, v->name, "freetext");
-
-    CHECK(d.has_count == v->has_count, v->name, "has_count");
-    if (v->has_count) CHECK(d.count == v->count, v->name, "count");
+    if (!v->valid) return;
+    CHECK(d.has_pax == v->has_pax, v->name, "has_pax");
+    if (v->has_pax) CHECK(d.pax == v->pax, v->name, "pax");
     CHECK(d.has_gps == v->has_gps, v->name, "has_gps");
     if (v->has_gps) {
         CHECK(d.gps.lat == v->lat, v->name, "gps.lat");
         CHECK(d.gps.lon == v->lon, v->name, "gps.lon");
     }
-    CHECK(d.has_eta == v->has_eta, v->name, "has_eta");
-    if (v->has_eta) CHECK(d.eta == v->eta, v->name, "eta");
-    CHECK(strcmp(d.reference, v->reference) == 0, v->name, "reference");
-    CHECK(strcmp(d.language, v->language) == 0, v->name, "language");
     CHECK(strcmp(d.timestamp, v->timestamp) == 0, v->name, "timestamp");
+    CHECK(strcmp(d.language, v->language) == 0, v->name, "language");
     CHECK(strcmp(d.callsign, v->callsign) == 0, v->name, "callsign");
-
-    flags_to_ids(d.warnings, 0, buf, sizeof buf);
-    CHECK(strcmp(buf, v->warnings) == 0, v->name, "warnings");
+    CHECK(strcmp(d.reference, v->reference) == 0, v->name, "reference");
+    CHECK(d.has_duration == v->has_duration, v->name, "has_duration");
+    if (v->has_duration) CHECK(d.duration == v->duration, v->name, "duration");
 }
 
 static void run_encode(const encode_vec_t *v)
@@ -125,15 +124,15 @@ static void run_encode(const encode_vec_t *v)
     char msg[512];
     char ids[256];
     mecp_encoded_t e;
-
     bool ok = mecp_encode(v->severity, v->codes, v->code_count, v->freetext,
                           msg, sizeof msg, &e);
+
     CHECK(ok, v->name, "encode returned false");
     CHECK(strcmp(msg, v->message) == 0, v->name, "message");
+    CHECK(e.ok == (v->message[0] != '\0'), v->name, "ok");
     CHECK(e.byte_length == v->byte_length, v->name, "byte_length");
-    CHECK(e.over_limit == v->over_limit, v->name, "over_limit");
-    flags_to_ids(e.warnings, e.invalid_code_count, ids, sizeof ids);
-    CHECK(strcmp(ids, v->warnings) == 0, v->name, "warnings");
+    flags_to_ids(e.errors, e.invalid_code_count, ids, sizeof ids);
+    CHECK(strcmp(ids, v->errors) == 0, v->name, "errors");
 }
 
 static void run_validate(const validate_vec_t *v)
@@ -145,8 +144,6 @@ static void run_validate(const validate_vec_t *v)
     CHECK(r.valid == v->valid, v->name, "valid");
     flags_to_ids(r.errors, 0, ids, sizeof ids);
     CHECK(strcmp(ids, v->errors) == 0, v->name, "errors");
-    flags_to_ids(r.warnings, 0, ids, sizeof ids);
-    CHECK(strcmp(ids, v->warnings) == 0, v->name, "warnings");
 }
 
 static void run_c_specific(void)
@@ -156,14 +153,19 @@ static void run_c_specific(void)
     char small[8];
     mecp_encoded_t e;
     const char *codes[] = {"M01", "M07"};
+    const char bad_utf8[] = "MECP/3/L01 \xff #tag";
 
     memcpy(big, "MECP/0/M01 ", 11);
     memset(big + 11, 'A', sizeof big - 12);
     CHECK(!mecp_decode(big, sizeof big - 1, &d), "input too long", "returned true");
-    CHECK(d.warnings == MECP_INPUT_TOO_LONG && !d.valid, "input too long", "flags");
+    CHECK(d.errors == MECP_INPUT_TOO_LONG && !d.valid, "input too long", "flags");
 
     CHECK(!mecp_encode(0, codes, 2, NULL, small, sizeof small, &e), "small buffer",
           "returned true");
+    CHECK(e.byte_length == 14, "small buffer", "byte_length");
+
+    mecp_decode(bad_utf8, sizeof bad_utf8 - 1, &d);
+    CHECK(d.valid && strcmp(d.reference, "tag") == 0, "invalid UTF-8", "not decoded");
 
     mecp_decode("MECP/0/B01 B02 B03", 18, &d);
     CHECK(mecp_is_beacon(&d) && mecp_is_beacon_ack(&d) && mecp_is_beacon_cancel(&d),
@@ -181,7 +183,7 @@ int main(void)
     for (size_t i = 0; i < nv; i++) run_validate(&VALIDATE_VECTORS[i]);
     run_c_specific();
 
-    printf("%zu decode, %zu encode, %zu validate vectors: %s (%d failures)\n",
+    printf("%zu decode (incl. upstream), %zu encode, %zu validate vectors: %s (%d failures)\n",
            nd, ne, nv, failures ? "FAIL" : "ok", failures);
     return failures ? 1 : 0;
 }

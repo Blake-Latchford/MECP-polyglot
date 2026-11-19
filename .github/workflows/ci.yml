@@ -16,20 +16,28 @@ jobs:
         with:
           python-version: "3.12"
       - run: python vectors/build_vectors.py --check
+      - run: python tools/mecp_sync.py check
+      - run: python tools/mecp_sync.py verify-remote
 
-  engine-oracle:
-    name: vectors vs @mecp/engine
+  upstream-oracle:
+    name: vectors vs mecp-org/MECP check-freetext
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - id: pin
+        run: echo "commit=$(jq -r .commit upstream/source.json)" >> "$GITHUB_OUTPUT"
       - uses: actions/checkout@v4
         with:
-          repository: mecp-org/mecp-app
-          path: mecp-app
+          repository: mecp-org/MECP
+          ref: ${{ steps.pin.outputs.commit }}
+          path: MECP
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
       - uses: actions/setup-node@v4
         with:
           node-version: "22"
-      - run: npx --yes tsx@4 oracle/check-engine.mts mecp-app/engine/src/index.ts
+      - run: python oracle/check_vectors.py MECP
 
   python:
     runs-on: ubuntu-latest

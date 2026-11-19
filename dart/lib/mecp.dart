@@ -1,19 +1,28 @@
-/// MECP (Mesh Emergency Communication Protocol) encoder/decoder.
+/// MECP (Mesh Emergency Communication Protocol) 1.4.0 encoder/decoder.
 ///
-/// Implements MECP-polyglot `spec/conformance.md`.
+/// Implements MECP-polyglot `spec/conformance.md`. The regexes come from the
+/// upstream pack via the generated `src/patterns.dart`.
 library mecp;
+
+import 'dart:convert' show utf8;
+
+import 'src/patterns.dart' as p;
+
+export 'src/patterns.dart' show mecpVersion;
 
 const int maxMessageBytes = 200;
 const String prefix = 'MECP/';
-const int _intFieldMax = 2147483647;
+const int _intMax = 2147483647;
 
-/// Warning and error identifiers.
-abstract final class Warnings {
+/// Error identifiers.
+abstract final class Errors {
   static const missingPrefix = 'missing_prefix';
   static const invalidSeverity = 'invalid_severity';
   static const missingDelimiter = 'missing_delimiter';
   static const noCodes = 'no_codes';
   static const invalidCode = 'invalid_code';
+  static const invalidFreetext = 'invalid_freetext';
+  static const forbiddenCharacter = 'forbidden_character';
   static const overLimit = 'over_limit';
 }
 
@@ -31,13 +40,17 @@ class Gps {
 }
 
 class Extracted {
-  int? count;
+  int? pax;
   Gps? gps;
-  int? eta;
-  String? reference;
-  String? language;
+
+  /// `HH:MM`.
   String? timestamp;
+  String? language;
   String? callsign;
+  String? reference;
+
+  /// Minutes.
+  int? duration;
 }
 
 class Decoded {
@@ -47,28 +60,25 @@ class Decoded {
   final List<String> codes = [];
   bool isDrill = false;
   String? freetext;
-  final Extracted extracted = Extracted();
-  final List<String> warnings = [];
+  Extracted extracted = Extracted();
   Decoded(this.raw);
 }
 
+/// [message] is null when the encoder refused (there are errors).
 class Encoded {
-  final String message;
+  final String? message;
   final int byteLength;
-  final bool overLimit;
-  final List<String> warnings;
-  const Encoded(this.message, this.byteLength, this.overLimit, this.warnings);
+  final List<String> errors;
+  const Encoded(this.message, this.byteLength, this.errors);
 }
 
 class Validation {
   final bool valid;
   final List<String> errors;
-  final List<String> warnings;
-  const Validation(this.valid, this.errors, this.warnings);
+  const Validation(this.valid, this.errors);
 }
 
-/// ECMAScript whitespace. All members are in the BMP, so a single UTF-16
-/// code unit check is exact. (Dart's String.trim also strips U+0085.)
+/// ECMAScript whitespace: what [encode] trims from freetext.
 bool _isWs(int c) =>
     (c >= 0x09 && c <= 0x0D) ||
     c == 0x20 ||
@@ -82,185 +92,202 @@ bool _isWs(int c) =>
     c == 0x3000 ||
     c == 0xFEFF;
 
-String _trimEnd(String s) {
-  var e = s.length;
-  while (e > 0 && _isWs(s.codeUnitAt(e - 1))) {
-    e--;
+/// Never on the wire: line breaks (§6.1 Wire), BOM and Unicode whitespace (rule 8).
+bool _isForbidden(int c) =>
+    c == 0x0A ||
+    c == 0x0C ||
+    c == 0x0D ||
+    c == 0x85 ||
+    c == 0x2028 ||
+    c == 0x2029 ||
+    c == 0xFEFF ||
+    c == 0xA0 ||
+    c == 0x1680 ||
+    (c >= 0x2000 && c <= 0x200A) ||
+    c == 0x202F ||
+    c == 0x205F ||
+    c == 0x3000;
+
+/// Rule 4: `(?:^|B)(?:pattern)(B|$)`. The right boundary is the last group so
+/// a failed match can resume where its token ends (rule 6).
+RegExp _wrap(String pattern) =>
+    RegExp('(?:^|${p.boundaryPattern})(?:$pattern)(${p.boundaryPattern}|\$)');
+
+final _message = RegExp(p.messagePattern);
+final _pax = _wrap(p.paxPattern);
+final _gps = _wrap(p.gpsPattern);
+final _timestamp = _wrap(p.timestampPattern);
+final _language = _wrap(p.languagePattern);
+final _callsign = _wrap(p.callsignPattern);
+final _reference = _wrap(p.referencePattern);
+final _duration = [for (final d in p.durationPatterns) _wrap(d)];
+final _code = RegExp(r'^[A-Z][0-9]{2}$');
+
+bool _always(RegExpMatch m) => true;
+
+/// Rules 5 and 6: the first match by position that passes [ok].
+RegExpMatch? _firstValid(RegExp re, String text, [bool Function(RegExpMatch) ok = _always]) {
+  var pos = 0;
+  while (pos <= text.length) {
+    // Searching from pos keeps ^ anchored at the start of the freetext.
+    final m = re.allMatches(text, pos).firstOrNull;
+    if (m == null) return null;
+    if (ok(m)) return m;
+    // Resume at the right boundary: B is one UTF-16 unit, or empty at $.
+    pos = m.end - m.group(m.groupCount)!.length;
   }
-  return s.substring(0, e);
+  return null;
 }
 
-String _trim(String s) {
-  var b = 0;
-  while (b < s.length && _isWs(s.codeUnitAt(b))) {
-    b++;
+/// Parse an ASCII digit run, clamping huge values to the int32 maximum.
+int _clampInt(String digits) {
+  var v = 0;
+  for (final c in digits.codeUnits) {
+    v = v * 10 + (c - 0x30);
+    if (v > _intMax) return _intMax;
   }
-  return _trimEnd(s.substring(b));
+  return v;
 }
 
-bool _isDigit(int c) => c >= 0x30 && c <= 0x39;
+int _clamp(int v) => v > _intMax ? _intMax : v;
 
-// Polyglot patterns: the same text in every implementation (spec "Patterns").
-// _ws holds literal characters, written with host-language string escapes.
-// Dart regexps match UTF-16 code units; every WS character is in the BMP.
-const _ws = '[\t-\r \u00a0\u1680\u2000-\u200a\u2028\u2029\u202f\u205f\u3000\ufeff]';
-const _end = '(?:$_ws|\$)';
-final _countRe = RegExp(r'([0-9]+)pax');
-final _gpsRe = RegExp(r'(-?[0-9]+\.[0-9]+),(-?[0-9]+\.[0-9]+)');
-final _etaRe = RegExp(r'^([0-9]+)' + _end);
-final _referenceRe = RegExp(r'#([A-Za-z0-9]{1,4})');
-final _languageRe = RegExp(r'@([a-z]{2})' + _end);
-final _timestampRe = RegExp(r'@([0-9]{4})' + _end);
-final _callsignRe = RegExp(r'~([A-Za-z0-9]{1,9})' + _end);
+// Duration kinds, in the order of p.durationPatterns.
+const _hm = 0, _h = 1, _d = 3, _bare = 4;
 
-/// Capture group 1 of the leftmost match of [re] in [s], or null.
-String? _find(RegExp re, String s) => re.firstMatch(s)?.group(1);
-
-int? _toInt(String digits) {
-  final v = int.tryParse(digits);
-  return v != null && v <= _intFieldMax ? v : null;
+int _minutes(int kind, RegExpMatch m) {
+  final a = _clampInt(m.group(1)!);
+  switch (kind) {
+    case _hm:
+      return _clamp(a * 60 + _clampInt(m.group(2)!));
+    case _h:
+      return _clamp(a * 60);
+    case _d:
+      return _clamp(a * 1440);
+    default:
+      return a; // min, bare
+  }
 }
 
-/// UTF-16 length of the code point at index i.
-int _cpLen(String s, int i) {
-  final c = s.codeUnitAt(i);
-  if (c >= 0xD800 && c <= 0xDBFF && i + 1 < s.length) {
-    final d = s.codeUnitAt(i + 1);
-    if (d >= 0xDC00 && d <= 0xDFFF) return 2;
+int? _durationOf(String text) {
+  RegExpMatch? best;
+  var bestMinutes = 0;
+  for (var kind = 0; kind < _duration.length; kind++) {
+    if (kind == _bare && best != null) break; // the bare number is only a fallback
+    final m = _firstValid(_duration[kind], text,
+        (m) => _minutes(kind, m) > 0 && (kind != _bare || m.group(2) == null));
+    // First by position; on a tie the earlier pattern (already in best) wins.
+    if (m != null && (best == null || m.start < best.start)) {
+      best = m;
+      bestMinutes = _minutes(kind, m);
+    }
   }
-  return 1;
+  return best == null ? null : bestMinutes;
 }
 
-int _utf8Length(String s) {
-  var n = 0;
-  for (final r in s.runes) {
-    n += r < 0x80 ? 1 : r < 0x800 ? 2 : r < 0x10000 ? 3 : 4;
+bool _gpsOk(RegExpMatch m) {
+  final lat = double.parse(m.group(1)!), lon = double.parse(m.group(2)!);
+  return lat >= -90 && lat <= 90 && lon >= -180 && lon <= 180;
+}
+
+// ASCII-only case folding (rule 5): never locale-sensitive.
+String _asciiLower(String s) =>
+    String.fromCharCodes(s.codeUnits.map((c) => c >= 0x41 && c <= 0x5A ? c + 32 : c));
+String _asciiUpper(String s) =>
+    String.fromCharCodes(s.codeUnits.map((c) => c >= 0x61 && c <= 0x7A ? c - 32 : c));
+
+Extracted _extract(String text, List<String> codes) {
+  final x = Extracted();
+  RegExpMatch? m;
+  if ((m = _firstValid(_pax, text)) != null) x.pax = _clampInt(m!.group(1)!);
+  if ((m = _firstValid(_gps, text, _gpsOk)) != null) {
+    x.gps = Gps(double.parse(m!.group(1)!), double.parse(m.group(2)!));
   }
-  return n;
+  if ((m = _firstValid(_timestamp, text)) != null) {
+    x.timestamp = '${_clampInt(m!.group(1)!).toString().padLeft(2, '0')}:${m.group(2)}';
+  }
+  if ((m = _firstValid(_language, text)) != null) {
+    x.language = _asciiLower(m!.group(1)!).replaceAll('_', '-');
+  }
+  if ((m = _firstValid(_callsign, text, (m) => m.group(1)!.length <= 12)) != null) {
+    x.callsign = _asciiUpper(m!.group(1)!);
+  }
+  if ((m = _firstValid(_reference, text)) != null) x.reference = m!.group(1);
+  if (codes.contains(p.durationScope)) x.duration = _durationOf(text);
+  return x;
 }
 
 bool isMecp(String s) => s.startsWith(prefix);
-
-bool isCode(String t) =>
-    t.length == 3 &&
-    t.codeUnitAt(0) >= 0x41 &&
-    t.codeUnitAt(0) <= 0x5A &&
-    _isDigit(t.codeUnitAt(1)) &&
-    _isDigit(t.codeUnitAt(2));
-
+bool isCode(String token) => _code.hasMatch(token);
 bool isBeacon(List<String> codes) => codes.contains('B01');
 bool isBeaconAck(List<String> codes) => codes.contains('B02');
 bool isBeaconCancel(List<String> codes) => codes.contains('B03');
 
-class _Header {
-  int? severity;
-  bool hasDelimiter = false;
-  String body = '';
-}
-
-/// [s] must start with [prefix]. Indexing is by code point.
-_Header _parseHeader(String s) {
-  final h = _Header();
-  var i = prefix.length;
-  if (i < s.length) {
-    final c = s.codeUnitAt(i);
-    if (c >= 0x30 && c <= 0x33) h.severity = c - 0x30;
-    i += _cpLen(s, i);
-  }
-  if (i < s.length) {
-    h.hasDelimiter = s.codeUnitAt(i) == 0x2F;
-    i += _cpLen(s, i);
-  }
-  h.body = s.substring(i);
-  return h;
-}
-
-void _extract(String t, List<String> codes, Extracted x) {
-  final count = _find(_countRe, t);
-  if (count != null) x.count = _toInt(count);
-
-  final gps = _gpsRe.firstMatch(t);
-  if (gps != null) {
-    final lat = double.parse(gps.group(1)!);
-    final lon = double.parse(gps.group(2)!);
-    if (lat >= -90 && lat <= 90 && lon >= -180 && lon <= 180) x.gps = Gps(lat, lon);
-  }
-
-  if (codes.contains('R03')) {
-    final eta = _find(_etaRe, t);
-    if (eta != null) x.eta = _toInt(eta);
-  }
-
-  x.reference = _find(_referenceRe, t);
-  x.language = _find(_languageRe, t);
-
-  final ts = _find(_timestampRe, t);
-  if (ts != null && int.parse(ts.substring(0, 2)) <= 23 && int.parse(ts.substring(2)) <= 59) {
-    x.timestamp = ts;
-  }
-
-  x.callsign = _find(_callsignRe, t);
+String _stripLineEnding(String s) {
+  if (s.endsWith('\r\n')) return s.substring(0, s.length - 2);
+  if (s.endsWith('\n') || s.endsWith('\r')) return s.substring(0, s.length - 1);
+  return s;
 }
 
 Decoded decode(String s) {
-  final d = Decoded(s);
-  if (!isMecp(s)) return d;
-
-  final h = _parseHeader(s);
-  d.severity = h.severity;
-  if (h.severity == null) d.warnings.add(Warnings.invalidSeverity);
-  if (!h.hasDelimiter) d.warnings.add(Warnings.missingDelimiter);
-
-  if (_trim(h.body).isEmpty) {
-    d.valid = h.severity != null;
-    if (d.valid) d.warnings.add(Warnings.noCodes);
-    return d;
-  }
-
-  final tokens = h.body.split(' ').where((t) => t.isNotEmpty).toList();
-  var i = 0;
-  while (i < tokens.length && isCode(tokens[i])) {
-    d.codes.add(tokens[i]);
-    i++;
-  }
-  if (i < tokens.length) {
-    final ft = d.freetext = tokens.sublist(i).join(' ');
-    _extract(ft, d.codes, d.extracted);
-  }
-
-  d.isDrill = d.codes.contains('D01') || d.codes.contains('D02');
-  d.valid = h.severity != null;
-  return d;
+  final r = Decoded(s);
+  final env = _message.firstMatch(_stripLineEnding(s));
+  if (env == null) return r;
+  r.valid = true;
+  r.severity = int.parse(env.group(1)!);
+  r.codes.addAll(env.group(2)!.split(' '));
+  r.isDrill = r.codes.contains('D01') || r.codes.contains('D02');
+  r.freetext = env.group(3);
+  if (r.freetext != null) r.extracted = _extract(r.freetext!, r.codes);
+  return r;
 }
 
-Encoded encode(int severity, List<String> codes, [String? freetext]) {
-  final warnings = <String>[];
-  if (severity < 0 || severity > 3) warnings.add(Warnings.invalidSeverity);
-  for (final c in codes) {
-    if (!isCode(c)) warnings.add(Warnings.invalidCode);
-  }
-
-  var message = '$prefix$severity/${codes.join(' ')}';
-  if (freetext != null) {
-    final ft = _trim(freetext);
-    if (ft.isNotEmpty) message += ' $ft';
-  }
-  message = _trimEnd(message);
-
-  final byteLength = _utf8Length(message);
-  final over = byteLength > maxMessageBytes;
-  if (over) warnings.add(Warnings.overLimit);
-  return Encoded(message, byteLength, over, warnings);
-}
-
+/// Whether [s] may be transmitted as an MECP 1.4.0 message.
 Validation validate(String s) {
-  if (!isMecp(s)) return const Validation(false, [Warnings.missingPrefix], []);
-  final h = _parseHeader(s);
+  if (!isMecp(s)) return const Validation(false, [Errors.missingPrefix]);
   final errors = <String>[];
-  final warnings = <String>[];
-  if (h.severity == null) errors.add(Warnings.invalidSeverity);
-  if (!h.hasDelimiter) errors.add(Warnings.missingDelimiter);
-  if (_trim(h.body).isEmpty) warnings.add(Warnings.noCodes);
-  if (_utf8Length(s) > maxMessageBytes) warnings.add(Warnings.overLimit);
-  return Validation(errors.isEmpty, errors, warnings);
+  final severityOk = s.length > 5 && '0123'.contains(s[5]);
+  final delimOk = s.length > 6 && s[6] == '/';
+  if (!severityOk) errors.add(Errors.invalidSeverity);
+  if (!delimOk) errors.add(Errors.missingDelimiter);
+  final forbidden = s.runes.any(_isForbidden);
+  if (severityOk && delimOk && !forbidden) {
+    if (s.length < 10 || !isCode(s.substring(7, 10)) || (s.length > 10 && s[10] != ' ')) {
+      errors.add(Errors.noCodes);
+    } else if (!_message.hasMatch(s)) {
+      errors.add(Errors.invalidFreetext);
+    }
+  }
+  if (forbidden) errors.add(Errors.forbiddenCharacter);
+  if (utf8.encode(s).length > maxMessageBytes) errors.add(Errors.overLimit);
+  return Validation(errors.isEmpty, errors);
+}
+
+String _trim(String s) {
+  final r = s.runes.toList();
+  var a = 0, b = r.length;
+  while (a < b && _isWs(r[a])) {
+    a++;
+  }
+  while (b > a && _isWs(r[b - 1])) {
+    b--;
+  }
+  return String.fromCharCodes(r.sublist(a, b));
+}
+
+/// Build a message. With any error, [Encoded.message] is null: the encoder refuses.
+Encoded encode(int severity, List<String> codes, [String? freetext]) {
+  final errors = <String>[];
+  if (severity < 0 || severity > 3) errors.add(Errors.invalidSeverity);
+  if (codes.isEmpty) errors.add(Errors.noCodes);
+  for (final c in codes) {
+    if (!isCode(c)) errors.add(Errors.invalidCode);
+  }
+  var message = '$prefix$severity/${codes.join(' ')}';
+  final ft = freetext == null ? '' : _trim(freetext);
+  if (ft.isNotEmpty) message += ' $ft';
+  // Wire errors; the other validate errors only repeat an input error.
+  errors.addAll(validate(message)
+      .errors
+      .where((e) => e == Errors.forbiddenCharacter || e == Errors.overLimit));
+  return Encoded(errors.isEmpty ? message : null, utf8.encode(message).length, errors);
 }

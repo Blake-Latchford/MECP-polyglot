@@ -1,0 +1,140 @@
+{
+  "_comment": "Paths: {root} is the MECP-polyglot checkout, {clients} is $MECP_CLIENTS_DIR (default: the directory containing MECP-polyglot). 'fields' lists the record fields the client exposes; others are reported as n/a, not failures.",
+  "clients": [
+    {
+      "name": "reference",
+      "description": "In-repo §6.1 transcription (harness sanity check, not a client)",
+      "cmd": [
+        "python3",
+        "{root}/conformance/adapters/reference/adapter.py"
+      ],
+      "fields": "all"
+    },
+    {
+      "name": "meshcore-tak-bridge",
+      "description": "Kotlin decoder Mecp.parse()",
+      "repo": "{clients}/meshcore-tak-bridge",
+      "upstream": "https://github.com/Colorado-Mesh/meshcore-tak-bridge",
+      "source": "meshcore-kotlin/protocol/src/main/kotlin/org/coloradomesh/meshcore/protocol/Mecp.kt",
+      "build": [
+        "{clients}/meshcore-tak-bridge/meshcore-kotlin/gradlew",
+        "-q",
+        "-p",
+        "{root}/conformance/adapters/meshcore-tak-bridge",
+        "installDist",
+        "-PclientDir={clients}/meshcore-tak-bridge"
+      ],
+      "cmd": [
+        "{root}/conformance/adapters/meshcore-tak-bridge/build/install/mecp-adapter-tak-bridge/bin/mecp-adapter-tak-bridge"
+      ],
+      "fields": "all"
+    },
+    {
+      "name": "mecp-app",
+      "description": "@mecp/engine decode() (the published reference engine)",
+      "repo": "{clients}/mecp-app",
+      "upstream": "https://github.com/mecp-org/mecp-app",
+      "source": "engine/src/decoder.ts",
+      "build": [
+        "npm",
+        "install",
+        "--prefix",
+        "{root}/conformance/adapters/ts",
+        "--no-audit",
+        "--no-fund"
+      ],
+      "cmd": [
+        "{root}/conformance/adapters/ts/node_modules/.bin/tsx",
+        "{root}/conformance/adapters/ts/adapter.mts",
+        "mecp-app",
+        "{clients}/mecp-app"
+      ],
+      "fields": "all"
+    },
+    {
+      "name": "mesh-client",
+      "description": "tryParseMecp() over its vendored @mecp/engine copy (inbound chat path)",
+      "repo": "{clients}/mesh-client",
+      "upstream": "https://github.com/Colorado-Mesh/mesh-client",
+      "source": "src/renderer/lib/mecp/mecpMessages.ts",
+      "build": [
+        "npm",
+        "install",
+        "--prefix",
+        "{root}/conformance/adapters/ts",
+        "--no-audit",
+        "--no-fund"
+      ],
+      "cmd": [
+        "{root}/conformance/adapters/ts/node_modules/.bin/tsx",
+        "{root}/conformance/adapters/ts/adapter.mts",
+        "mesh-client",
+        "{clients}/mesh-client"
+      ],
+      "fields": "all"
+    },
+    {
+      "name": "reticulum-mobile",
+      "description": "decodeMecpMessage() in the mobile app",
+      "repo": "{clients}/reticulum_mobile_emergency_management",
+      "upstream": "https://github.com/FreeTAKTeam/reticulum_mobile_emergency_management",
+      "source": "apps/mobile/src/utils/mecp.ts",
+      "build": [
+        "npm",
+        "install",
+        "--prefix",
+        "{root}/conformance/adapters/ts",
+        "--no-audit",
+        "--no-fund"
+      ],
+      "cmd": [
+        "{root}/conformance/adapters/ts/node_modules/.bin/tsx",
+        "{root}/conformance/adapters/ts/adapter.mts",
+        "reticulum-mobile",
+        "{clients}/reticulum_mobile_emergency_management"
+      ],
+      "fields": "all"
+    },
+    {
+      "name": "wadamesh",
+      "description": "MECP app decode() (renders text; structured fields recovered from the rendering)",
+      "repo": "{clients}/wadamesh",
+      "upstream": "https://github.com/ALLFATHER-BV/wadamesh",
+      "source": "deploy/apps/mecp/1.0/mecp.lua",
+      "cmd": [
+        "lua5.4",
+        "{root}/conformance/adapters/wadamesh/adapter.lua",
+        "{clients}/wadamesh/deploy/apps/mecp/1.0/mecp.lua"
+      ],
+      "fields": [
+        "severity",
+        "pax",
+        "gps",
+        "timestamp"
+      ]
+    },
+    {
+      "name": "meshcore-one",
+      "description": "MeshCore One (MC1) iOS app, MECPDecode.decode() and MECPMessage's derived fields",
+      "repo": "{clients}/MeshCoreOne",
+      "upstream": "https://github.com/Avi0n/MeshCoreOne",
+      "source": "MC1Services/Sources/MC1Services/MECP/MECPDecode.swift",
+      "build": [
+        "sh",
+        "{root}/conformance/adapters/meshcore-one/build.sh",
+        "{clients}/MeshCoreOne"
+      ],
+      "cmd": [
+        "{root}/conformance/adapters/meshcore-one/build/mc1-adapter"
+      ],
+      "fields": [
+        "severity",
+        "codes",
+        "freetext",
+        "pax",
+        "timestamp",
+        "duration"
+      ]
+    }
+  ]
+}

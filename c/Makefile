@@ -7,6 +7,7 @@ SANITIZE?= -fsanitize=address,undefined -fno-omit-frame-pointer
 
 BUILD   := build
 VECTORS := ../vectors/mecp-vectors.json
+UPSTREAM:= ../upstream/freetext/tests.json ../upstream/freetext/manifest.json
 
 .PHONY: all test clean
 
@@ -15,17 +16,17 @@ all: $(BUILD)/libmecp.a
 $(BUILD):
 	mkdir -p $@
 
-$(BUILD)/mecp.o: src/mecp.c include/mecp.h | $(BUILD)
+$(BUILD)/mecp.o: src/mecp.c src/mecp_boundary.h include/mecp.h | $(BUILD)
 	$(CC) $(CFLAGS) -Iinclude -c $< -o $@
 
 $(BUILD)/libmecp.a: $(BUILD)/mecp.o
 	$(AR) rcs $@ $^
 
-$(BUILD)/vectors.h: $(VECTORS) tests/gen_vectors.py | $(BUILD)
-	$(PYTHON) tests/gen_vectors.py $< $@
+$(BUILD)/vectors.h: $(VECTORS) $(UPSTREAM) tests/gen_vectors.py | $(BUILD)
+	$(PYTHON) tests/gen_vectors.py $(VECTORS) $(UPSTREAM) $@
 
 # Test binary built from C, with sanitizers.
-$(BUILD)/test_c: tests/test_vectors.c src/mecp.c include/mecp.h $(BUILD)/vectors.h
+$(BUILD)/test_c: tests/test_vectors.c src/mecp.c src/mecp_boundary.h include/mecp.h $(BUILD)/vectors.h
 	$(CC) $(CFLAGS) $(SANITIZE) -Iinclude -I$(BUILD) tests/test_vectors.c src/mecp.c -o $@
 
 # Same tests compiled as C++ against the C library, to check the header.

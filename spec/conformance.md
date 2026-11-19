@@ -1,44 +1,69 @@
 # MECP-polyglot Conformance Rules
 
 This document pins down the exact behaviour every MECP-polyglot codec must
-implement. The wire format comes from the
-[MECP protocol brief](https://github.com/mecp-org/MECP/blob/main/MECP_Comprehensive_Brief.md)
-(§6.1). Where the brief is loose, behaviour follows the TypeScript reference
-engine [`@mecp/engine`](https://github.com/mecp-org/mecp-app/tree/main/engine).
-Deliberate divergences from that engine are listed in
-[Divergences from @mecp/engine](#divergences-from-mecpengine).
+implement. It follows MECP protocol **1.4.0**, brief §6.1
+([MECP_Comprehensive_Brief.md](https://github.com/mecp-org/MECP/blob/main/MECP_Comprehensive_Brief.md)).
+Where this document and the brief disagree, the brief wins and this document
+has a bug.
 
-The shared test vectors in [`../vectors/mecp-vectors.json`](../vectors/mecp-vectors.json)
-are normative: an implementation conforms when it passes every vector.
+Conformance is defined by two test sets, and a codec must pass both:
+
+- [`../upstream/freetext/tests.json`](../upstream/freetext/tests.json): the
+  upstream decode cases from mecp-org/MECP, copied unchanged.
+- [`../vectors/mecp-vectors.json`](../vectors/mecp-vectors.json): our own
+  hand-written cases for what upstream does not cover (the envelope fields,
+  clamping, encode and validate).
+
+## Where the regexes come from
+
+The patterns are not retyped in any codec. [`tools/mecp_sync.py`](../tools/mecp_sync.py)
+copies `freetext/{manifest,patterns,tests}.json` from a mecp-org/MECP commit
+into [`upstream/`](../upstream/), reads the boundary class B from §6.1 rule 4
+of the brief (`patterns.json` does not carry it), and generates one source file
+per language:
+
+| Language | Generated file |
+|----------|----------------|
+| Python | `python/src/mecp/_patterns.py` |
+| Go | `go/patterns.go` |
+| Rust | `rust/src/patterns.rs` |
+| Dart | `dart/lib/src/patterns.dart` |
+| C | `c/src/mecp_boundary.h` (B as code point ranges; C matches the patterns by hand) |
+
+The generator rewrites each `\uXXXX` regex escape as the literal character,
+written in the host language's string syntax: Go's RE2 has no `\u` escape and
+Rust spells it `\u{..}`. Every other escape in the upstream patterns
+(`\t`, `\.`, `\[`, …) means the same in Python `re`, Go `regexp`, Rust
+`regex-lite` and Dart `RegExp`, so the regex text is otherwise unchanged.
+
+To move to a newer MECP:
+
+```sh
+python3 tools/mecp_sync.py pull ../MECP   # a clean checkout of mecp-org/MECP
+```
+
+then run every test suite. `mecp_sync.py check` (CI) fails if a generated
+file is stale, and `mecp_sync.py verify-remote` (CI) fails if `upstream/` is
+not byte-identical to the recorded commit on GitHub.
 
 ## Definitions
 
-- **String**: a sequence of Unicode code points. On the wire it is UTF-8.
-  All indexing in this document counts **code points**, not bytes or UTF-16
-  code units.
-- **Digit**: ASCII `0`–`9` only. Unicode digits do not count. (Python's and
-  Rust's `\d` are Unicode-aware by default, so use `[0-9]`.)
-- **Alnum**: ASCII `A`–`Z`, `a`–`z`, `0`–`9`.
-- **Whitespace (WS)**: the ECMAScript whitespace set:
-  U+0009 TAB, U+000A LF, U+000B VT, U+000C FF, U+000D CR, U+0020 SPACE,
-  U+00A0, U+1680, U+2000–U+200A, U+2028, U+2029, U+202F, U+205F, U+3000,
-  U+FEFF. This differs from Python `str.strip()`, Go RE2's `\s` and C
-  `isspace()`, so define it explicitly.
-- **trim(s)**: `s` with leading and trailing WS removed.
-- **Boundary**: a position followed by a WS code point or by the end of the
-  string. (In regex form: `(?:WS|$)`; see [Patterns](#patterns).)
+- **B**: the boundary class from §6.1 rule 4 (`upstream/boundary.json`).
 - **Code**: a token matching exactly `[A-Z][0-9][0-9]`.
-- **Integer field limit**: `count` and `eta` are integers in
-  `0..2147483647`. A digit run whose value exceeds 2147483647 yields `null`.
-
-Patterns below are given as regexes with leftmost-first semantics. "Search"
-means find the match with the **lowest start index**. Only that first match is
-considered: if it later fails a range check, the field is `null` and no
-further matches are tried.
+- **Forbidden on the wire**: the line breaks `\n`, `\f`, `\r`, U+0085, U+2028,
+  U+2029 (§6.1 Wire), plus the byte-order mark U+FEFF and the Unicode
+  whitespace U+00A0, U+1680, U+2000–U+200A, U+202F, U+205F, U+3000 that
+  encoders must not emit (rule 8).
+- **ECMAScript whitespace (WS)**: U+0009–U+000D, U+0020, U+00A0, U+1680,
+  U+2000–U+200A, U+2028, U+2029, U+202F, U+205F, U+3000, U+FEFF. Only used to
+  trim encoder input.
+- **Clamp**: integer fields (`pax`, `duration`) are int32. A value above
+  2147483647, including an intermediate such as `99999999h` in minutes,
+  becomes 2147483647. Huge digit runs never fail.
 
 ## Decode
 
-Input: a string `s`. Output: a `Decoded` record:
+Input: a string. Output: a `Decoded` record:
 
 | Field | Type | Default |
 |-------|------|---------|
@@ -47,149 +72,118 @@ Input: a string `s`. Output: a `Decoded` record:
 | `codes` | list of string | [] |
 | `is_drill` | bool | false |
 | `freetext` | string or null | null |
-| `extracted.count` | int or null | null |
+| `extracted.pax` | int or null | null |
 | `extracted.gps` | `{lat, lon}` (float64) or null | null |
-| `extracted.eta` | int or null | null |
-| `extracted.reference` | string or null | null |
+| `extracted.timestamp` | `"HH:MM"` or null | null |
 | `extracted.language` | string or null | null |
-| `extracted.timestamp` | string or null | null |
 | `extracted.callsign` | string or null | null |
-| `warnings` | list of warning ids | [] |
+| `extracted.reference` | string or null | null |
+| `extracted.duration` | int (minutes) or null | null |
 
 Steps:
 
-1. **Prefix.** If `s` does not start with `MECP/` (case-sensitive), return the
-   defaults.
-2. **Severity.** Let `c5` be the code point at index 5 (none if `s` is too
-   short). If `c5` is one of `0 1 2 3`, set `severity` to its value. Otherwise
-   add warning `invalid_severity` and continue.
-3. **Delimiter.** If the code point at index 6 is not `/` (or does not exist),
-   add warning `missing_delimiter` and continue.
-4. **Body.** `body` is `s` from code point index 7 to the end (empty if `s` is
-   shorter). If `trim(body)` is empty: set `valid = (severity != null)`; if
-   `valid`, add warning `no_codes`; return.
-5. **Tokenise.** Split `body` on U+0020 SPACE **only** and drop empty tokens.
-   Other WS stays inside tokens. Walk the tokens left to right: while a token is
-   a Code, append it to `codes`. The first non-Code token and every token after
-   it, joined with a single U+0020, form `freetext`. Code-like tokens after
-   that point stay in `freetext`. If every token is a Code, `freetext` stays
-   null.
-6. **Extract** from `freetext` (use `""` when it is null):
-   - `count`: search `([0-9]+)pax`. The value is the decimal integer of group 1
-     (subject to the integer field limit).
-   - `gps`: search `(-?[0-9]+\.[0-9]+),(-?[0-9]+\.[0-9]+)`. Parse both groups as
-     float64 (round to nearest). If `-90 ≤ lat ≤ 90` and `-180 ≤ lon ≤ 180`,
-     set `gps`; otherwise it stays null.
-   - `eta`: only if `codes` contains `R03` and `freetext` is non-null: match
-     `^([0-9]+)Boundary` anchored at index 0 of `freetext`. The value is the
-     integer of group 1 (subject to the limit).
-   - `reference`: search `#([A-Za-z0-9]{1,4})`. Greedy, with **no** boundary,
-     so `#basecamp` yields `base`.
-   - `language`: search `@([a-z]{2})Boundary`.
-   - `timestamp`: search `@([0-9]{4})Boundary`. Let `hh` be the first two digits
-     and `mm` the last two. If `hh ≤ 23` and `mm ≤ 59`, set `timestamp` to the
-     four-digit string.
-   - `callsign`: search `~([A-Za-z0-9]{1,9})Boundary`. The alnum run after `~`
-     must be 1–9 long and end at a Boundary.
-7. **Drill.** `is_drill` is true if `codes` contains `D01` or `D02`. (`D03` and
-   `D04` do not set it.)
-8. **Valid.** `valid = (severity != null)`.
+1. **Strip** at most one trailing `\r\n`, `\n` or `\r`.
+2. **Envelope.** Match the whole string against `message.decode`. With no
+   match, return the defaults. (Python must use `fullmatch`: its `$` also
+   matches before a final `\n`.)
+3. Set `valid = true`, `severity` from group 1, `codes` from group 2 split on
+   U+0020, and `freetext` from group 3 (null when absent). `is_drill` is true
+   if `codes` contains `D01` or `D02`.
+4. **Extract** from `freetext` if it is not null, each convention independently:
+   - Wrap each decode pattern P as `(?:^|B)(?:P)(B|$)`. The right boundary is
+     captured as the last group.
+   - Search from position 0 for the leftmost match. If it fails Additional
+     Validation, search again from the start of its right boundary (the end of
+     the failed token), and so on. `^` keeps meaning the start of the freetext.
+     Searching a suffix is equivalent, because that position always holds a
+     B character and no pattern starts with one.
+   - `pax`: group 1, clamped.
+   - `gps`: groups 1 and 2 as float64. Valid only if −90 ≤ lat ≤ 90 and
+     −180 ≤ lon ≤ 180.
+   - `timestamp`: group 1 (hour) zero-padded to two digits, `:`, group 2.
+   - `language`: group 1, ASCII-lowercased, `_` replaced with `-`.
+   - `callsign`: group 1, ASCII-uppercased. Valid only if group 1 is at most
+     12 characters.
+   - `reference`: group 1, verbatim.
+   - `duration`: only if `codes` contains `R03` (`duration.scope`). For each
+     of decode patterns 1–4 in order (h+min, h, min, d), find the first valid
+     match, where valid means the minutes are > 0. Keep the match with the
+     lowest start; on a tie the earlier pattern wins. Only if none of 1–4
+     matched, try pattern 5 (bare number), which is valid only if the minutes
+     are > 0 **and** group 2 (a decimal part) did not take part. Minutes:
+     h+min = g1·60 + g2, h = g1·60, min = g1, d = g1·1440, bare = g1, each
+     clamped.
 
-Unknown but well-formed codes (e.g. `Z99`) are accepted as codes. Checking
-codes against the code table is a localisation concern, not a decode concern.
+Case folding is ASCII-only, never locale-sensitive (rule 5).
 
-## Patterns
+Unknown but well-formed codes (e.g. `Z99`) are codes. Checking them against
+the code table is a localisation concern.
 
-The extraction rules in Decode step 6 are written so that the same regex text
-works in Python `re`, Go `regexp`, Rust `regex`/`regex-lite` and ECMAScript
-(Dart `RegExp`). Implementations with a regex engine should use these exact
-patterns. Implementations without one (C) match them by hand.
-
-```text
-WS        = [\t-\r \u00a0\u1680\u2000-\u200a\u2028\u2029\u202f\u205f\u3000\ufeff]
-END       = (?:WS|$)
-COUNT     = ([0-9]+)pax
-GPS       = (-?[0-9]+\.[0-9]+),(-?[0-9]+\.[0-9]+)
-ETA       = ^([0-9]+)END
-REFERENCE = #([A-Za-z0-9]{1,4})
-LANGUAGE  = @([a-z]{2})END
-TIMESTAMP = @([0-9]{4})END
-CALLSIGN  = ~([A-Za-z0-9]{1,9})END
-```
-
-Portability rules:
-
-- **Build `WS` from literal characters.** The `\t`, `\r` and `\uXXXX` in `WS`
-  are host-language *string* escapes, not regex escapes. Each language writes
-  them in its own string-literal syntax (Rust: `\u{a0}`), so the regex engine
-  sees the characters themselves. Regex escape syntax for code points differs
-  between engines (`\x{a0}` in Go, `\u00a0` in ECMAScript), and `\s` means
-  something different in each one.
-- **Use `$` without multiline mode.** In Go, Rust and ECMAScript it matches only
-  at the end of the text. Python's `$` also matches just before a final `\n`,
-  but `\n` is in `WS`, so `END` matches there anyway and the result is the same.
-- **Use ASCII ranges, never `\d` or `\w`.** They are Unicode-aware in some
-  engines.
-- **Match code units or code points.** Every character a pattern can match is
-  in the BMP, so engines that work on UTF-16 code units (Dart, ECMAScript) give
-  the same results as those that work on code points.
-- **Search for the leftmost match** (Python `re.search`, Go
-  `FindStringSubmatch`, Rust `captures`, Dart `firstMatch`) and use capture
-  group 1. Only the first match is considered (see above).
+Invalid UTF-8 is read as U+FFFD (C, Go). Python, Rust and Dart take
+already-decoded strings.
 
 ## Encode
 
 Input: `severity` (integer), `codes` (list of strings), `freetext` (string or
-null). Output: `{message, byte_length, over_limit, warnings}`.
+null). Output: `{message, byte_length, errors}`.
 
-1. If `severity` is not 0–3, add warning `invalid_severity`. Encoding still
-   proceeds using the decimal form of the integer.
-2. For each code that is not a Code, add warning `invalid_code`, once per bad
-   code and in order. The code is still emitted.
-3. `message = "MECP/" + decimal(severity) + "/" + join(codes, " ")`.
-4. If `freetext` is non-null and `trim(freetext)` is non-empty, append
-   `" " + trim(freetext)`.
-5. Strip trailing WS from `message`.
-6. `byte_length` is the UTF-8 byte length of `message`.
-   `over_limit = byte_length > 200`. If over the limit, add warning
-   `over_limit`.
+1. If `severity` is not 0–3: error `invalid_severity`. If `codes` is empty:
+   error `no_codes`. For each code that is not a Code: error `invalid_code`,
+   once per bad code, in order.
+2. `message = "MECP/" + decimal(severity) + "/" + join(codes, " ")`. If
+   `freetext` is non-null and not empty after trimming WS from both ends,
+   append `" " + trimmed freetext`.
+3. Add the `forbidden_character` and `over_limit` errors that
+   [Validate](#validate) reports for `message`. (Its other errors would only
+   repeat one from step 1.)
+4. `byte_length` is the UTF-8 byte length of `message`. If there is any error,
+   `message` is null: the encoder refuses (§6.1 Encoders). It never truncates.
 
 ## Validate
 
-Input: a string `s`. Output: `{valid, errors, warnings}`.
+Whether a string may be transmitted. Input: a string `s`. Output:
+`{valid, errors}`. Line endings are **not** stripped.
 
-1. If `s` does not start with `MECP/`: errors `[missing_prefix]`, return.
-2. If the code point at index 5 is not `0`–`3`: error `invalid_severity`.
-3. If the code point at index 6 is not `/`: error `missing_delimiter`.
-4. If `trim(body)` is empty (body as in Decode step 4): warning `no_codes`.
-5. If the UTF-8 byte length of `s` > 200: warning `over_limit`.
-6. `valid = errors is empty`.
+1. If `s` does not start with `MECP/`: errors `[missing_prefix]`, stop.
+2. If the character at index 5 is not `0`–`3`: `invalid_severity`.
+3. If the character at index 6 is not `/`: `missing_delimiter`.
+4. If neither of those, and `s` has no forbidden character:
+   - if `s[7..10]` is not a Code followed by a space or the end: `no_codes`;
+   - otherwise, if `s` does not match `message.decode`: `invalid_freetext`.
+5. If `s` contains a forbidden character: `forbidden_character`.
+6. If the UTF-8 byte length of `s` is over 200: `over_limit`.
+7. `valid = errors is empty`.
 
 ## Helpers
 
 - `is_mecp(s)`: `s` starts with `MECP/`.
+- `is_code(t)`: `t` is a Code.
 - `is_beacon(codes)`, `is_beacon_ack(codes)`, `is_beacon_cancel(codes)`:
   `codes` contains `B01`, `B02` or `B03` respectively.
-- `MAX_MESSAGE_BYTES = 200`.
+- `MAX_MESSAGE_BYTES = 200`; `MECP_VERSION`, the protocol version of the
+  upstream pack.
 
-## Warning and error ids
+## Error ids
 
 | Id | Raised by |
 |----|-----------|
-| `invalid_severity` | decode (warning), encode (warning), validate (error) |
-| `missing_delimiter` | decode (warning), validate (error) |
-| `missing_prefix` | validate (error) |
-| `no_codes` | decode (warning), validate (warning) |
-| `invalid_code` | encode (warning) |
-| `over_limit` | encode (warning), validate (warning) |
+| `missing_prefix` | validate |
+| `invalid_severity` | encode, validate |
+| `missing_delimiter` | validate |
+| `no_codes` | encode, validate |
+| `invalid_code` | encode |
+| `invalid_freetext` | validate |
+| `forbidden_character` | encode, validate |
+| `over_limit` | encode, validate |
 
-Implementations may attach human-readable messages, but conformance compares
-ids only, in order.
+Errors are listed in the order of this table. Implementations may attach
+human-readable messages, but conformance compares ids only.
 
-## Divergences from @mecp/engine
+## Choices the brief leaves open
 
-| Area | @mecp/engine | MECP-polyglot | Why |
-|------|--------------|---------------|-----|
-| Indexing | UTF-16 code units | Code points | Same for everything except astral-plane characters at index 5 or 6. Code points are portable to C, Rust and Go. |
-| Integer overflow | `parseInt` → float, loses precision | `null` above 2147483647 | Deterministic and safe on firmware. |
-| Warnings | Free-text strings | Stable ids | Comparable across languages. |
+| Area | Brief | MECP-polyglot |
+|------|-------|---------------|
+| Huge integers | Not covered (proposed: MUST NOT fail, SHOULD clamp); upstream's checker does not clamp | Clamp to 2147483647 |
+| Oversize encode | Refuse, or truncate freetext at a grapheme boundary | Refuse; grapheme segmentation is not in every standard library |
+| Oversize decode | MUST NOT reject | Accepted (C: up to `MECP_MAX_INPUT_BYTES`, default 256) |
+| Extra boundary characters | Decoders MAY treat other non-ASCII space or punctuation as B | Exactly the B list, no more |

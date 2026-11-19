@@ -27,16 +27,20 @@ type vectorFile struct {
 	} `json:"validate"`
 }
 
-func loadVectors(t *testing.T) vectorFile {
+func readJSON(t *testing.T, path string, v any) {
 	t.Helper()
-	raw, err := os.ReadFile("../vectors/mecp-vectors.json")
+	raw, err := os.ReadFile(path)
 	if err != nil {
 		t.Fatal(err)
 	}
-	var v vectorFile
-	if err := json.Unmarshal(raw, &v); err != nil {
+	if err := json.Unmarshal(raw, v); err != nil {
 		t.Fatal(err)
 	}
+}
+
+func loadVectors(t *testing.T) vectorFile {
+	var v vectorFile
+	readJSON(t, "../vectors/mecp-vectors.json", &v)
 	return v
 }
 
@@ -78,6 +82,46 @@ func TestEncodeVectors(t *testing.T) {
 func TestValidateVectors(t *testing.T) {
 	for _, c := range loadVectors(t).Validate {
 		sameJSON(t, c.Name, Validate(c.Input), c.Expect)
+	}
+}
+
+// TestUpstreamFreetext runs mecp-org/MECP freetext/tests.json unchanged.
+func TestUpstreamFreetext(t *testing.T) {
+	var manifest struct {
+		SchemaVersion int `json:"schemaVersion"`
+	}
+	readJSON(t, "../upstream/freetext/manifest.json", &manifest)
+	if manifest.SchemaVersion != 1 {
+		t.Fatalf("unsupported schemaVersion %d", manifest.SchemaVersion)
+	}
+	var tests []struct {
+		Title  string                     `json:"title"`
+		Input  string                     `json:"input"`
+		Expect map[string]json.RawMessage `json:"expect"`
+	}
+	readJSON(t, "../upstream/freetext/tests.json", &tests)
+	fields := []string{"pax", "gps", "timestamp", "language", "callsign", "reference", "duration"}
+	for _, c := range tests {
+		d := Decode(c.Input)
+		if c.Expect == nil {
+			if d.Valid {
+				t.Errorf("%s: decoded as valid", c.Title)
+			}
+			continue
+		}
+		if !d.Valid {
+			t.Errorf("%s: not valid", c.Title)
+			continue
+		}
+		want := map[string]json.RawMessage{}
+		for _, f := range fields {
+			want[f] = json.RawMessage("null")
+			if v, ok := c.Expect[f]; ok {
+				want[f] = v
+			}
+		}
+		w, _ := json.Marshal(want)
+		sameJSON(t, c.Title, d.Extracted, w)
 	}
 }
 

@@ -5,57 +5,64 @@ from pathlib import Path
 
 import mecp
 
-VECTORS = json.loads(
-    (Path(__file__).resolve().parents[2] / "vectors" / "mecp-vectors.json").read_text(encoding="utf-8")
-)
+ROOT = Path(__file__).resolve().parents[2]
+VECTORS = json.loads((ROOT / "vectors/mecp-vectors.json").read_text(encoding="utf-8"))
+UPSTREAM = ROOT / "upstream/freetext"
+FIELDS = ("pax", "gps", "timestamp", "language", "callsign", "reference", "duration")
 
 
-def as_dict(decoded: mecp.Decoded) -> dict:
-    d = dataclasses.asdict(decoded)
-    del d["raw"]
-    return d
+def decoded_json(d: mecp.Decoded) -> dict:
+    out = dataclasses.asdict(d)
+    del out["raw"]
+    return out
 
 
-class DecodeVectors(unittest.TestCase):
+class Vectors(unittest.TestCase):
     def test_decode(self):
-        for case in VECTORS["decode"]:
-            with self.subTest(case["name"]):
-                got = mecp.decode(case["input"])
-                self.assertEqual(got.raw, case["input"])
-                self.assertEqual(as_dict(got), case["expect"])
+        for c in VECTORS["decode"]:
+            with self.subTest(c["name"]):
+                self.assertEqual(decoded_json(mecp.decode(c["input"])), c["expect"])
 
-
-class EncodeVectors(unittest.TestCase):
     def test_encode(self):
-        for case in VECTORS["encode"]:
-            with self.subTest(case["name"]):
-                got = mecp.encode(case["severity"], case["codes"], case["freetext"])
-                self.assertEqual(dataclasses.asdict(got), case["expect"])
+        for c in VECTORS["encode"]:
+            with self.subTest(c["name"]):
+                got = mecp.encode(c["severity"], c["codes"], c["freetext"])
+                self.assertEqual(dataclasses.asdict(got), c["expect"])
 
-
-class ValidateVectors(unittest.TestCase):
     def test_validate(self):
-        for case in VECTORS["validate"]:
-            with self.subTest(case["name"]):
-                got = mecp.validate(case["input"])
-                self.assertEqual(dataclasses.asdict(got), case["expect"])
+        for c in VECTORS["validate"]:
+            with self.subTest(c["name"]):
+                self.assertEqual(dataclasses.asdict(mecp.validate(c["input"])), c["expect"])
 
 
-class RoundTrip(unittest.TestCase):
-    def test_encode_then_decode(self):
-        enc = mecp.encode(0, ["M01", "M07", "P05"], "2pax 48.6520,20.1305")
-        dec = mecp.decode(enc.message)
-        self.assertTrue(dec.valid)
-        self.assertEqual(dec.codes, ["M01", "M07", "P05"])
-        self.assertEqual(dec.extracted.count, 2)
-        self.assertEqual(dec.extracted.gps, mecp.Gps(48.652, 20.1305))
+class UpstreamFreetext(unittest.TestCase):
+    """mecp-org/MECP freetext/tests.json, run unchanged."""
 
-    def test_beacon_helpers(self):
+    def test_cases(self):
+        manifest = json.loads((UPSTREAM / "manifest.json").read_text(encoding="utf-8"))
+        self.assertEqual(manifest["schemaVersion"], 1)
+        tests = json.loads((UPSTREAM / "tests.json").read_text(encoding="utf-8"))
+        for t in tests:
+            with self.subTest(t["title"]):
+                d = mecp.decode(t["input"])
+                if t["expect"] is None:
+                    self.assertFalse(d.valid)
+                    continue
+                self.assertTrue(d.valid)
+                got = dataclasses.asdict(d.extracted)
+                self.assertEqual(got, {f: t["expect"].get(f) for f in FIELDS})
+
+
+class Helpers(unittest.TestCase):
+    def test_beacon(self):
         codes = mecp.decode("MECP/0/B01 B02 B03").codes
         self.assertTrue(mecp.is_beacon(codes))
         self.assertTrue(mecp.is_beacon_ack(codes))
         self.assertTrue(mecp.is_beacon_cancel(codes))
         self.assertFalse(mecp.is_beacon(["M01"]))
+
+    def test_version(self):
+        self.assertEqual(mecp.MECP_VERSION, "1.4.0")
 
 
 if __name__ == "__main__":

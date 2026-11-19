@@ -1,0 +1,3345 @@
+{
+  "spec": "MECP 1.4.0, MECP_Comprehensive_Brief.md §6.1",
+  "kind": "decode",
+  "generated_by": "conformance/vectors/build.py (hand-written; do not edit the JSON)",
+  "fields": [
+    "valid",
+    "severity",
+    "codes",
+    "freetext",
+    "pax",
+    "gps",
+    "timestamp",
+    "language",
+    "callsign",
+    "reference",
+    "duration"
+  ],
+  "cases": [
+    {
+      "id": "env.readme",
+      "clause": "6.1 Message Format",
+      "input": "MECP/0/M01 M07 2pax P05 48.6520,20.1305",
+      "expect": {
+        "valid": true,
+        "severity": 0,
+        "codes": [
+          "M01",
+          "M07"
+        ],
+        "freetext": "2pax P05 48.6520,20.1305",
+        "pax": 2,
+        "gps": {
+          "lat": 48.652,
+          "lon": 20.1305
+        },
+        "timestamp": null,
+        "language": null,
+        "callsign": null,
+        "reference": null,
+        "duration": null
+      },
+      "note": "README example. P05 after freetext starts is freetext (Codes rule 3)."
+    },
+    {
+      "id": "env.codes-only",
+      "clause": "6.1 Message Format",
+      "input": "MECP/2/B03",
+      "expect": {
+        "valid": true,
+        "severity": 2,
+        "codes": [
+          "B03"
+        ],
+        "freetext": null,
+        "pax": null,
+        "gps": null,
+        "timestamp": null,
+        "language": null,
+        "callsign": null,
+        "reference": null,
+        "duration": null
+      }
+    },
+    {
+      "id": "env.sev0",
+      "clause": "6.1 Message Format",
+      "input": "MECP/0/B01",
+      "expect": {
+        "valid": true,
+        "severity": 0,
+        "codes": [
+          "B01"
+        ],
+        "freetext": null,
+        "pax": null,
+        "gps": null,
+        "timestamp": null,
+        "language": null,
+        "callsign": null,
+        "reference": null,
+        "duration": null
+      }
+    },
+    {
+      "id": "env.sev3",
+      "clause": "6.1 Message Format",
+      "input": "MECP/3/L04",
+      "expect": {
+        "valid": true,
+        "severity": 3,
+        "codes": [
+          "L04"
+        ],
+        "freetext": null,
+        "pax": null,
+        "gps": null,
+        "timestamp": null,
+        "language": null,
+        "callsign": null,
+        "reference": null,
+        "duration": null
+      }
+    },
+    {
+      "id": "env.repeat-code",
+      "clause": "6.1 Codes 4",
+      "input": "MECP/1/T05 T05 damaged",
+      "expect": {
+        "valid": true,
+        "severity": 1,
+        "codes": [
+          "T05",
+          "T05"
+        ],
+        "freetext": "damaged",
+        "pax": null,
+        "gps": null,
+        "timestamp": null,
+        "language": null,
+        "callsign": null,
+        "reference": null,
+        "duration": null
+      }
+    },
+    {
+      "id": "env.unknown-code",
+      "clause": "6.1 Codes 5",
+      "input": "MECP/3/Z99 hello",
+      "expect": {
+        "valid": true,
+        "severity": 3,
+        "codes": [
+          "Z99"
+        ],
+        "freetext": "hello",
+        "pax": null,
+        "gps": null,
+        "timestamp": null,
+        "language": null,
+        "callsign": null,
+        "reference": null,
+        "duration": null
+      },
+      "note": "Unknown but well-formed codes MUST be preserved, not treated as freetext."
+    },
+    {
+      "id": "env.unknown-category-only",
+      "clause": "6.1 Codes 5",
+      "input": "MECP/1/Q42",
+      "expect": {
+        "valid": true,
+        "severity": 1,
+        "codes": [
+          "Q42"
+        ],
+        "freetext": null,
+        "pax": null,
+        "gps": null,
+        "timestamp": null,
+        "language": null,
+        "callsign": null,
+        "reference": null,
+        "duration": null
+      }
+    },
+    {
+      "id": "env.lowercase-ends-codes",
+      "clause": "6.1 Codes 3",
+      "input": "MECP/3/L01 l06 late",
+      "expect": {
+        "valid": true,
+        "severity": 3,
+        "codes": [
+          "L01"
+        ],
+        "freetext": "l06 late",
+        "pax": null,
+        "gps": null,
+        "timestamp": null,
+        "language": null,
+        "callsign": null,
+        "reference": null,
+        "duration": null
+      }
+    },
+    {
+      "id": "env.code-after-freetext",
+      "clause": "6.1 Codes 3",
+      "input": "MECP/0/M01 2pax M07",
+      "expect": {
+        "valid": true,
+        "severity": 0,
+        "codes": [
+          "M01"
+        ],
+        "freetext": "2pax M07",
+        "pax": 2,
+        "gps": null,
+        "timestamp": null,
+        "language": null,
+        "callsign": null,
+        "reference": null,
+        "duration": null
+      }
+    },
+    {
+      "id": "env.freetext-inner-spaces",
+      "clause": "6.1 Message Format",
+      "input": "MECP/3/L01 see  you   there",
+      "expect": {
+        "valid": true,
+        "severity": 3,
+        "codes": [
+          "L01"
+        ],
+        "freetext": "see  you   there",
+        "pax": null,
+        "gps": null,
+        "timestamp": null,
+        "language": null,
+        "callsign": null,
+        "reference": null,
+        "duration": null
+      },
+      "note": "Freetext is regex group 3 verbatim; inner runs of spaces are kept."
+    },
+    {
+      "id": "env.freetext-tab-inside",
+      "clause": "6.1 Message Format",
+      "input": "MECP/3/L01 a\tb",
+      "expect": {
+        "valid": true,
+        "severity": 3,
+        "codes": [
+          "L01"
+        ],
+        "freetext": "a\tb",
+        "pax": null,
+        "gps": null,
+        "timestamp": null,
+        "language": null,
+        "callsign": null,
+        "reference": null,
+        "duration": null
+      }
+    },
+    {
+      "id": "env.trailing-lf",
+      "clause": "6.1 Message Format",
+      "input": "MECP/2/B03\n",
+      "expect": {
+        "valid": true,
+        "severity": 2,
+        "codes": [
+          "B03"
+        ],
+        "freetext": null,
+        "pax": null,
+        "gps": null,
+        "timestamp": null,
+        "language": null,
+        "callsign": null,
+        "reference": null,
+        "duration": null
+      },
+      "note": "Remove at most one trailing CR/LF before matching."
+    },
+    {
+      "id": "env.trailing-cr",
+      "clause": "6.1 Message Format",
+      "input": "MECP/2/B03\r",
+      "expect": {
+        "valid": true,
+        "severity": 2,
+        "codes": [
+          "B03"
+        ],
+        "freetext": null,
+        "pax": null,
+        "gps": null,
+        "timestamp": null,
+        "language": null,
+        "callsign": null,
+        "reference": null,
+        "duration": null
+      }
+    },
+    {
+      "id": "env.trailing-crlf",
+      "clause": "6.1 Message Format",
+      "input": "MECP/2/B03\r\n",
+      "expect": {
+        "valid": true,
+        "severity": 2,
+        "codes": [
+          "B03"
+        ],
+        "freetext": null,
+        "pax": null,
+        "gps": null,
+        "timestamp": null,
+        "language": null,
+        "callsign": null,
+        "reference": null,
+        "duration": null
+      },
+      "note": "One trailing CR/LF means the regex \\r?\\n? at the end, so CRLF counts as one."
+    },
+    {
+      "id": "env.trailing-crlf-freetext",
+      "clause": "6.1 Message Format",
+      "input": "MECP/3/L01 see you\r\n",
+      "expect": {
+        "valid": true,
+        "severity": 3,
+        "codes": [
+          "L01"
+        ],
+        "freetext": "see you",
+        "pax": null,
+        "gps": null,
+        "timestamp": null,
+        "language": null,
+        "callsign": null,
+        "reference": null,
+        "duration": null
+      }
+    },
+    {
+      "id": "env.utf8-freetext",
+      "clause": "6.1 Message Format",
+      "input": "MECP/3/L04 Gipfel erreicht 山頂",
+      "expect": {
+        "valid": true,
+        "severity": 3,
+        "codes": [
+          "L04"
+        ],
+        "freetext": "Gipfel erreicht 山頂",
+        "pax": null,
+        "gps": null,
+        "timestamp": null,
+        "language": null,
+        "callsign": null,
+        "reference": null,
+        "duration": null
+      }
+    },
+    {
+      "id": "env.no-codes",
+      "clause": "6.1 Message Format",
+      "input": "MECP/0/",
+      "expect": {
+        "valid": false
+      },
+      "note": "The envelope regex needs at least one code."
+    },
+    {
+      "id": "env.no-codes-no-slash",
+      "clause": "6.1 Message Format",
+      "input": "MECP/0",
+      "expect": {
+        "valid": false
+      }
+    },
+    {
+      "id": "env.prefix-only",
+      "clause": "6.1 Message Format",
+      "input": "MECP/",
+      "expect": {
+        "valid": false
+      }
+    },
+    {
+      "id": "env.empty",
+      "clause": "6.1 Message Format",
+      "input": "",
+      "expect": {
+        "valid": false
+      }
+    },
+    {
+      "id": "env.not-mecp",
+      "clause": "6.1 Message Format",
+      "input": "hello world",
+      "expect": {
+        "valid": false
+      }
+    },
+    {
+      "id": "env.sev4",
+      "clause": "6.1 Severity",
+      "input": "MECP/4/M01",
+      "expect": {
+        "valid": false
+      }
+    },
+    {
+      "id": "env.sev9",
+      "clause": "6.1 Severity",
+      "input": "MECP/9/M01",
+      "expect": {
+        "valid": false
+      }
+    },
+    {
+      "id": "env.sev-letter",
+      "clause": "6.1 Severity",
+      "input": "MECP/X/M01",
+      "expect": {
+        "valid": false
+      }
+    },
+    {
+      "id": "env.sev-two-digits",
+      "clause": "6.1 Severity",
+      "input": "MECP/01/M01",
+      "expect": {
+        "valid": false
+      }
+    },
+    {
+      "id": "env.sev-arabic-indic",
+      "clause": "6.1 Severity",
+      "input": "MECP/٣/M01",
+      "expect": {
+        "valid": false
+      }
+    },
+    {
+      "id": "env.lowercase-prefix",
+      "clause": "6.1 Message Format",
+      "input": "mecp/0/M01",
+      "expect": {
+        "valid": false
+      }
+    },
+    {
+      "id": "env.leading-space",
+      "clause": "6.1 Message Format",
+      "input": " MECP/0/M01",
+      "expect": {
+        "valid": false
+      }
+    },
+    {
+      "id": "env.channel-prefix",
+      "clause": "6.1 Message Format",
+      "input": "Alice: MECP/0/M01",
+      "expect": {
+        "valid": false
+      },
+      "note": "A sender prefix is transport framing; strip it before decoding, not in the decoder."
+    },
+    {
+      "id": "env.no-prefix-compact",
+      "clause": "6.1 Message Format",
+      "input": "M01 P05 48.65,20.13",
+      "expect": {
+        "valid": false
+      }
+    },
+    {
+      "id": "env.lowercase-first-code",
+      "clause": "6.1 Codes 3",
+      "input": "MECP/1/t05 x",
+      "expect": {
+        "valid": false
+      }
+    },
+    {
+      "id": "env.four-char-code",
+      "clause": "6.1 Message Format",
+      "input": "MECP/0/M011",
+      "expect": {
+        "valid": false
+      }
+    },
+    {
+      "id": "env.trailing-space",
+      "clause": "6.1 Message Format",
+      "input": "MECP/1/T05 ",
+      "expect": {
+        "valid": false
+      },
+      "note": "Freetext MUST NOT begin or end with a space."
+    },
+    {
+      "id": "env.trailing-space-after-text",
+      "clause": "6.1 Message Format",
+      "input": "MECP/1/T05 help ",
+      "expect": {
+        "valid": false
+      }
+    },
+    {
+      "id": "env.double-space-before-freetext",
+      "clause": "6.1 Message Format",
+      "input": "MECP/0/M01  help",
+      "expect": {
+        "valid": false
+      }
+    },
+    {
+      "id": "env.double-space-between-codes",
+      "clause": "6.1 Message Format",
+      "input": "MECP/0/M01  M07",
+      "expect": {
+        "valid": false
+      }
+    },
+    {
+      "id": "env.tab-after-codes",
+      "clause": "6.1 Message Format",
+      "input": "MECP/0/M01\tM07",
+      "expect": {
+        "valid": false
+      }
+    },
+    {
+      "id": "env.embedded-lf",
+      "clause": "6.1 Message Format",
+      "input": "MECP/0/M01\nM07",
+      "expect": {
+        "valid": false
+      }
+    },
+    {
+      "id": "env.embedded-cr",
+      "clause": "6.1 Message Format",
+      "input": "MECP/3/L01 a\rb",
+      "expect": {
+        "valid": false
+      }
+    },
+    {
+      "id": "env.line-separator",
+      "clause": "6.1 Message Format",
+      "input": "MECP/3/L01 a b",
+      "expect": {
+        "valid": false
+      }
+    },
+    {
+      "id": "env.nel",
+      "clause": "6.1 Message Format",
+      "input": "MECP/3/L01 ab",
+      "expect": {
+        "valid": false
+      }
+    },
+    {
+      "id": "env.two-trailing-lf",
+      "clause": "6.1 Message Format",
+      "input": "MECP/2/B03\n\n",
+      "expect": {
+        "valid": false
+      }
+    },
+    {
+      "id": "env.lfcr",
+      "clause": "6.1 Message Format",
+      "input": "MECP/2/B03\n\r",
+      "expect": {
+        "valid": false
+      },
+      "note": "\\r?\\n? removes only the final CR; the LF remains."
+    },
+    {
+      "id": "env.two-crlf",
+      "clause": "6.1 Message Format",
+      "input": "MECP/2/B03\r\n\r\n",
+      "expect": {
+        "valid": false
+      }
+    },
+    {
+      "id": "env.nbsp-after-codes",
+      "clause": "6.1 Message Format",
+      "input": "MECP/0/M01 help",
+      "expect": {
+        "valid": false
+      }
+    },
+    {
+      "id": "b.paren",
+      "clause": "6.1 Optional Freetext 4",
+      "input": "MECP/1/S01 (4pax)",
+      "expect": {
+        "valid": true,
+        "severity": 1,
+        "codes": [
+          "S01"
+        ],
+        "freetext": "(4pax)",
+        "pax": 4,
+        "gps": null,
+        "timestamp": null,
+        "language": null,
+        "callsign": null,
+        "reference": null,
+        "duration": null
+      }
+    },
+    {
+      "id": "b.period",
+      "clause": "6.1 Optional Freetext 4",
+      "input": "MECP/1/S01 4Pax.",
+      "expect": {
+        "valid": true,
+        "severity": 1,
+        "codes": [
+          "S01"
+        ],
+        "freetext": "4Pax.",
+        "pax": 4,
+        "gps": null,
+        "timestamp": null,
+        "language": null,
+        "callsign": null,
+        "reference": null,
+        "duration": null
+      }
+    },
+    {
+      "id": "b.comma-run",
+      "clause": "6.1 Optional Freetext 4",
+      "input": "MECP/1/S01 4pax,3pax",
+      "expect": {
+        "valid": true,
+        "severity": 1,
+        "codes": [
+          "S01"
+        ],
+        "freetext": "4pax,3pax",
+        "pax": 4,
+        "gps": null,
+        "timestamp": null,
+        "language": null,
+        "callsign": null,
+        "reference": null,
+        "duration": null
+      }
+    },
+    {
+      "id": "b.asterisk",
+      "clause": "6.1 Optional Freetext 4",
+      "input": "MECP/1/S01 *4pax*",
+      "expect": {
+        "valid": true,
+        "severity": 1,
+        "codes": [
+          "S01"
+        ],
+        "freetext": "*4pax*",
+        "pax": null,
+        "gps": null,
+        "timestamp": null,
+        "language": null,
+        "callsign": null,
+        "reference": null,
+        "duration": null
+      },
+      "note": "1.4.0 lists the ASCII boundaries explicitly; '*' is not one of them."
+    },
+    {
+      "id": "b.slash",
+      "clause": "6.1 Optional Freetext 4",
+      "input": "MECP/1/S01 4pax/3",
+      "expect": {
+        "valid": true,
+        "severity": 1,
+        "codes": [
+          "S01"
+        ],
+        "freetext": "4pax/3",
+        "pax": null,
+        "gps": null,
+        "timestamp": null,
+        "language": null,
+        "callsign": null,
+        "reference": null,
+        "duration": null
+      },
+      "note": "1.4.0 lists the ASCII boundaries explicitly; '/' is not one of them."
+    },
+    {
+      "id": "b.ideographic-comma",
+      "clause": "6.1 Optional Freetext 4",
+      "input": "MECP/1/S01 4pax、水",
+      "expect": {
+        "valid": true,
+        "severity": 1,
+        "codes": [
+          "S01"
+        ],
+        "freetext": "4pax、水",
+        "pax": 4,
+        "gps": null,
+        "timestamp": null,
+        "language": null,
+        "callsign": null,
+        "reference": null,
+        "duration": null
+      }
+    },
+    {
+      "id": "b.corner-brackets",
+      "clause": "6.1 Optional Freetext 4",
+      "input": "MECP/1/S01 「4pax」",
+      "expect": {
+        "valid": true,
+        "severity": 1,
+        "codes": [
+          "S01"
+        ],
+        "freetext": "「4pax」",
+        "pax": 4,
+        "gps": null,
+        "timestamp": null,
+        "language": null,
+        "callsign": null,
+        "reference": null,
+        "duration": null
+      }
+    },
+    {
+      "id": "b.nbsp",
+      "clause": "6.1 Optional Freetext 4",
+      "input": "MECP/1/S01 4pax water",
+      "expect": {
+        "valid": true,
+        "severity": 1,
+        "codes": [
+          "S01"
+        ],
+        "freetext": "4pax water",
+        "pax": 4,
+        "gps": null,
+        "timestamp": null,
+        "language": null,
+        "callsign": null,
+        "reference": null,
+        "duration": null
+      }
+    },
+    {
+      "id": "b.arabic-comma",
+      "clause": "6.1 Optional Freetext 4",
+      "input": "MECP/0/M01 48.65,20.13،",
+      "expect": {
+        "valid": true,
+        "severity": 0,
+        "codes": [
+          "M01"
+        ],
+        "freetext": "48.65,20.13،",
+        "pax": null,
+        "gps": {
+          "lat": 48.65,
+          "lon": 20.13
+        },
+        "timestamp": null,
+        "language": null,
+        "callsign": null,
+        "reference": null,
+        "duration": null
+      }
+    },
+    {
+      "id": "b.letter-left",
+      "clause": "6.1 Optional Freetext 4",
+      "input": "MECP/1/S01 x4pax",
+      "expect": {
+        "valid": true,
+        "severity": 1,
+        "codes": [
+          "S01"
+        ],
+        "freetext": "x4pax",
+        "pax": null,
+        "gps": null,
+        "timestamp": null,
+        "language": null,
+        "callsign": null,
+        "reference": null,
+        "duration": null
+      }
+    },
+    {
+      "id": "b.letter-right",
+      "clause": "6.1 Optional Freetext 4",
+      "input": "MECP/1/S01 3paxmore",
+      "expect": {
+        "valid": true,
+        "severity": 1,
+        "codes": [
+          "S01"
+        ],
+        "freetext": "3paxmore",
+        "pax": null,
+        "gps": null,
+        "timestamp": null,
+        "language": null,
+        "callsign": null,
+        "reference": null,
+        "duration": null
+      }
+    },
+    {
+      "id": "b.hash-not-b",
+      "clause": "6.1 Optional Freetext 4",
+      "input": "MECP/1/S01 #4pax",
+      "expect": {
+        "valid": true,
+        "severity": 1,
+        "codes": [
+          "S01"
+        ],
+        "freetext": "#4pax",
+        "pax": null,
+        "gps": null,
+        "timestamp": null,
+        "language": null,
+        "callsign": null,
+        "reference": "4pax",
+        "duration": null
+      },
+      "note": "'#' is a sigil, so it is not a boundary; '4pax' is not decoded (but '#4pax' is a reference)."
+    },
+    {
+      "id": "b.hyphen-not-b",
+      "clause": "6.1 Optional Freetext 4",
+      "input": "MECP/1/S01 -4pax",
+      "expect": {
+        "valid": true,
+        "severity": 1,
+        "codes": [
+          "S01"
+        ],
+        "freetext": "-4pax",
+        "pax": null,
+        "gps": null,
+        "timestamp": null,
+        "language": null,
+        "callsign": null,
+        "reference": null,
+        "duration": null
+      }
+    },
+    {
+      "id": "b.underscore-not-b",
+      "clause": "6.1 Optional Freetext 4",
+      "input": "MECP/1/S01 _4pax",
+      "expect": {
+        "valid": true,
+        "severity": 1,
+        "codes": [
+          "S01"
+        ],
+        "freetext": "_4pax",
+        "pax": null,
+        "gps": null,
+        "timestamp": null,
+        "language": null,
+        "callsign": null,
+        "reference": null,
+        "duration": null
+      }
+    },
+    {
+      "id": "b.plus-not-b",
+      "clause": "6.1 Optional Freetext 4",
+      "input": "MECP/1/S01 +4pax",
+      "expect": {
+        "valid": true,
+        "severity": 1,
+        "codes": [
+          "S01"
+        ],
+        "freetext": "+4pax",
+        "pax": null,
+        "gps": null,
+        "timestamp": null,
+        "language": null,
+        "callsign": null,
+        "reference": null,
+        "duration": null
+      }
+    },
+    {
+      "id": "b.vt-not-b",
+      "clause": "6.1 Optional Freetext 4",
+      "input": "MECP/1/S01 4pax\u000bwater",
+      "expect": {
+        "valid": true,
+        "severity": 1,
+        "codes": [
+          "S01"
+        ],
+        "freetext": "4pax\u000bwater",
+        "pax": null,
+        "gps": null,
+        "timestamp": null,
+        "language": null,
+        "callsign": null,
+        "reference": null,
+        "duration": null
+      },
+      "note": "ASCII whitespace in B is TAB, LF, FF, CR and SPACE; VT is not a boundary."
+    },
+    {
+      "id": "pax.canonical",
+      "clause": "6.1 Person count",
+      "input": "MECP/1/S01 4pax",
+      "expect": {
+        "valid": true,
+        "severity": 1,
+        "codes": [
+          "S01"
+        ],
+        "freetext": "4pax",
+        "pax": 4,
+        "gps": null,
+        "timestamp": null,
+        "language": null,
+        "callsign": null,
+        "reference": null,
+        "duration": null
+      }
+    },
+    {
+      "id": "pax.space",
+      "clause": "6.1 Person count",
+      "input": "MECP/1/S01 4 pax",
+      "expect": {
+        "valid": true,
+        "severity": 1,
+        "codes": [
+          "S01"
+        ],
+        "freetext": "4 pax",
+        "pax": 4,
+        "gps": null,
+        "timestamp": null,
+        "language": null,
+        "callsign": null,
+        "reference": null,
+        "duration": null
+      }
+    },
+    {
+      "id": "pax.upper",
+      "clause": "6.1 Person count",
+      "input": "MECP/1/S01 4PAX",
+      "expect": {
+        "valid": true,
+        "severity": 1,
+        "codes": [
+          "S01"
+        ],
+        "freetext": "4PAX",
+        "pax": 4,
+        "gps": null,
+        "timestamp": null,
+        "language": null,
+        "callsign": null,
+        "reference": null,
+        "duration": null
+      }
+    },
+    {
+      "id": "pax.leading-zero",
+      "clause": "6.1 Person count",
+      "input": "MECP/1/S01 04pax",
+      "expect": {
+        "valid": true,
+        "severity": 1,
+        "codes": [
+          "S01"
+        ],
+        "freetext": "04pax",
+        "pax": 4,
+        "gps": null,
+        "timestamp": null,
+        "language": null,
+        "callsign": null,
+        "reference": null,
+        "duration": null
+      }
+    },
+    {
+      "id": "pax.zero-skipped",
+      "clause": "6.1 Person count",
+      "input": "MECP/1/S01 0pax 2pax",
+      "expect": {
+        "valid": true,
+        "severity": 1,
+        "codes": [
+          "S01"
+        ],
+        "freetext": "0pax 2pax",
+        "pax": 2,
+        "gps": null,
+        "timestamp": null,
+        "language": null,
+        "callsign": null,
+        "reference": null,
+        "duration": null
+      }
+    },
+    {
+      "id": "pax.first-wins",
+      "clause": "6.1 Person count",
+      "input": "MECP/1/S01 2pax 5pax",
+      "expect": {
+        "valid": true,
+        "severity": 1,
+        "codes": [
+          "S01"
+        ],
+        "freetext": "2pax 5pax",
+        "pax": 2,
+        "gps": null,
+        "timestamp": null,
+        "language": null,
+        "callsign": null,
+        "reference": null,
+        "duration": null
+      }
+    },
+    {
+      "id": "pax.multi-digit",
+      "clause": "6.1 Person count",
+      "input": "MECP/2/H07 120pax",
+      "expect": {
+        "valid": true,
+        "severity": 2,
+        "codes": [
+          "H07"
+        ],
+        "freetext": "120pax",
+        "pax": 120,
+        "gps": null,
+        "timestamp": null,
+        "language": null,
+        "callsign": null,
+        "reference": null,
+        "duration": null
+      }
+    },
+    {
+      "id": "pax.localised-word",
+      "clause": "6.1 Person count",
+      "input": "MECP/1/S01 4人",
+      "expect": {
+        "valid": true,
+        "severity": 1,
+        "codes": [
+          "S01"
+        ],
+        "freetext": "4人",
+        "pax": null,
+        "gps": null,
+        "timestamp": null,
+        "language": null,
+        "callsign": null,
+        "reference": null,
+        "duration": null
+      }
+    },
+    {
+      "id": "pax.german-word",
+      "clause": "6.1 Person count",
+      "input": "MECP/1/S01 4 Personen",
+      "expect": {
+        "valid": true,
+        "severity": 1,
+        "codes": [
+          "S01"
+        ],
+        "freetext": "4 Personen",
+        "pax": null,
+        "gps": null,
+        "timestamp": null,
+        "language": null,
+        "callsign": null,
+        "reference": null,
+        "duration": null
+      }
+    },
+    {
+      "id": "pax.arabic-indic-digit",
+      "clause": "6.1 Optional Freetext 5",
+      "input": "MECP/1/S01 ٤pax",
+      "expect": {
+        "valid": true,
+        "severity": 1,
+        "codes": [
+          "S01"
+        ],
+        "freetext": "٤pax",
+        "pax": null,
+        "gps": null,
+        "timestamp": null,
+        "language": null,
+        "callsign": null,
+        "reference": null,
+        "duration": null
+      }
+    },
+    {
+      "id": "pax.fullwidth-digit",
+      "clause": "6.1 Optional Freetext 5",
+      "input": "MECP/1/S01 ４pax",
+      "expect": {
+        "valid": true,
+        "severity": 1,
+        "codes": [
+          "S01"
+        ],
+        "freetext": "４pax",
+        "pax": null,
+        "gps": null,
+        "timestamp": null,
+        "language": null,
+        "callsign": null,
+        "reference": null,
+        "duration": null
+      }
+    },
+    {
+      "id": "pax.two-spaces",
+      "clause": "6.1 Person count",
+      "input": "MECP/1/S01 4  pax",
+      "expect": {
+        "valid": true,
+        "severity": 1,
+        "codes": [
+          "S01"
+        ],
+        "freetext": "4  pax",
+        "pax": null,
+        "gps": null,
+        "timestamp": null,
+        "language": null,
+        "callsign": null,
+        "reference": null,
+        "duration": null
+      }
+    },
+    {
+      "id": "pax.after-decimal",
+      "clause": "6.1 Person count",
+      "input": "MECP/1/S01 1.5pax",
+      "expect": {
+        "valid": true,
+        "severity": 1,
+        "codes": [
+          "S01"
+        ],
+        "freetext": "1.5pax",
+        "pax": 5,
+        "gps": null,
+        "timestamp": null,
+        "language": null,
+        "callsign": null,
+        "reference": null,
+        "duration": null
+      },
+      "note": "'.' is in B, so this decodes as 5. Encoders cannot produce it: encoded values follow a space (rule 3)."
+    },
+    {
+      "id": "pax.huge",
+      "clause": "6.1 Optional Freetext 10",
+      "input": "MECP/1/S01 99999999999999999999999pax",
+      "expect": {
+        "valid": true,
+        "severity": 1,
+        "codes": [
+          "S01"
+        ],
+        "freetext": "99999999999999999999999pax",
+        "gps": null,
+        "timestamp": null,
+        "language": null,
+        "callsign": null,
+        "reference": null,
+        "duration": null
+      },
+      "proposed": "Not in the 1.4.0 brief: proposed on Blake-Latchford/MECP branch spec-clarifications (2026-11-16)",
+      "note": "Must decode without failing; the value SHOULD be clamped, so it is not compared."
+    },
+    {
+      "id": "gps.canonical",
+      "clause": "6.1 GPS coordinates",
+      "input": "MECP/0/M04 P05 -41.2865,174.7762",
+      "expect": {
+        "valid": true,
+        "severity": 0,
+        "codes": [
+          "M04",
+          "P05"
+        ],
+        "freetext": "-41.2865,174.7762",
+        "pax": null,
+        "gps": {
+          "lat": -41.2865,
+          "lon": 174.7762
+        },
+        "timestamp": null,
+        "language": null,
+        "callsign": null,
+        "reference": null,
+        "duration": null
+      }
+    },
+    {
+      "id": "gps.plus-and-space",
+      "clause": "6.1 GPS coordinates",
+      "input": "MECP/0/M04 +48.8566, 2.3522",
+      "expect": {
+        "valid": true,
+        "severity": 0,
+        "codes": [
+          "M04"
+        ],
+        "freetext": "+48.8566, 2.3522",
+        "pax": null,
+        "gps": {
+          "lat": 48.8566,
+          "lon": 2.3522
+        },
+        "timestamp": null,
+        "language": null,
+        "callsign": null,
+        "reference": null,
+        "duration": null
+      }
+    },
+    {
+      "id": "gps.high-precision",
+      "clause": "6.1 GPS coordinates",
+      "input": "MECP/0/M04 48.85661234,2.35221234",
+      "expect": {
+        "valid": true,
+        "severity": 0,
+        "codes": [
+          "M04"
+        ],
+        "freetext": "48.85661234,2.35221234",
+        "pax": null,
+        "gps": {
+          "lat": 48.85661234,
+          "lon": 2.35221234
+        },
+        "timestamp": null,
+        "language": null,
+        "callsign": null,
+        "reference": null,
+        "duration": null
+      }
+    },
+    {
+      "id": "gps.limits",
+      "clause": "6.1 GPS coordinates",
+      "input": "MECP/0/M04 90.0,180.0",
+      "expect": {
+        "valid": true,
+        "severity": 0,
+        "codes": [
+          "M04"
+        ],
+        "freetext": "90.0,180.0",
+        "pax": null,
+        "gps": {
+          "lat": 90.0,
+          "lon": 180.0
+        },
+        "timestamp": null,
+        "language": null,
+        "callsign": null,
+        "reference": null,
+        "duration": null
+      }
+    },
+    {
+      "id": "gps.neg-limits",
+      "clause": "6.1 GPS coordinates",
+      "input": "MECP/0/M04 -90.0,-180.0",
+      "expect": {
+        "valid": true,
+        "severity": 0,
+        "codes": [
+          "M04"
+        ],
+        "freetext": "-90.0,-180.0",
+        "pax": null,
+        "gps": {
+          "lat": -90.0,
+          "lon": -180.0
+        },
+        "timestamp": null,
+        "language": null,
+        "callsign": null,
+        "reference": null,
+        "duration": null
+      }
+    },
+    {
+      "id": "gps.lat-out-of-range",
+      "clause": "6.1 GPS coordinates",
+      "input": "MECP/0/M04 90.0001,0.0",
+      "expect": {
+        "valid": true,
+        "severity": 0,
+        "codes": [
+          "M04"
+        ],
+        "freetext": "90.0001,0.0",
+        "pax": null,
+        "gps": null,
+        "timestamp": null,
+        "language": null,
+        "callsign": null,
+        "reference": null,
+        "duration": null
+      }
+    },
+    {
+      "id": "gps.resume-after-invalid",
+      "clause": "6.1 Optional Freetext 6",
+      "input": "MECP/3/L06 95.0,200.0 47.3,8.5",
+      "expect": {
+        "valid": true,
+        "severity": 3,
+        "codes": [
+          "L06"
+        ],
+        "freetext": "95.0,200.0 47.3,8.5",
+        "pax": null,
+        "gps": {
+          "lat": 47.3,
+          "lon": 8.5
+        },
+        "timestamp": null,
+        "language": null,
+        "callsign": null,
+        "reference": null,
+        "duration": null
+      }
+    },
+    {
+      "id": "gps.integers",
+      "clause": "6.1 GPS coordinates",
+      "input": "MECP/0/M04 48,20",
+      "expect": {
+        "valid": true,
+        "severity": 0,
+        "codes": [
+          "M04"
+        ],
+        "freetext": "48,20",
+        "pax": null,
+        "gps": null,
+        "timestamp": null,
+        "language": null,
+        "callsign": null,
+        "reference": null,
+        "duration": null
+      }
+    },
+    {
+      "id": "gps.zero-zero",
+      "clause": "6.1 GPS coordinates",
+      "input": "MECP/0/M04 0,0",
+      "expect": {
+        "valid": true,
+        "severity": 0,
+        "codes": [
+          "M04"
+        ],
+        "freetext": "0,0",
+        "pax": null,
+        "gps": null,
+        "timestamp": null,
+        "language": null,
+        "callsign": null,
+        "reference": null,
+        "duration": null
+      }
+    },
+    {
+      "id": "gps.decimal-comma",
+      "clause": "6.1 GPS coordinates",
+      "input": "MECP/3/L02 2,5 km",
+      "expect": {
+        "valid": true,
+        "severity": 3,
+        "codes": [
+          "L02"
+        ],
+        "freetext": "2,5 km",
+        "pax": null,
+        "gps": null,
+        "timestamp": null,
+        "language": null,
+        "callsign": null,
+        "reference": null,
+        "duration": null
+      }
+    },
+    {
+      "id": "gps.colon-left",
+      "clause": "6.1 GPS coordinates",
+      "input": "MECP/0/M01 at:48.65,20.13",
+      "expect": {
+        "valid": true,
+        "severity": 0,
+        "codes": [
+          "M01"
+        ],
+        "freetext": "at:48.65,20.13",
+        "pax": null,
+        "gps": {
+          "lat": 48.65,
+          "lon": 20.13
+        },
+        "timestamp": null,
+        "language": null,
+        "callsign": null,
+        "reference": null,
+        "duration": null
+      }
+    },
+    {
+      "id": "gps.trailing-period",
+      "clause": "6.1 GPS coordinates",
+      "input": "MECP/0/M01 48.65,20.13.",
+      "expect": {
+        "valid": true,
+        "severity": 0,
+        "codes": [
+          "M01"
+        ],
+        "freetext": "48.65,20.13.",
+        "pax": null,
+        "gps": {
+          "lat": 48.65,
+          "lon": 20.13
+        },
+        "timestamp": null,
+        "language": null,
+        "callsign": null,
+        "reference": null,
+        "duration": null
+      }
+    },
+    {
+      "id": "gps.letter-left",
+      "clause": "6.1 GPS coordinates",
+      "input": "MECP/0/M01 x48.65,20.13",
+      "expect": {
+        "valid": true,
+        "severity": 0,
+        "codes": [
+          "M01"
+        ],
+        "freetext": "x48.65,20.13",
+        "pax": null,
+        "gps": null,
+        "timestamp": null,
+        "language": null,
+        "callsign": null,
+        "reference": null,
+        "duration": null
+      }
+    },
+    {
+      "id": "gps.space-before-comma",
+      "clause": "6.1 GPS coordinates",
+      "input": "MECP/0/M01 48.65 ,20.13",
+      "expect": {
+        "valid": true,
+        "severity": 0,
+        "codes": [
+          "M01"
+        ],
+        "freetext": "48.65 ,20.13",
+        "pax": null,
+        "gps": null,
+        "timestamp": null,
+        "language": null,
+        "callsign": null,
+        "reference": null,
+        "duration": null
+      }
+    },
+    {
+      "id": "gps.altitude-suffix",
+      "clause": "6.1 GPS coordinates",
+      "input": "MECP/0/M01 48.65,20.13,1200",
+      "expect": {
+        "valid": true,
+        "severity": 0,
+        "codes": [
+          "M01"
+        ],
+        "freetext": "48.65,20.13,1200",
+        "pax": null,
+        "gps": {
+          "lat": 48.65,
+          "lon": 20.13
+        },
+        "timestamp": null,
+        "language": null,
+        "callsign": null,
+        "reference": null,
+        "duration": null
+      },
+      "note": "',' is in B, so a trailing altitude stays in the freetext."
+    },
+    {
+      "id": "gps.two-spaces-after-comma",
+      "clause": "6.1 GPS coordinates",
+      "input": "MECP/0/M01 48.65,  20.13",
+      "expect": {
+        "valid": true,
+        "severity": 0,
+        "codes": [
+          "M01"
+        ],
+        "freetext": "48.65,  20.13",
+        "pax": null,
+        "gps": null,
+        "timestamp": null,
+        "language": null,
+        "callsign": null,
+        "reference": null,
+        "duration": null
+      }
+    },
+    {
+      "id": "gps.after-codes-later",
+      "clause": "6.1 GPS coordinates",
+      "input": "MECP/0/M01 M07 2pax P05 48.65,20.13 @1430",
+      "expect": {
+        "valid": true,
+        "severity": 0,
+        "codes": [
+          "M01",
+          "M07"
+        ],
+        "freetext": "2pax P05 48.65,20.13 @1430",
+        "pax": 2,
+        "gps": {
+          "lat": 48.65,
+          "lon": 20.13
+        },
+        "timestamp": "14:30",
+        "language": null,
+        "callsign": null,
+        "reference": null,
+        "duration": null
+      }
+    },
+    {
+      "id": "ts.canonical",
+      "clause": "6.1 Timestamp",
+      "input": "MECP/2/T01 @0630",
+      "expect": {
+        "valid": true,
+        "severity": 2,
+        "codes": [
+          "T01"
+        ],
+        "freetext": "@0630",
+        "pax": null,
+        "gps": null,
+        "timestamp": "06:30",
+        "language": null,
+        "callsign": null,
+        "reference": null,
+        "duration": null
+      }
+    },
+    {
+      "id": "ts.three-digit",
+      "clause": "6.1 Timestamp",
+      "input": "MECP/2/T01 @630",
+      "expect": {
+        "valid": true,
+        "severity": 2,
+        "codes": [
+          "T01"
+        ],
+        "freetext": "@630",
+        "pax": null,
+        "gps": null,
+        "timestamp": "06:30",
+        "language": null,
+        "callsign": null,
+        "reference": null,
+        "duration": null
+      }
+    },
+    {
+      "id": "ts.colon-one-digit",
+      "clause": "6.1 Timestamp",
+      "input": "MECP/2/T01 @6:30",
+      "expect": {
+        "valid": true,
+        "severity": 2,
+        "codes": [
+          "T01"
+        ],
+        "freetext": "@6:30",
+        "pax": null,
+        "gps": null,
+        "timestamp": "06:30",
+        "language": null,
+        "callsign": null,
+        "reference": null,
+        "duration": null
+      }
+    },
+    {
+      "id": "ts.colon",
+      "clause": "6.1 Timestamp",
+      "input": "MECP/2/T01 @06:30",
+      "expect": {
+        "valid": true,
+        "severity": 2,
+        "codes": [
+          "T01"
+        ],
+        "freetext": "@06:30",
+        "pax": null,
+        "gps": null,
+        "timestamp": "06:30",
+        "language": null,
+        "callsign": null,
+        "reference": null,
+        "duration": null
+      }
+    },
+    {
+      "id": "ts.hmm",
+      "clause": "6.1 Timestamp",
+      "input": "MECP/3/L01 @123",
+      "expect": {
+        "valid": true,
+        "severity": 3,
+        "codes": [
+          "L01"
+        ],
+        "freetext": "@123",
+        "pax": null,
+        "gps": null,
+        "timestamp": "01:23",
+        "language": null,
+        "callsign": null,
+        "reference": null,
+        "duration": null
+      }
+    },
+    {
+      "id": "ts.midnight",
+      "clause": "6.1 Timestamp",
+      "input": "MECP/3/L01 @0000",
+      "expect": {
+        "valid": true,
+        "severity": 3,
+        "codes": [
+          "L01"
+        ],
+        "freetext": "@0000",
+        "pax": null,
+        "gps": null,
+        "timestamp": "00:00",
+        "language": null,
+        "callsign": null,
+        "reference": null,
+        "duration": null
+      }
+    },
+    {
+      "id": "ts.2359",
+      "clause": "6.1 Timestamp",
+      "input": "MECP/3/L01 @2359",
+      "expect": {
+        "valid": true,
+        "severity": 3,
+        "codes": [
+          "L01"
+        ],
+        "freetext": "@2359",
+        "pax": null,
+        "gps": null,
+        "timestamp": "23:59",
+        "language": null,
+        "callsign": null,
+        "reference": null,
+        "duration": null
+      }
+    },
+    {
+      "id": "ts.skip-invalid",
+      "clause": "6.1 Timestamp",
+      "input": "MECP/3/L06 @2460 @1400 @1530",
+      "expect": {
+        "valid": true,
+        "severity": 3,
+        "codes": [
+          "L06"
+        ],
+        "freetext": "@2460 @1400 @1530",
+        "pax": null,
+        "gps": null,
+        "timestamp": "14:00",
+        "language": null,
+        "callsign": null,
+        "reference": null,
+        "duration": null
+      }
+    },
+    {
+      "id": "ts.2400",
+      "clause": "6.1 Timestamp",
+      "input": "MECP/3/L06 @2400",
+      "expect": {
+        "valid": true,
+        "severity": 3,
+        "codes": [
+          "L06"
+        ],
+        "freetext": "@2400",
+        "pax": null,
+        "gps": null,
+        "timestamp": null,
+        "language": null,
+        "callsign": null,
+        "reference": null,
+        "duration": null
+      }
+    },
+    {
+      "id": "ts.9999",
+      "clause": "6.1 Timestamp",
+      "input": "MECP/3/L06 @9999",
+      "expect": {
+        "valid": true,
+        "severity": 3,
+        "codes": [
+          "L06"
+        ],
+        "freetext": "@9999",
+        "pax": null,
+        "gps": null,
+        "timestamp": null,
+        "language": null,
+        "callsign": null,
+        "reference": null,
+        "duration": null
+      }
+    },
+    {
+      "id": "ts.trailing-comma",
+      "clause": "6.1 Timestamp",
+      "input": "MECP/2/T05 @1430,",
+      "expect": {
+        "valid": true,
+        "severity": 2,
+        "codes": [
+          "T05"
+        ],
+        "freetext": "@1430,",
+        "pax": null,
+        "gps": null,
+        "timestamp": "14:30",
+        "language": null,
+        "callsign": null,
+        "reference": null,
+        "duration": null
+      }
+    },
+    {
+      "id": "ts.glued-left",
+      "clause": "6.1 Timestamp",
+      "input": "MECP/2/T05 meet@1430",
+      "expect": {
+        "valid": true,
+        "severity": 2,
+        "codes": [
+          "T05"
+        ],
+        "freetext": "meet@1430",
+        "pax": null,
+        "gps": null,
+        "timestamp": null,
+        "language": null,
+        "callsign": null,
+        "reference": null,
+        "duration": null
+      }
+    },
+    {
+      "id": "ts.zulu-suffix",
+      "clause": "6.1 Timestamp",
+      "input": "MECP/2/T05 @1430Z",
+      "expect": {
+        "valid": true,
+        "severity": 2,
+        "codes": [
+          "T05"
+        ],
+        "freetext": "@1430Z",
+        "pax": null,
+        "gps": null,
+        "timestamp": null,
+        "language": null,
+        "callsign": null,
+        "reference": null,
+        "duration": null
+      }
+    },
+    {
+      "id": "ts.five-digits",
+      "clause": "6.1 Timestamp",
+      "input": "MECP/2/T05 @14300",
+      "expect": {
+        "valid": true,
+        "severity": 2,
+        "codes": [
+          "T05"
+        ],
+        "freetext": "@14300",
+        "pax": null,
+        "gps": null,
+        "timestamp": null,
+        "language": null,
+        "callsign": null,
+        "reference": null,
+        "duration": null
+      }
+    },
+    {
+      "id": "ts.with-language",
+      "clause": "6.1 Timestamp",
+      "input": "MECP/0/M01 @1430 @en",
+      "expect": {
+        "valid": true,
+        "severity": 0,
+        "codes": [
+          "M01"
+        ],
+        "freetext": "@1430 @en",
+        "pax": null,
+        "gps": null,
+        "timestamp": "14:30",
+        "language": "en",
+        "callsign": null,
+        "reference": null,
+        "duration": null
+      }
+    },
+    {
+      "id": "ts.arabic-indic",
+      "clause": "6.1 Optional Freetext 5",
+      "input": "MECP/2/T05 @١٤٣٠",
+      "expect": {
+        "valid": true,
+        "severity": 2,
+        "codes": [
+          "T05"
+        ],
+        "freetext": "@١٤٣٠",
+        "pax": null,
+        "gps": null,
+        "timestamp": null,
+        "language": null,
+        "callsign": null,
+        "reference": null,
+        "duration": null
+      }
+    },
+    {
+      "id": "lang.canonical",
+      "clause": "6.1 Language hint",
+      "input": "MECP/3/L04 Gipfel erreicht @de",
+      "expect": {
+        "valid": true,
+        "severity": 3,
+        "codes": [
+          "L04"
+        ],
+        "freetext": "Gipfel erreicht @de",
+        "pax": null,
+        "gps": null,
+        "timestamp": null,
+        "language": "de",
+        "callsign": null,
+        "reference": null,
+        "duration": null
+      }
+    },
+    {
+      "id": "lang.upper",
+      "clause": "6.1 Language hint",
+      "input": "MECP/3/L04 @DE",
+      "expect": {
+        "valid": true,
+        "severity": 3,
+        "codes": [
+          "L04"
+        ],
+        "freetext": "@DE",
+        "pax": null,
+        "gps": null,
+        "timestamp": null,
+        "language": "de",
+        "callsign": null,
+        "reference": null,
+        "duration": null
+      }
+    },
+    {
+      "id": "lang.underscore",
+      "clause": "6.1 Language hint",
+      "input": "MECP/3/L04 @zh_CN",
+      "expect": {
+        "valid": true,
+        "severity": 3,
+        "codes": [
+          "L04"
+        ],
+        "freetext": "@zh_CN",
+        "pax": null,
+        "gps": null,
+        "timestamp": null,
+        "language": "zh-cn",
+        "callsign": null,
+        "reference": null,
+        "duration": null
+      }
+    },
+    {
+      "id": "lang.region",
+      "clause": "6.1 Language hint",
+      "input": "MECP/3/L04 @zh-TW",
+      "expect": {
+        "valid": true,
+        "severity": 3,
+        "codes": [
+          "L04"
+        ],
+        "freetext": "@zh-TW",
+        "pax": null,
+        "gps": null,
+        "timestamp": null,
+        "language": "zh-tw",
+        "callsign": null,
+        "reference": null,
+        "duration": null
+      }
+    },
+    {
+      "id": "lang.script-region",
+      "clause": "6.1 Language hint",
+      "input": "MECP/3/L04 @zh-Hans-CN",
+      "expect": {
+        "valid": true,
+        "severity": 3,
+        "codes": [
+          "L04"
+        ],
+        "freetext": "@zh-Hans-CN",
+        "pax": null,
+        "gps": null,
+        "timestamp": null,
+        "language": "zh-hans-cn",
+        "callsign": null,
+        "reference": null,
+        "duration": null
+      }
+    },
+    {
+      "id": "lang.sr-latn",
+      "clause": "6.1 Language hint",
+      "input": "MECP/3/L04 @sr-Latn-RS",
+      "expect": {
+        "valid": true,
+        "severity": 3,
+        "codes": [
+          "L04"
+        ],
+        "freetext": "@sr-Latn-RS",
+        "pax": null,
+        "gps": null,
+        "timestamp": null,
+        "language": "sr-latn-rs",
+        "callsign": null,
+        "reference": null,
+        "duration": null
+      }
+    },
+    {
+      "id": "lang.three-letter",
+      "clause": "6.1 Language hint",
+      "input": "MECP/3/L04 @fil",
+      "expect": {
+        "valid": true,
+        "severity": 3,
+        "codes": [
+          "L04"
+        ],
+        "freetext": "@fil",
+        "pax": null,
+        "gps": null,
+        "timestamp": null,
+        "language": "fil",
+        "callsign": null,
+        "reference": null,
+        "duration": null
+      }
+    },
+    {
+      "id": "lang.four-letter",
+      "clause": "6.1 Language hint",
+      "input": "MECP/3/L04 @abcd",
+      "expect": {
+        "valid": true,
+        "severity": 3,
+        "codes": [
+          "L04"
+        ],
+        "freetext": "@abcd",
+        "pax": null,
+        "gps": null,
+        "timestamp": null,
+        "language": null,
+        "callsign": null,
+        "reference": null,
+        "duration": null
+      }
+    },
+    {
+      "id": "lang.email",
+      "clause": "6.1 Language hint",
+      "input": "MECP/3/L04 mail me@example.com",
+      "expect": {
+        "valid": true,
+        "severity": 3,
+        "codes": [
+          "L04"
+        ],
+        "freetext": "mail me@example.com",
+        "pax": null,
+        "gps": null,
+        "timestamp": null,
+        "language": null,
+        "callsign": null,
+        "reference": null,
+        "duration": null
+      }
+    },
+    {
+      "id": "lang.period",
+      "clause": "6.1 Language hint",
+      "input": "MECP/3/L04 @en.",
+      "expect": {
+        "valid": true,
+        "severity": 3,
+        "codes": [
+          "L04"
+        ],
+        "freetext": "@en.",
+        "pax": null,
+        "gps": null,
+        "timestamp": null,
+        "language": "en",
+        "callsign": null,
+        "reference": null,
+        "duration": null
+      }
+    },
+    {
+      "id": "lang.turkish-i",
+      "clause": "6.1 Optional Freetext 5",
+      "input": "MECP/3/L04 @TR",
+      "expect": {
+        "valid": true,
+        "severity": 3,
+        "codes": [
+          "L04"
+        ],
+        "freetext": "@TR",
+        "pax": null,
+        "gps": null,
+        "timestamp": null,
+        "language": "tr",
+        "callsign": null,
+        "reference": null,
+        "duration": null
+      },
+      "note": "ASCII-only, locale-independent case folding."
+    },
+    {
+      "id": "cs.portable",
+      "clause": "6.1 Callsign",
+      "input": "MECP/3/L20 ~VK2/OK1ABC/P",
+      "expect": {
+        "valid": true,
+        "severity": 3,
+        "codes": [
+          "L20"
+        ],
+        "freetext": "~VK2/OK1ABC/P",
+        "pax": null,
+        "gps": null,
+        "timestamp": null,
+        "language": null,
+        "callsign": "VK2/OK1ABC/P",
+        "reference": null,
+        "duration": null
+      }
+    },
+    {
+      "id": "cs.lower",
+      "clause": "6.1 Callsign",
+      "input": "MECP/3/L20 ~vk2/ok1abc/p",
+      "expect": {
+        "valid": true,
+        "severity": 3,
+        "codes": [
+          "L20"
+        ],
+        "freetext": "~vk2/ok1abc/p",
+        "pax": null,
+        "gps": null,
+        "timestamp": null,
+        "language": null,
+        "callsign": "VK2/OK1ABC/P",
+        "reference": null,
+        "duration": null
+      }
+    },
+    {
+      "id": "cs.prefix",
+      "clause": "6.1 Callsign",
+      "input": "MECP/3/L20 ~DL/OK1ABC",
+      "expect": {
+        "valid": true,
+        "severity": 3,
+        "codes": [
+          "L20"
+        ],
+        "freetext": "~DL/OK1ABC",
+        "pax": null,
+        "gps": null,
+        "timestamp": null,
+        "language": null,
+        "callsign": "DL/OK1ABC",
+        "reference": null,
+        "duration": null
+      }
+    },
+    {
+      "id": "cs.simple",
+      "clause": "6.1 Callsign",
+      "input": "MECP/3/L20 ~OK1ABC",
+      "expect": {
+        "valid": true,
+        "severity": 3,
+        "codes": [
+          "L20"
+        ],
+        "freetext": "~OK1ABC",
+        "pax": null,
+        "gps": null,
+        "timestamp": null,
+        "language": null,
+        "callsign": "OK1ABC",
+        "reference": null,
+        "duration": null
+      }
+    },
+    {
+      "id": "cs.twelve",
+      "clause": "6.1 Callsign",
+      "input": "MECP/3/L20 ~ABCDEFGHIJKL",
+      "expect": {
+        "valid": true,
+        "severity": 3,
+        "codes": [
+          "L20"
+        ],
+        "freetext": "~ABCDEFGHIJKL",
+        "pax": null,
+        "gps": null,
+        "timestamp": null,
+        "language": null,
+        "callsign": "ABCDEFGHIJKL",
+        "reference": null,
+        "duration": null
+      }
+    },
+    {
+      "id": "cs.thirteen-skipped",
+      "clause": "6.1 Callsign",
+      "input": "MECP/3/L20 ~ABCDEFGHIJKLM ~OK1ABC",
+      "expect": {
+        "valid": true,
+        "severity": 3,
+        "codes": [
+          "L20"
+        ],
+        "freetext": "~ABCDEFGHIJKLM ~OK1ABC",
+        "pax": null,
+        "gps": null,
+        "timestamp": null,
+        "language": null,
+        "callsign": "OK1ABC",
+        "reference": null,
+        "duration": null
+      }
+    },
+    {
+      "id": "cs.comma",
+      "clause": "6.1 Callsign",
+      "input": "MECP/3/L20 ~OK1ABC, ok",
+      "expect": {
+        "valid": true,
+        "severity": 3,
+        "codes": [
+          "L20"
+        ],
+        "freetext": "~OK1ABC, ok",
+        "pax": null,
+        "gps": null,
+        "timestamp": null,
+        "language": null,
+        "callsign": "OK1ABC",
+        "reference": null,
+        "duration": null
+      }
+    },
+    {
+      "id": "cs.ssid",
+      "clause": "6.1 Callsign",
+      "input": "MECP/3/L20 ~OK1ABC-7",
+      "expect": {
+        "valid": true,
+        "severity": 3,
+        "codes": [
+          "L20"
+        ],
+        "freetext": "~OK1ABC-7",
+        "pax": null,
+        "gps": null,
+        "timestamp": null,
+        "language": null,
+        "callsign": null,
+        "reference": null,
+        "duration": null
+      },
+      "note": "An APRS/AX.25 SSID is outside the alphabet and '-' is not in B, so this is not a callsign and is not read as ~OK1ABC either (1.4.0, mecp-org/MECP#36)."
+    },
+    {
+      "id": "cs.aprs-ssid",
+      "clause": "6.1 Callsign",
+      "input": "MECP/3/L20 ~W1AW-9",
+      "expect": {
+        "valid": true,
+        "severity": 3,
+        "codes": [
+          "L20"
+        ],
+        "freetext": "~W1AW-9",
+        "pax": null,
+        "gps": null,
+        "timestamp": null,
+        "language": null,
+        "callsign": null,
+        "reference": null,
+        "duration": null
+      }
+    },
+    {
+      "id": "cs.portable-ssid",
+      "clause": "6.1 Callsign",
+      "input": "MECP/3/L20 ~vk2/ok1abc-7",
+      "expect": {
+        "valid": true,
+        "severity": 3,
+        "codes": [
+          "L20"
+        ],
+        "freetext": "~vk2/ok1abc-7",
+        "pax": null,
+        "gps": null,
+        "timestamp": null,
+        "language": null,
+        "callsign": null,
+        "reference": null,
+        "duration": null
+      }
+    },
+    {
+      "id": "cs.glued-left",
+      "clause": "6.1 Callsign",
+      "input": "MECP/3/L20 de~OK1ABC",
+      "expect": {
+        "valid": true,
+        "severity": 3,
+        "codes": [
+          "L20"
+        ],
+        "freetext": "de~OK1ABC",
+        "pax": null,
+        "gps": null,
+        "timestamp": null,
+        "language": null,
+        "callsign": null,
+        "reference": null,
+        "duration": null
+      }
+    },
+    {
+      "id": "ref.basecamp",
+      "clause": "6.1 Reference",
+      "input": "MECP/2/C08 #basecamp",
+      "expect": {
+        "valid": true,
+        "severity": 2,
+        "codes": [
+          "C08"
+        ],
+        "freetext": "#basecamp",
+        "pax": null,
+        "gps": null,
+        "timestamp": null,
+        "language": null,
+        "callsign": null,
+        "reference": "basecamp",
+        "duration": null
+      }
+    },
+    {
+      "id": "ref.hyphen",
+      "clause": "6.1 Reference",
+      "input": "MECP/2/C08 #base-camp,",
+      "expect": {
+        "valid": true,
+        "severity": 2,
+        "codes": [
+          "C08"
+        ],
+        "freetext": "#base-camp,",
+        "pax": null,
+        "gps": null,
+        "timestamp": null,
+        "language": null,
+        "callsign": null,
+        "reference": "base-camp",
+        "duration": null
+      }
+    },
+    {
+      "id": "ref.underscore",
+      "clause": "6.1 Reference",
+      "input": "MECP/2/C08 #base_camp",
+      "expect": {
+        "valid": true,
+        "severity": 2,
+        "codes": [
+          "C08"
+        ],
+        "freetext": "#base_camp",
+        "pax": null,
+        "gps": null,
+        "timestamp": null,
+        "language": null,
+        "callsign": null,
+        "reference": "base-camp",
+        "duration": null
+      },
+      "note": "Compared by identity: case-insensitive, '_' equals '-'."
+    },
+    {
+      "id": "ref.upper",
+      "clause": "6.1 Reference",
+      "input": "MECP/2/C08 #BaseCamp",
+      "expect": {
+        "valid": true,
+        "severity": 2,
+        "codes": [
+          "C08"
+        ],
+        "freetext": "#BaseCamp",
+        "pax": null,
+        "gps": null,
+        "timestamp": null,
+        "language": null,
+        "callsign": null,
+        "reference": "basecamp",
+        "duration": null
+      }
+    },
+    {
+      "id": "ref.paren",
+      "clause": "6.1 Reference",
+      "input": "MECP/2/C08 (#tag)",
+      "expect": {
+        "valid": true,
+        "severity": 2,
+        "codes": [
+          "C08"
+        ],
+        "freetext": "(#tag)",
+        "pax": null,
+        "gps": null,
+        "timestamp": null,
+        "language": null,
+        "callsign": null,
+        "reference": "tag",
+        "duration": null
+      }
+    },
+    {
+      "id": "ref.digits",
+      "clause": "6.1 Reference",
+      "input": "MECP/2/C08 #2026a",
+      "expect": {
+        "valid": true,
+        "severity": 2,
+        "codes": [
+          "C08"
+        ],
+        "freetext": "#2026a",
+        "pax": null,
+        "gps": null,
+        "timestamp": null,
+        "language": null,
+        "callsign": null,
+        "reference": "2026a",
+        "duration": null
+      }
+    },
+    {
+      "id": "ref.long",
+      "clause": "6.1 Reference",
+      "input": "MECP/2/C08 #flood-sector-north-7",
+      "expect": {
+        "valid": true,
+        "severity": 2,
+        "codes": [
+          "C08"
+        ],
+        "freetext": "#flood-sector-north-7",
+        "pax": null,
+        "gps": null,
+        "timestamp": null,
+        "language": null,
+        "callsign": null,
+        "reference": "flood-sector-north-7",
+        "duration": null
+      }
+    },
+    {
+      "id": "ref.cjk",
+      "clause": "6.1 Reference",
+      "input": "MECP/2/C08 #避難所",
+      "expect": {
+        "valid": true,
+        "severity": 2,
+        "codes": [
+          "C08"
+        ],
+        "freetext": "#避難所",
+        "pax": null,
+        "gps": null,
+        "timestamp": null,
+        "language": null,
+        "callsign": null,
+        "reference": null,
+        "duration": null
+      }
+    },
+    {
+      "id": "ref.cyrillic",
+      "clause": "6.1 Reference",
+      "input": "MECP/2/C08 #база",
+      "expect": {
+        "valid": true,
+        "severity": 2,
+        "codes": [
+          "C08"
+        ],
+        "freetext": "#база",
+        "pax": null,
+        "gps": null,
+        "timestamp": null,
+        "language": null,
+        "callsign": null,
+        "reference": null,
+        "duration": null
+      }
+    },
+    {
+      "id": "ref.accent",
+      "clause": "6.1 Reference",
+      "input": "MECP/2/C08 #café",
+      "expect": {
+        "valid": true,
+        "severity": 2,
+        "codes": [
+          "C08"
+        ],
+        "freetext": "#café",
+        "pax": null,
+        "gps": null,
+        "timestamp": null,
+        "language": null,
+        "callsign": null,
+        "reference": null,
+        "duration": null
+      }
+    },
+    {
+      "id": "ref.glued-left",
+      "clause": "6.1 Reference",
+      "input": "MECP/2/C08 issue#5",
+      "expect": {
+        "valid": true,
+        "severity": 2,
+        "codes": [
+          "C08"
+        ],
+        "freetext": "issue#5",
+        "pax": null,
+        "gps": null,
+        "timestamp": null,
+        "language": null,
+        "callsign": null,
+        "reference": null,
+        "duration": null
+      }
+    },
+    {
+      "id": "dur.min",
+      "clause": "6.1 Duration",
+      "input": "MECP/2/R03 45min",
+      "expect": {
+        "valid": true,
+        "severity": 2,
+        "codes": [
+          "R03"
+        ],
+        "freetext": "45min",
+        "pax": null,
+        "gps": null,
+        "timestamp": null,
+        "language": null,
+        "callsign": null,
+        "reference": null,
+        "duration": 45
+      }
+    },
+    {
+      "id": "dur.eta-min",
+      "clause": "6.1 Duration",
+      "input": "MECP/2/R03 ETA 45min",
+      "expect": {
+        "valid": true,
+        "severity": 2,
+        "codes": [
+          "R03"
+        ],
+        "freetext": "ETA 45min",
+        "pax": null,
+        "gps": null,
+        "timestamp": null,
+        "language": null,
+        "callsign": null,
+        "reference": null,
+        "duration": 45
+      }
+    },
+    {
+      "id": "dur.eta-glued",
+      "clause": "6.1 Duration",
+      "input": "MECP/2/R03 ETA45min",
+      "expect": {
+        "valid": true,
+        "severity": 2,
+        "codes": [
+          "R03"
+        ],
+        "freetext": "ETA45min",
+        "pax": null,
+        "gps": null,
+        "timestamp": null,
+        "language": null,
+        "callsign": null,
+        "reference": null,
+        "duration": 45
+      }
+    },
+    {
+      "id": "dur.space-min",
+      "clause": "6.1 Duration",
+      "input": "MECP/2/R03 45 min",
+      "expect": {
+        "valid": true,
+        "severity": 2,
+        "codes": [
+          "R03"
+        ],
+        "freetext": "45 min",
+        "pax": null,
+        "gps": null,
+        "timestamp": null,
+        "language": null,
+        "callsign": null,
+        "reference": null,
+        "duration": 45
+      }
+    },
+    {
+      "id": "dur.bare",
+      "clause": "6.1 Duration",
+      "input": "MECP/2/R03 45",
+      "expect": {
+        "valid": true,
+        "severity": 2,
+        "codes": [
+          "R03"
+        ],
+        "freetext": "45",
+        "pax": null,
+        "gps": null,
+        "timestamp": null,
+        "language": null,
+        "callsign": null,
+        "reference": null,
+        "duration": 45
+      }
+    },
+    {
+      "id": "dur.eta-bare",
+      "clause": "6.1 Duration",
+      "input": "MECP/2/R03 ETA 45",
+      "expect": {
+        "valid": true,
+        "severity": 2,
+        "codes": [
+          "R03"
+        ],
+        "freetext": "ETA 45",
+        "pax": null,
+        "gps": null,
+        "timestamp": null,
+        "language": null,
+        "callsign": null,
+        "reference": null,
+        "duration": 45
+      }
+    },
+    {
+      "id": "dur.h",
+      "clause": "6.1 Duration",
+      "input": "MECP/2/R03 2h",
+      "expect": {
+        "valid": true,
+        "severity": 2,
+        "codes": [
+          "R03"
+        ],
+        "freetext": "2h",
+        "pax": null,
+        "gps": null,
+        "timestamp": null,
+        "language": null,
+        "callsign": null,
+        "reference": null,
+        "duration": 120
+      }
+    },
+    {
+      "id": "dur.hm",
+      "clause": "6.1 Duration",
+      "input": "MECP/2/R03 1h30min",
+      "expect": {
+        "valid": true,
+        "severity": 2,
+        "codes": [
+          "R03"
+        ],
+        "freetext": "1h30min",
+        "pax": null,
+        "gps": null,
+        "timestamp": null,
+        "language": null,
+        "callsign": null,
+        "reference": null,
+        "duration": 90
+      }
+    },
+    {
+      "id": "dur.h-space-m",
+      "clause": "6.1 Duration",
+      "input": "MECP/2/R03 1h 30min",
+      "expect": {
+        "valid": true,
+        "severity": 2,
+        "codes": [
+          "R03"
+        ],
+        "freetext": "1h 30min",
+        "pax": null,
+        "gps": null,
+        "timestamp": null,
+        "language": null,
+        "callsign": null,
+        "reference": null,
+        "duration": 90
+      }
+    },
+    {
+      "id": "dur.d",
+      "clause": "6.1 Duration",
+      "input": "MECP/2/R03 1d",
+      "expect": {
+        "valid": true,
+        "severity": 2,
+        "codes": [
+          "R03"
+        ],
+        "freetext": "1d",
+        "pax": null,
+        "gps": null,
+        "timestamp": null,
+        "language": null,
+        "callsign": null,
+        "reference": null,
+        "duration": 1440
+      }
+    },
+    {
+      "id": "dur.s",
+      "clause": "6.1 Duration",
+      "input": "MECP/2/R03 120s",
+      "expect": {
+        "valid": true,
+        "severity": 2,
+        "codes": [
+          "R03"
+        ],
+        "freetext": "120s",
+        "pax": null,
+        "gps": null,
+        "timestamp": null,
+        "language": null,
+        "callsign": null,
+        "reference": null,
+        "duration": null
+      },
+      "note": "1.4.0 dropped seconds: s is not a unit of this convention."
+    },
+    {
+      "id": "dur.with-codes-before",
+      "clause": "6.1 Duration",
+      "input": "MECP/2/C01 R03 P05 47.3769,12.1048 45min",
+      "expect": {
+        "valid": true,
+        "severity": 2,
+        "codes": [
+          "C01",
+          "R03",
+          "P05"
+        ],
+        "freetext": "47.3769,12.1048 45min",
+        "pax": null,
+        "gps": {
+          "lat": 47.3769,
+          "lon": 12.1048
+        },
+        "timestamp": null,
+        "language": null,
+        "callsign": null,
+        "reference": null,
+        "duration": 45
+      }
+    },
+    {
+      "id": "dur.example",
+      "clause": "6.1 Duration",
+      "input": "MECP/2/C01 R03 45min @en",
+      "expect": {
+        "valid": true,
+        "severity": 2,
+        "codes": [
+          "C01",
+          "R03"
+        ],
+        "freetext": "45min @en",
+        "pax": null,
+        "gps": null,
+        "timestamp": null,
+        "language": "en",
+        "callsign": null,
+        "reference": null,
+        "duration": 45
+      }
+    },
+    {
+      "id": "dur.unscoped-min",
+      "clause": "6.1 Optional Freetext 9",
+      "input": "MECP/3/L06 45min",
+      "expect": {
+        "valid": true,
+        "severity": 3,
+        "codes": [
+          "L06"
+        ],
+        "freetext": "45min",
+        "pax": null,
+        "gps": null,
+        "timestamp": null,
+        "language": null,
+        "callsign": null,
+        "reference": null,
+        "duration": null
+      }
+    },
+    {
+      "id": "dur.unscoped-bare",
+      "clause": "6.1 Optional Freetext 9",
+      "input": "MECP/3/L06 45",
+      "expect": {
+        "valid": true,
+        "severity": 3,
+        "codes": [
+          "L06"
+        ],
+        "freetext": "45",
+        "pax": null,
+        "gps": null,
+        "timestamp": null,
+        "language": null,
+        "callsign": null,
+        "reference": null,
+        "duration": null
+      }
+    },
+    {
+      "id": "dur.bare-not-first",
+      "clause": "6.1 Duration",
+      "input": "MECP/2/C01 R03 1pax 45",
+      "expect": {
+        "valid": true,
+        "severity": 2,
+        "codes": [
+          "C01",
+          "R03"
+        ],
+        "freetext": "1pax 45",
+        "pax": 1,
+        "gps": null,
+        "timestamp": null,
+        "language": null,
+        "callsign": null,
+        "reference": null,
+        "duration": null
+      }
+    },
+    {
+      "id": "dur.bare-latitude",
+      "clause": "6.1 Duration",
+      "input": "MECP/2/R03 47.3769,12.1048",
+      "expect": {
+        "valid": true,
+        "severity": 2,
+        "codes": [
+          "R03"
+        ],
+        "freetext": "47.3769,12.1048",
+        "pax": null,
+        "gps": {
+          "lat": 47.3769,
+          "lon": 12.1048
+        },
+        "timestamp": null,
+        "language": null,
+        "callsign": null,
+        "reference": null,
+        "duration": null
+      },
+      "note": "The bare number must not have a decimal part (1.4.0)."
+    },
+    {
+      "id": "dur.bare-after-ts",
+      "clause": "6.1 Duration",
+      "input": "MECP/2/R03 @1430 45",
+      "expect": {
+        "valid": true,
+        "severity": 2,
+        "codes": [
+          "R03"
+        ],
+        "freetext": "@1430 45",
+        "pax": null,
+        "gps": null,
+        "timestamp": "14:30",
+        "language": null,
+        "callsign": null,
+        "reference": null,
+        "duration": null
+      }
+    },
+    {
+      "id": "dur.2d",
+      "clause": "6.1 Duration",
+      "input": "MECP/2/R03 2d",
+      "expect": {
+        "valid": true,
+        "severity": 2,
+        "codes": [
+          "R03"
+        ],
+        "freetext": "2d",
+        "pax": null,
+        "gps": null,
+        "timestamp": null,
+        "language": null,
+        "callsign": null,
+        "reference": null,
+        "duration": 2880
+      },
+      "note": "1.2.1 removed the 1440-minute upper bound."
+    },
+    {
+      "id": "dur.48h",
+      "clause": "6.1 Duration",
+      "input": "MECP/2/R03 48h",
+      "expect": {
+        "valid": true,
+        "severity": 2,
+        "codes": [
+          "R03"
+        ],
+        "freetext": "48h",
+        "pax": null,
+        "gps": null,
+        "timestamp": null,
+        "language": null,
+        "callsign": null,
+        "reference": null,
+        "duration": 2880
+      }
+    },
+    {
+      "id": "dur.2880min",
+      "clause": "6.1 Duration",
+      "input": "MECP/2/R03 2880min",
+      "expect": {
+        "valid": true,
+        "severity": 2,
+        "codes": [
+          "R03"
+        ],
+        "freetext": "2880min",
+        "pax": null,
+        "gps": null,
+        "timestamp": null,
+        "language": null,
+        "callsign": null,
+        "reference": null,
+        "duration": 2880
+      }
+    },
+    {
+      "id": "dur.week",
+      "clause": "6.1 Duration",
+      "input": "MECP/2/R03 7d",
+      "expect": {
+        "valid": true,
+        "severity": 2,
+        "codes": [
+          "R03"
+        ],
+        "freetext": "7d",
+        "pax": null,
+        "gps": null,
+        "timestamp": null,
+        "language": null,
+        "callsign": null,
+        "reference": null,
+        "duration": 10080
+      }
+    },
+    {
+      "id": "dur.zero",
+      "clause": "6.1 Duration",
+      "input": "MECP/2/R03 0min",
+      "expect": {
+        "valid": true,
+        "severity": 2,
+        "codes": [
+          "R03"
+        ],
+        "freetext": "0min",
+        "pax": null,
+        "gps": null,
+        "timestamp": null,
+        "language": null,
+        "callsign": null,
+        "reference": null,
+        "duration": null
+      }
+    },
+    {
+      "id": "dur.first-by-position",
+      "clause": "6.1 Duration",
+      "input": "MECP/2/R03 30min or 1h",
+      "expect": {
+        "valid": true,
+        "severity": 2,
+        "codes": [
+          "R03"
+        ],
+        "freetext": "30min or 1h",
+        "pax": null,
+        "gps": null,
+        "timestamp": null,
+        "language": null,
+        "callsign": null,
+        "reference": null,
+        "duration": 30
+      },
+      "note": "The first match by position wins (rule 5); 1h is ignored."
+    },
+    {
+      "id": "dur.same-position-list-order",
+      "clause": "6.1 Duration",
+      "input": "MECP/2/R03 2 h",
+      "expect": {
+        "valid": true,
+        "severity": 2,
+        "codes": [
+          "R03"
+        ],
+        "freetext": "2 h",
+        "pax": null,
+        "gps": null,
+        "timestamp": null,
+        "language": null,
+        "callsign": null,
+        "reference": null,
+        "duration": 120
+      },
+      "note": "h (pattern 2) and the bare number both start at 0; the bare number is only a fallback."
+    },
+    {
+      "id": "dur.zero-seconds",
+      "clause": "6.1 Duration",
+      "input": "MECP/2/R03 0s",
+      "expect": {
+        "valid": true,
+        "severity": 2,
+        "codes": [
+          "R03"
+        ],
+        "freetext": "0s",
+        "pax": null,
+        "gps": null,
+        "timestamp": null,
+        "language": null,
+        "callsign": null,
+        "reference": null,
+        "duration": null
+      },
+      "note": "s is not a unit (1.4.0)."
+    },
+    {
+      "id": "dur.huge",
+      "clause": "6.1 Optional Freetext 10",
+      "input": "MECP/2/R03 99999999999999999999999min",
+      "expect": {
+        "valid": true,
+        "severity": 2,
+        "codes": [
+          "R03"
+        ],
+        "freetext": "99999999999999999999999min",
+        "pax": null,
+        "gps": null,
+        "timestamp": null,
+        "language": null,
+        "callsign": null,
+        "reference": null
+      },
+      "proposed": "Not in the 1.4.0 brief: proposed on Blake-Latchford/MECP branch spec-clarifications (2026-11-16)",
+      "note": "Must decode without failing; the value SHOULD be clamped, so it is not compared."
+    },
+    {
+      "id": "dur.h-then-digits",
+      "clause": "6.1 Duration",
+      "input": "MECP/2/R03 1h30",
+      "expect": {
+        "valid": true,
+        "severity": 2,
+        "codes": [
+          "R03"
+        ],
+        "freetext": "1h30",
+        "pax": null,
+        "gps": null,
+        "timestamp": null,
+        "language": null,
+        "callsign": null,
+        "reference": null,
+        "duration": null
+      }
+    },
+    {
+      "id": "dur.days-word",
+      "clause": "6.1 Duration",
+      "input": "MECP/2/R03 in 5 days",
+      "expect": {
+        "valid": true,
+        "severity": 2,
+        "codes": [
+          "R03"
+        ],
+        "freetext": "in 5 days",
+        "pax": null,
+        "gps": null,
+        "timestamp": null,
+        "language": null,
+        "callsign": null,
+        "reference": null,
+        "duration": null
+      }
+    },
+    {
+      "id": "dur.with-pax",
+      "clause": "6.1 Duration",
+      "input": "MECP/2/R03 4pax 2h",
+      "expect": {
+        "valid": true,
+        "severity": 2,
+        "codes": [
+          "R03"
+        ],
+        "freetext": "4pax 2h",
+        "pax": 4,
+        "gps": null,
+        "timestamp": null,
+        "language": null,
+        "callsign": null,
+        "reference": null,
+        "duration": 120
+      }
+    },
+    {
+      "id": "dur.localised",
+      "clause": "6.1 Duration",
+      "input": "MECP/2/R03 45分",
+      "expect": {
+        "valid": true,
+        "severity": 2,
+        "codes": [
+          "R03"
+        ],
+        "freetext": "45分",
+        "pax": null,
+        "gps": null,
+        "timestamp": null,
+        "language": null,
+        "callsign": null,
+        "reference": null,
+        "duration": null
+      }
+    },
+    {
+      "id": "dur.first-of-kind",
+      "clause": "6.1 Duration",
+      "input": "MECP/2/R03 25h 3h",
+      "expect": {
+        "valid": true,
+        "severity": 2,
+        "codes": [
+          "R03"
+        ],
+        "freetext": "25h 3h",
+        "pax": null,
+        "gps": null,
+        "timestamp": null,
+        "language": null,
+        "callsign": null,
+        "reference": null,
+        "duration": 1500
+      }
+    },
+    {
+      "id": "dur.zero-then-ok",
+      "clause": "6.1 Optional Freetext 6",
+      "input": "MECP/2/R03 0min 5min",
+      "expect": {
+        "valid": true,
+        "severity": 2,
+        "codes": [
+          "R03"
+        ],
+        "freetext": "0min 5min",
+        "pax": null,
+        "gps": null,
+        "timestamp": null,
+        "language": null,
+        "callsign": null,
+        "reference": null,
+        "duration": 5
+      }
+    },
+    {
+      "id": "dur.bare-first-token-only",
+      "clause": "6.1 Duration",
+      "input": "MECP/2/R03 2 sleeping bags",
+      "expect": {
+        "valid": true,
+        "severity": 2,
+        "codes": [
+          "R03"
+        ],
+        "freetext": "2 sleeping bags",
+        "pax": null,
+        "gps": null,
+        "timestamp": null,
+        "language": null,
+        "callsign": null,
+        "reference": null,
+        "duration": 2
+      },
+      "note": "Decode-only form: a bare first-token number is minutes. Encoders must not emit it."
+    },
+    {
+      "id": "dur.bare-not-days",
+      "clause": "6.1 Duration",
+      "input": "MECP/2/R03 5 days",
+      "expect": {
+        "valid": true,
+        "severity": 2,
+        "codes": [
+          "R03"
+        ],
+        "freetext": "5 days",
+        "pax": null,
+        "gps": null,
+        "timestamp": null,
+        "language": null,
+        "callsign": null,
+        "reference": null,
+        "duration": 5
+      },
+      "note": "'5 days' is not the day form '5d'; the bare first token 5 is read as minutes. Decode-only."
+    },
+    {
+      "id": "mix.everything",
+      "clause": "6.1",
+      "input": "MECP/0/M01 M07 R03 3pax 48.8566,2.3522 @1430 @en ~OK1ABC #base 20min",
+      "expect": {
+        "valid": true,
+        "severity": 0,
+        "codes": [
+          "M01",
+          "M07",
+          "R03"
+        ],
+        "freetext": "3pax 48.8566,2.3522 @1430 @en ~OK1ABC #base 20min",
+        "pax": 3,
+        "gps": {
+          "lat": 48.8566,
+          "lon": 2.3522
+        },
+        "timestamp": "14:30",
+        "language": "en",
+        "callsign": "OK1ABC",
+        "reference": "base",
+        "duration": 20
+      }
+    },
+    {
+      "id": "mix.beacon",
+      "clause": "6.1",
+      "input": "MECP/0/B01 M01 P05 48.65,20.13 @1430",
+      "expect": {
+        "valid": true,
+        "severity": 0,
+        "codes": [
+          "B01",
+          "M01",
+          "P05"
+        ],
+        "freetext": "48.65,20.13 @1430",
+        "pax": null,
+        "gps": {
+          "lat": 48.65,
+          "lon": 20.13
+        },
+        "timestamp": "14:30",
+        "language": null,
+        "callsign": null,
+        "reference": null,
+        "duration": null
+      }
+    },
+    {
+      "id": "mix.drill",
+      "clause": "6.1",
+      "input": "MECP/0/D01 M01 M07 2pax P05 48.65,20.13",
+      "expect": {
+        "valid": true,
+        "severity": 0,
+        "codes": [
+          "D01",
+          "M01",
+          "M07"
+        ],
+        "freetext": "2pax P05 48.65,20.13",
+        "pax": 2,
+        "gps": {
+          "lat": 48.65,
+          "lon": 20.13
+        },
+        "timestamp": null,
+        "language": null,
+        "callsign": null,
+        "reference": null,
+        "duration": null
+      }
+    }
+  ]
+}

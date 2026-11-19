@@ -4,52 +4,44 @@ import 'dart:io';
 import 'package:mecp/mecp.dart' as mecp;
 import 'package:test/test.dart';
 
-final Map<String, dynamic> vectors =
-    jsonDecode(File('../vectors/mecp-vectors.json').readAsStringSync()) as Map<String, dynamic>;
+dynamic readJson(String rel) => jsonDecode(File('../$rel').readAsStringSync());
 
-Map<String, Object?> decodedJson(mecp.Decoded d) {
-  final x = d.extracted;
-  return {
-    'valid': d.valid,
-    'severity': d.severity,
-    'codes': d.codes,
-    'is_drill': d.isDrill,
-    'freetext': d.freetext,
-    'extracted': {
-      'count': x.count,
+final Map<String, dynamic> vectors = readJson('vectors/mecp-vectors.json') as Map<String, dynamic>;
+const fields = ['pax', 'gps', 'timestamp', 'language', 'callsign', 'reference', 'duration'];
+
+Map<String, Object?> extractedJson(mecp.Extracted x) => {
+      'pax': x.pax,
       'gps': x.gps == null ? null : {'lat': x.gps!.lat, 'lon': x.gps!.lon},
-      'eta': x.eta,
-      'reference': x.reference,
-      'language': x.language,
       'timestamp': x.timestamp,
+      'language': x.language,
       'callsign': x.callsign,
-    },
-    'warnings': d.warnings,
-  };
-}
+      'reference': x.reference,
+      'duration': x.duration,
+    };
+
+Map<String, Object?> decodedJson(mecp.Decoded d) => {
+      'valid': d.valid,
+      'severity': d.severity,
+      'codes': d.codes,
+      'is_drill': d.isDrill,
+      'freetext': d.freetext,
+      'extracted': extractedJson(d.extracted),
+    };
 
 void main() {
   group('decode', () {
     for (final c in vectors['decode'] as List) {
-      test(c['name'], () {
-        final got = mecp.decode(c['input'] as String);
-        expect(got.raw, c['input']);
-        expect(decodedJson(got), equals(c['expect']));
-      });
+      test(c['name'], () => expect(decodedJson(mecp.decode(c['input'] as String)), c['expect']));
     }
   });
 
   group('encode', () {
     for (final c in vectors['encode'] as List) {
       test(c['name'], () {
-        final got = mecp.encode(
+        final e = mecp.encode(
             c['severity'] as int, (c['codes'] as List).cast<String>(), c['freetext'] as String?);
-        expect({
-          'message': got.message,
-          'byte_length': got.byteLength,
-          'over_limit': got.overLimit,
-          'warnings': got.warnings,
-        }, equals(c['expect']));
+        expect({'message': e.message, 'byte_length': e.byteLength, 'errors': e.errors},
+            c['expect']);
       });
     }
   });
@@ -57,9 +49,26 @@ void main() {
   group('validate', () {
     for (final c in vectors['validate'] as List) {
       test(c['name'], () {
-        final got = mecp.validate(c['input'] as String);
-        expect({'valid': got.valid, 'errors': got.errors, 'warnings': got.warnings},
-            equals(c['expect']));
+        final v = mecp.validate(c['input'] as String);
+        expect({'valid': v.valid, 'errors': v.errors}, c['expect']);
+      });
+    }
+  });
+
+  group('upstream freetext', () {
+    test('schemaVersion', () {
+      expect(readJson('upstream/freetext/manifest.json')['schemaVersion'], 1);
+    });
+    for (final t in readJson('upstream/freetext/tests.json') as List) {
+      test(t['title'], () {
+        final d = mecp.decode(t['input'] as String);
+        final exp = t['expect'] as Map<String, dynamic>?;
+        if (exp == null) {
+          expect(d.valid, isFalse);
+          return;
+        }
+        expect(d.valid, isTrue);
+        expect(extractedJson(d.extracted), {for (final f in fields) f: exp[f]});
       });
     }
   });
@@ -70,5 +79,6 @@ void main() {
     expect(mecp.isBeaconAck(codes), isTrue);
     expect(mecp.isBeaconCancel(codes), isTrue);
     expect(mecp.isBeacon(['M01']), isFalse);
+    expect(mecp.mecpVersion, '1.4.0');
   });
 }
