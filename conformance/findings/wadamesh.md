@@ -41,3 +41,8 @@ and `MECP/1/t05 x` are all accepted.
 Values must be whole tokens: `(4pax)`, `4Pax.`, `4pax,3pax`, `*4pax*`, `「4pax」` and `48.65,20.13،`
 aren't decoded, and neither are `4 pax` or `4PAX`. `0pax` is shown as "0 people" (expected: skipped, then
 `2pax`).
+
+## 7. Code table (checked 2026-11-20 at `ba41167a2c`)
+
+`CODES` has no `M16` ("Medical supply drop needed", brief §7). `MECP/1/M16` is shown as a bare
+"M16", and M16 cannot be picked when composing. The other 108 codes are present.

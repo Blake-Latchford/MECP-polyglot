@@ -1,9 +1,9 @@
 {
-  "_comment": "Paths: {root} is the MECP-polyglot checkout, {clients} is $MECP_CLIENTS_DIR (default: the directory containing MECP-polyglot). 'fields' lists the record fields the client exposes; others are reported as n/a, not failures.",
+  "_comment": "Paths: {root} is the MECP-polyglot checkout, {clients} is $MECP_CLIENTS_DIR (default: the directory containing MECP-polyglot). 'fields' lists the record fields the client exposes; others are reported as n/a, not failures. 'codes_cmd', if present, prints the client's own code table as a JSON array; it is compared with vectors/codes-1.4.1.json (brief \u00a77).",
   "clients": [
     {
       "name": "reference",
-      "description": "In-repo §6.1 transcription (harness sanity check, not a client)",
+      "description": "In-repo \u00a76.1 transcription (harness sanity check, not a client)",
       "cmd": [
         "python3",
         "{root}/conformance/adapters/reference/adapter.py"
@@ -27,29 +27,11 @@
       "cmd": [
         "{root}/conformance/adapters/meshcore-tak-bridge/build/install/mecp-adapter-tak-bridge/bin/mecp-adapter-tak-bridge"
       ],
-      "fields": "all"
-    },
-    {
-      "name": "mecp-app",
-      "description": "@mecp/engine decode() (the published reference engine)",
-      "repo": "{clients}/mecp-app",
-      "upstream": "https://github.com/mecp-org/mecp-app",
-      "source": "engine/src/decoder.ts",
-      "build": [
-        "npm",
-        "install",
-        "--prefix",
-        "{root}/conformance/adapters/ts",
-        "--no-audit",
-        "--no-fund"
-      ],
-      "cmd": [
-        "{root}/conformance/adapters/ts/node_modules/.bin/tsx",
-        "{root}/conformance/adapters/ts/adapter.mts",
-        "mecp-app",
-        "{clients}/mecp-app"
-      ],
-      "fields": "all"
+      "fields": "all",
+      "codes_cmd": [
+        "{root}/conformance/adapters/meshcore-tak-bridge/build/install/mecp-adapter-tak-bridge/bin/mecp-adapter-tak-bridge",
+        "--codes"
+      ]
     },
     {
       "name": "mesh-client",
@@ -71,7 +53,14 @@
         "mesh-client",
         "{clients}/mesh-client"
       ],
-      "fields": "all"
+      "fields": "all",
+      "codes_cmd": [
+        "{root}/conformance/adapters/ts/node_modules/.bin/tsx",
+        "{root}/conformance/adapters/ts/adapter.mts",
+        "mesh-client",
+        "{clients}/mesh-client",
+        "--codes"
+      ]
     },
     {
       "name": "reticulum-mobile",
@@ -93,7 +82,14 @@
         "reticulum-mobile",
         "{clients}/reticulum_mobile_emergency_management"
       ],
-      "fields": "all"
+      "fields": "all",
+      "codes_cmd": [
+        "{root}/conformance/adapters/ts/node_modules/.bin/tsx",
+        "{root}/conformance/adapters/ts/adapter.mts",
+        "reticulum-mobile",
+        "{clients}/reticulum_mobile_emergency_management",
+        "--codes"
+      ]
     },
     {
       "name": "wadamesh",
@@ -111,6 +107,12 @@
         "pax",
         "gps",
         "timestamp"
+      ],
+      "codes_cmd": [
+        "lua5.4",
+        "{root}/conformance/adapters/wadamesh/adapter.lua",
+        "{clients}/wadamesh/deploy/apps/mecp/1.0/mecp.lua",
+        "--codes"
       ]
     },
     {
@@ -134,6 +136,11 @@
         "pax",
         "timestamp",
         "duration"
+      ],
+      "codes_cmd": [
+        "{root}/conformance/adapters/meshcore-one/build/mc1-adapter",
+        "--codes",
+        "{clients}/MeshCoreOne/MC1Services/Sources/MC1Services/MECP/Languages"
       ]
     }
   ]

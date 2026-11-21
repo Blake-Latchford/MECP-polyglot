@@ -82,7 +82,7 @@ fn validate_vectors() {
 /// mecp-org/MECP freetext/tests.json, run unchanged.
 #[test]
 fn upstream_freetext() {
-    assert_eq!(read("upstream/freetext/manifest.json")["schemaVersion"], 1);
+    assert_eq!(read("upstream/freetext/manifest.json")["schemaVersion"], 2);
     let mut bad = Vec::new();
     for t in read("upstream/freetext/tests.json").as_array().unwrap() {
         let d = mecp::decode(t["input"].as_str().unwrap());
@@ -108,5 +108,5 @@ fn beacon_helpers() {
     assert!(mecp::is_beacon_ack(&d.codes));
     assert!(mecp::is_beacon_cancel(&d.codes));
     assert!(!mecp::is_beacon(&["M01"]));
-    assert_eq!(mecp::MECP_VERSION, "1.4.0");
+    assert_eq!(mecp::MECP_VERSION, "1.4.1");
 }

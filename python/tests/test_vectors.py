@@ -40,7 +40,7 @@ class UpstreamFreetext(unittest.TestCase):
 
     def test_cases(self):
         manifest = json.loads((UPSTREAM / "manifest.json").read_text(encoding="utf-8"))
-        self.assertEqual(manifest["schemaVersion"], 1)
+        self.assertEqual(manifest["schemaVersion"], 2)
         tests = json.loads((UPSTREAM / "tests.json").read_text(encoding="utf-8"))
         for t in tests:
             with self.subTest(t["title"]):
@@ -62,7 +62,7 @@ class Helpers(unittest.TestCase):
         self.assertFalse(mecp.is_beacon(["M01"]))
 
     def test_version(self):
-        self.assertEqual(mecp.MECP_VERSION, "1.4.0")
+        self.assertEqual(mecp.MECP_VERSION, "1.4.1")
 
 
 if __name__ == "__main__":

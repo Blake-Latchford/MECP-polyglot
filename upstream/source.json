@@ -1,6 +1,6 @@
 {
   "repository": "https://github.com/mecp-org/MECP",
-  "commit": "76bcc1b6cbb442cd3c0dc6c60e60e8549d4028ba",
-  "protocolVersion": "1.4.0",
-  "schemaVersion": 1
+  "commit": "eab95105cad121b3b80f7a49bf5e05ca7aa80c9d",
+  "protocolVersion": "1.4.1",
+  "schemaVersion": 2
 }

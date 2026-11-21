@@ -134,6 +134,7 @@ typedef struct {
     const char *start; /* start of the whole match, left boundary included */
     const char *end;   /* end of the token, i.e. start of the right boundary */
     span_t g[2];       /* capture groups 1 and 2 */
+    const char *text, *lim; /* the freetext searched */
 } match_t;
 
 /* Try the pattern at `at` (text is the freetext start, for ^). On success
@@ -362,6 +363,8 @@ typedef bool (*valid_fn)(const match_t *m, int kind);
 /* Leftmost match of (?:^|B)(?:pattern)(?:B|$) starting at or after pos. */
 static bool search(pattern_fn f, const char *text, const char *end, const char *pos, match_t *m)
 {
+    m->text = text;
+    m->lim = end;
     for (const char *s = pos;;) {
         size_t n;
         if (s == text && f(text, s, end, m)) { m->start = s; return true; }
@@ -429,9 +432,20 @@ static int32_t minutes(const match_t *m, int kind)
     }
 }
 
+/* Whether *p is '.' or ',' between two ASCII digits of the freetext. */
+static bool decimal_mark(const match_t *m, const char *p)
+{
+    return p > m->text && p + 1 < m->lim && (*p == '.' || *p == ',') &&
+           p[-1] >= '0' && p[-1] <= '9' && p[1] >= '0' && p[1] <= '9';
+}
+
 static bool duration_ok(const match_t *m, int kind)
 {
-    return minutes(m, kind) > 0 && (kind != DUR_BARE || m->g[1].b == NULL);
+    if (minutes(m, kind) <= 0) return false;
+    /* Group 2 absent, and a decimal mark taken as the boundary also fails. */
+    if (kind == DUR_BARE) return m->g[1].b == NULL && !decimal_mark(m, m->g[0].e);
+    /* Not the fractional part of a decimal. */
+    return !(m->g[0].b > m->text && decimal_mark(m, m->g[0].b - 1));
 }
 
 /* Patterns 1-4: first by position, ties to list order. Pattern 5 (bare

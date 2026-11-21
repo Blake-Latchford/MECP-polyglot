@@ -91,7 +91,7 @@ func TestUpstreamFreetext(t *testing.T) {
 		SchemaVersion int `json:"schemaVersion"`
 	}
 	readJSON(t, "../upstream/freetext/manifest.json", &manifest)
-	if manifest.SchemaVersion != 1 {
+	if manifest.SchemaVersion != 2 {
 		t.Fatalf("unsupported schemaVersion %d", manifest.SchemaVersion)
 	}
 	var tests []struct {

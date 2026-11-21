@@ -1,13 +1,14 @@
 #!/usr/bin/env python3
-"""Build decode-1.4.0.json: MECP 1.4.0 §6.1 decode conformance vectors.
+"""Build decode-1.4.1.json (MECP 1.4.1 §6.1 decode conformance vectors) and
+codes-1.4.1.json (the §7 code table every client's catalog should match).
 
 Every expectation here is written by hand from the protocol brief
-(MECP_Comprehensive_Brief.md §6.1, release 1.4.0) -- never copied from a
+(MECP_Comprehensive_Brief.md §6.1, release 1.4.1) -- never copied from a
 client's output. `--check` also runs each case through
 ../reference/record.py; a disagreement is a typo here or a spec ambiguity.
 
 Usage:
-  python3 conformance/vectors/build.py           # rewrite decode-1.4.0.json
+  python3 conformance/vectors/build.py           # rewrite both JSON files
   python3 conformance/vectors/build.py --check   # verify; exit 1 on drift
 """
 
@@ -18,7 +19,8 @@ import sys
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
-OUT = HERE / "decode-1.4.0.json"
+OUT = HERE / "decode-1.4.1.json"
+CODES_OUT = HERE / "codes-1.4.1.json"
 sys.path.insert(0, str(HERE.parent / "reference"))
 
 FIELDS = ("pax", "gps", "timestamp", "language", "callsign", "reference", "duration")
@@ -43,12 +45,12 @@ def ok(id, clause, input, codes, freetext=None, severity=None, note=None, skip=(
 
 
 def bad(id, clause, input, note=None):
-    """Not an MECP 1.4.0 message: only `valid` is compared."""
+    """Not an MECP 1.4.1 message: only `valid` is compared."""
     _add(id, clause, input, {"valid": False}, note)
 
 
 # Proposed spec changes that some vectors depend on.
-PROPOSED = "Not in the 1.4.0 brief: proposed on Blake-Latchford/MECP branch spec-clarifications (2026-11-16)"
+PROPOSED = "Not in the 1.4.1 brief: proposed on Blake-Latchford/MECP branch spec-clarifications (2026-11-16)"
 
 
 def _add(id, clause, input, expect, note, proposed=False):
@@ -330,9 +332,28 @@ ok("mix.drill", MX, "MECP/0/D01 M01 M07 2pax P05 48.65,20.13", ["D01", "M01", "M
    "2pax P05 48.65,20.13", pax=2, gps=gps(48.65, 20.13))
 
 
+# ------------------------------------------------------------ code table
+# Brief §7 "The Full Code Table": category letter and number of codes, numbered
+# from 01 with no gaps. Unknown codes still decode (Codes rule 5), so a client
+# missing one only shows it as unknown; vectors cannot catch that, this table can.
+CODE_TABLE = [("M", 16), ("T", 17), ("W", 6), ("S", 6), ("P", 7), ("C", 8), ("R", 7),
+              ("D", 4), ("L", 20), ("X", 7), ("H", 8), ("B", 3)]
+CODES = [f"{cat}{n:02d}" for cat, count in CODE_TABLE for n in range(1, count + 1)]
+assert len(CODES) == 109, "§7: MECP defines 109 codes"
+
+
+def codes_document() -> dict:
+    return {
+        "spec": "MECP 1.4.1, MECP_Comprehensive_Brief.md §7",
+        "kind": "code-table",
+        "generated_by": "conformance/vectors/build.py (hand-written; do not edit the JSON)",
+        "codes": CODES,
+    }
+
+
 def document() -> dict:
     return {
-        "spec": "MECP 1.4.0, MECP_Comprehensive_Brief.md §6.1",
+        "spec": "MECP 1.4.1, MECP_Comprehensive_Brief.md §6.1",
         "kind": "decode",
         "generated_by": "conformance/vectors/build.py (hand-written; do not edit the JSON)",
         "fields": ["valid", "severity", "codes", "freetext", *FIELDS],
@@ -359,17 +380,20 @@ def check_against_reference() -> list[str]:
 
 
 def main() -> int:
-    text = json.dumps(document(), ensure_ascii=False, indent=2) + "\n"
+    outputs = {OUT: document(), CODES_OUT: codes_document()}
+    texts = {path: json.dumps(doc, ensure_ascii=False, indent=2) + "\n"
+             for path, doc in outputs.items()}
     problems = check_against_reference()
     for p in problems:
         print("MISMATCH", p, file=sys.stderr)
     if "--check" in sys.argv:
-        if not OUT.exists() or OUT.read_text(encoding="utf-8") != text:
-            print(f"{OUT.name} is out of date; run build.py", file=sys.stderr)
-            return 1
-        return 1 if problems else 0
-    OUT.write_text(text, encoding="utf-8")
-    print(f"wrote {len(CASES)} cases to {OUT.name}")
+        stale = [p for p, t in texts.items() if not p.exists() or p.read_text(encoding="utf-8") != t]
+        for p in stale:
+            print(f"{p.name} is out of date; run build.py", file=sys.stderr)
+        return 1 if stale or problems else 0
+    for path, text in texts.items():
+        path.write_text(text, encoding="utf-8")
+    print(f"wrote {len(CASES)} cases to {OUT.name}, {len(CODES)} codes to {CODES_OUT.name}")
     return 1 if problems else 0
 
 

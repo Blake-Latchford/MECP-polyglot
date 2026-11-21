@@ -168,13 +168,36 @@ int _minutes(int kind, RegExpMatch m) {
   }
 }
 
+bool _isDigit(int c) => c >= 0x30 && c <= 0x39;
+
+/// Whether text[i] is `.` or `,` between two ASCII digits.
+bool _decimalMark(String text, int i) =>
+    i > 0 &&
+    i < text.length - 1 &&
+    (text[i] == '.' || text[i] == ',') &&
+    _isDigit(text.codeUnitAt(i - 1)) &&
+    _isDigit(text.codeUnitAt(i + 1));
+
+bool _durationOk(String text, int kind, RegExpMatch m) {
+  if (_minutes(kind, m) <= 0) return false;
+  // Dart has no group offsets. The bare number's group 1 ends where the right
+  // boundary group starts; group 2 must be absent, and a decimal mark taken
+  // as that boundary also fails.
+  if (kind == _bare) {
+    return m.group(2) == null && !_decimalMark(text, m.end - m.group(m.groupCount)!.length);
+  }
+  // Not the fractional part of a decimal. Group 1 directly follows the left
+  // boundary only when that boundary is `.` or `,` and no ETA prefix is used,
+  // which is exactly when the boundary at m.start is a decimal mark.
+  return !_decimalMark(text, m.start);
+}
+
 int? _durationOf(String text) {
   RegExpMatch? best;
   var bestMinutes = 0;
   for (var kind = 0; kind < _duration.length; kind++) {
     if (kind == _bare && best != null) break; // the bare number is only a fallback
-    final m = _firstValid(_duration[kind], text,
-        (m) => _minutes(kind, m) > 0 && (kind != _bare || m.group(2) == null));
+    final m = _firstValid(_duration[kind], text, (m) => _durationOk(text, kind, m));
     // First by position; on a tie the earlier pattern (already in best) wins.
     if (m != null && (best == null || m.start < best.start)) {
       best = m;

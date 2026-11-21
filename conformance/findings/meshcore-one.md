@@ -2,7 +2,7 @@
 
 **Tested:** `MECPDecode.decode()` and the fields `MECPMessage` derives from it (`personCount`,
 `timestampHHMM`, `eta`) in `MC1Services/Sources/MC1Services/MECP/` (MeshCore One `5e980a53`,
-2026-11-16), against the 179 hand-written vectors in [`decode-1.4.0.json`](../vectors/decode-1.4.0.json)
+2026-11-16), against the 179 hand-written vectors in [`decode-1.4.1.json`](../vectors/decode-1.4.1.json) (unchanged since 1.4.0)
 plus the 70 cases in mecp-org/MECP `freetext/tests.json`.
 **Result:** 154 pass, 95 fail. MC1 does not decode GPS, language, callsign or reference, so those
 are not scored. Full list: [reports/meshcore-one.md](../reports/meshcore-one.md).
@@ -54,10 +54,17 @@ not a timestamp.
 a unit is present the bare number wins: `R03 2 h` gives 2 (expected 120) and `R03 45 2h` gives
 45 (expected 120, since a value with a unit is preferred over a bare number).
 
+## 5. The code table has no M16 (checked 2026-11-20 at `0313f25537`)
+
+None of the 11 language packs in `MECP/Languages/` has `M16` ("Medical supply drop needed", added
+to the MECP code table in 1.2.0, brief §7). `MECP/1/M16` still decodes, but reads as
+"M16: Unknown code". The other 108 codes are present in every pack.
+
 ## Adapter
 
-[`adapters/meshcore-one/`](../adapters/meshcore-one/) compiles MC1's own `MECPDecode.swift` and
-`MECPMessage.swift` from the checkout, together with a small `main.swift`, into one module. It uses
+[`adapters/meshcore-one/`](../adapters/meshcore-one/) compiles MC1's own `MECPDecode.swift`,
+`MECPMessage.swift` and `MECPCatalog*.swift` from the checkout, together with a small `main.swift`,
+into one module. `--codes` lists the English pack as `MECPCatalog.languagePack` loads it. It uses
 the official `swift` Docker image and links statically, so the host needs only Docker. No MC1 code
 (GPLv3) is copied into this repository. The adapter changes representation only
 (`timestampHHMM` `1430` becomes `14:30`).

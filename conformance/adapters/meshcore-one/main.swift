@@ -1,11 +1,32 @@
 // Conformance adapter for MeshCore One (MC1): MECPDecode.decode().
 //
-// Compiled into one module together with MC1's own MECPDecode.swift and
-// MECPMessage.swift from the client checkout (see build.sh), so no MC1 code
-// is copied here. Reads `id<TAB>hex(utf-8)` lines, writes one JSON record per
-// line. Representation only: timestampHHMM "1430" becomes "14:30".
+// Compiled into one module together with MC1's own MECP sources from the
+// client checkout (see build.sh), so no MC1 code is copied here. Reads
+// `id<TAB>hex(utf-8)` lines, writes one JSON record per line. Representation
+// only: timestampHHMM "1430" becomes "14:30".
+//
+// `mc1-adapter --codes <MECP/Languages dir>` instead prints a JSON array of the
+// codes in MC1's English pack, loaded by MECPCatalog itself.
 
 import Foundation
+
+// SwiftPM generates Bundle.module for MC1's resources; swiftc does not. Only
+// MECPCatalog's default arguments use it; --codes passes the pack directory.
+extension Bundle {
+    static let module = Bundle.main
+}
+
+let args = CommandLine.arguments
+if args.count == 3, args[1] == "--codes" {
+    guard let dir = Bundle(path: args[2]),
+          let pack = MECPCatalog.languagePack(stem: MECPCatalog.englishStem, resourceBundle: dir) else {
+        FileHandle.standardError.write("no English pack in \(args[2])\n".data(using: .utf8)!)
+        exit(1)
+    }
+    let data = try! JSONEncoder().encode(pack.codes.keys.sorted())
+    print(String(decoding: data, as: UTF8.self))
+    exit(0)
+}
 
 struct Record: Encodable {
     var valid: Bool

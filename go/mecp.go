@@ -116,6 +116,7 @@ type match struct {
 	start  int
 	groups []string // groups[0] is the whole match; "" when a group did not take part
 	has    []bool
+	at     []int // start of each group in text
 }
 
 // firstValid applies rules 5 and 6: the first match by position that passes ok.
@@ -129,11 +130,12 @@ func firstValid(re *regexp.Regexp, text string, ok func(match) bool) (match, boo
 			break
 		}
 		n := len(ix) / 2
-		m := match{start: pos + ix[0], groups: make([]string, n), has: make([]bool, n)}
+		m := match{start: pos + ix[0], groups: make([]string, n), has: make([]bool, n), at: make([]int, n)}
 		for g := 0; g < n; g++ {
 			if ix[2*g] >= 0 {
 				m.groups[g] = text[pos+ix[2*g] : pos+ix[2*g+1]]
 				m.has[g] = true
+				m.at[g] = pos + ix[2*g]
 			}
 		}
 		if ok == nil || ok(m) {
@@ -185,6 +187,25 @@ func minutes(kind int, m match) int {
 	return a // min, bare
 }
 
+// decimalMark reports whether text[i] is '.' or ',' between two ASCII digits.
+func decimalMark(text string, i int) bool {
+	isDigit := func(c byte) bool { return c >= '0' && c <= '9' }
+	return i > 0 && i < len(text)-1 && (text[i] == '.' || text[i] == ',') &&
+		isDigit(text[i-1]) && isDigit(text[i+1])
+}
+
+func durationOK(text string, kind int, m match) bool {
+	if minutes(kind, m) <= 0 {
+		return false
+	}
+	if kind == kindBare {
+		// Group 2 absent, and a decimal mark taken as the boundary also fails.
+		return !m.has[2] && !decimalMark(text, m.at[1]+len(m.groups[1]))
+	}
+	// Not the fractional part of a decimal.
+	return !decimalMark(text, m.at[1]-1)
+}
+
 func duration(text string) *int {
 	found, bestStart, best := false, 0, 0
 	for kind, re := range reDuration {
@@ -192,7 +213,7 @@ func duration(text string) *int {
 			break // the bare number is only a fallback
 		}
 		m, ok := firstValid(re, text, func(m match) bool {
-			return minutes(kind, m) > 0 && (kind != kindBare || !m.has[2])
+			return durationOK(text, kind, m)
 		})
 		// First by position; on a tie the earlier pattern (already found) wins.
 		if ok && (!found || m.start < bestStart) {

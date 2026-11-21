@@ -65,3 +65,10 @@ The input is trimmed and split on `/\s+/`, so a leading space, tabs, NBSP, embed
 trailing spaces and doubled spaces are all accepted. Freetext whitespace is collapsed (NBSP becomes a
 space). A body without the `MECP/` prefix (`M01 P05 48.65,20.13`) is decoded as severity 2. If that is
 REM's compact wire format, consider a separate entry point so `MECP/` text is decoded strictly.
+
+## 9. Code table (checked 2026-11-20 at `6ccf01a958`)
+
+`MECP_EVENT_CODES` has no `M16` ("Medical supply drop needed", brief §7), so `MECP/1/M16` decodes
+with the label "M16" and a warning that the code is unknown. It also has `B04` ("Household / community
+status"), which is not in the MECP code table. The Events view offers B04 when composing, so REM can send
+a code that other clients show as unknown.

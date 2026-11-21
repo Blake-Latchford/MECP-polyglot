@@ -1,47 +1,27 @@
-# meshcore-one: MECP 1.4.0 decode conformance
+# meshcore-one: MECP 1.4.1 decode conformance
 
 - Client: MeshCore One (MC1) iOS app, MECPDecode.decode() and MECPMessage's derived fields
 - Repository: https://github.com/Avi0n/MeshCoreOne
-- Commit tested: `5e980a53e0` (2026-11-16)
+- Commit tested: `26460496fe` (2026-11-20)
 - Decoder: `MC1Services/Sources/MC1Services/MECP/MECPDecode.swift`
 - Fields compared: valid, severity, codes, freetext, pax, timestamp, duration (others not exposed by this client)
-- Vectors: `conformance/vectors/decode-1.4.0.json` plus mecp-org/MECP `freetext/tests.json` (249 cases), run 2026-11-18
-- **Result: 154 pass, 95 fail, 0 error**
+- Vectors: `conformance/vectors/decode-1.4.1.json` plus mecp-org/MECP `freetext/tests.json` (256 cases), run 2026-11-21
+- **Result: 209 pass, 47 fail, 0 error**
+- **Code table: 108/109**
+
+## Code table (§7)
+
+Compared with `conformance/vectors/codes-1.4.1.json`. A missing code still decodes (Codes rule 5) but has no label, so it reads as unknown.
+
+- Missing (1): `M16`
+
+## Decode vectors
 
 Cases marked *(proposed)* depend on spec changes not yet merged upstream; see the vector's `proposed` field.
 
 Each row is one vector. *Expected* is written by hand from the protocol brief (clause in the heading); *Got* is what this client's decoder returned.
 
-## 6.1 Message Format (21)
-
-| Case | Input | Field | Expected | Got |
-|---|---|---|---|---|
-| `env.freetext-inner-spaces` | `MECP/3/L01 see  you   there` | freetext | "see  you   there" | "see you there" |
-| `env.trailing-lf` | `MECP/2/B03\n` | codes | ["B03"] | [] |
-|  |  | freetext | null | "B03\n" |
-| `env.trailing-cr` | `MECP/2/B03\r` | codes | ["B03"] | [] |
-|  |  | freetext | null | "B03\r" |
-| `env.trailing-crlf` | `MECP/2/B03\r\n` | codes | ["B03"] | [] |
-|  |  | freetext | null | "B03\r\n" |
-| `env.trailing-crlf-freetext` | `MECP/3/L01 see you\r\n` | freetext | "see you" | "see you\r\n" |
-| `env.no-codes` | `MECP/0/` | valid | false | true |
-| `env.no-codes-no-slash` | `MECP/0` | valid | false | true |
-| `env.four-char-code` | `MECP/0/M011` | valid | false | true |
-| `env.trailing-space` | `MECP/1/T05 ` | valid | false | true |
-| `env.trailing-space-after-text` | `MECP/1/T05 help ` | valid | false | true |
-| `env.double-space-before-freetext` | `MECP/0/M01  help` | valid | false | true |
-| `env.double-space-between-codes` | `MECP/0/M01  M07` | valid | false | true |
-| `env.tab-after-codes` | `MECP/0/M01\tM07` | valid | false | true |
-| `env.embedded-lf` | `MECP/0/M01\nM07` | valid | false | true |
-| `env.embedded-cr` | `MECP/3/L01 a\rb` | valid | false | true |
-| `env.line-separator` | `MECP/3/L01 a\u2028b` | valid | false | true |
-| `env.nel` | `MECP/3/L01 a\u0085b` | valid | false | true |
-| `env.two-trailing-lf` | `MECP/2/B03\n\n` | valid | false | true |
-| `env.lfcr` | `MECP/2/B03\n\r` | valid | false | true |
-| `env.two-crlf` | `MECP/2/B03\r\n\r\n` | valid | false | true |
-| `env.nbsp-after-codes` | `MECP/0/M01\u00a0help` | valid | false | true |
-
-## 6.1 Duration (18)
+### 6.1 Duration (18)
 
 | Case | Input | Field | Expected | Got |
 |---|---|---|---|---|
@@ -64,7 +44,7 @@ Each row is one vector. *Expected* is written by hand from the protocol brief (c
 | `dur.with-pax` | `MECP/2/R03 4pax 2h` | duration | 120 | null |
 | `dur.first-of-kind` | `MECP/2/R03 25h 3h` | duration | 1500 | null |
 
-## upstream: Duration (13)
+### upstream: Duration (15)
 
 | Case | Input | Field | Expected | Got |
 |---|---|---|---|---|
@@ -81,23 +61,10 @@ Each row is one vector. *Expected* is written by hand from the protocol brief (c
 | `up.52` Duration: the first value by position wins (minutes before hours) | `MECP/2/R03 45min 2h` | duration | 45 | null |
 | `up.53` Duration: hours and minutes separated by a space are combined | `MECP/2/R03 1h 30min` | duration | 90 | null |
 | `up.54` Duration: a space between the number and the unit is accepted | `MECP/2/R03 2 h` | duration | 120 | 2 |
+| `up.60` Duration: a skipped decimal value lets the next value be used | `MECP/2/R03 1.5h 45min` | duration | 45 | null |
+| `up.61` Duration: a period after a letter still separates a value | `MECP/2/R03 hut.2h` | duration | 120 | null |
 
-## 6.1 Optional Freetext 4 (10)
-
-| Case | Input | Field | Expected | Got |
-|---|---|---|---|---|
-| `b.period` | `MECP/1/S01 4Pax.` | pax | 4 | null |
-| `b.asterisk` | `MECP/1/S01 *4pax*` | pax | null | 4 |
-| `b.slash` | `MECP/1/S01 4pax/3` | pax | null | 4 |
-| `b.letter-left` | `MECP/1/S01 x4pax` | pax | null | 4 |
-| `b.letter-right` | `MECP/1/S01 3paxmore` | pax | null | 3 |
-| `b.hash-not-b` | `MECP/1/S01 #4pax` | pax | null | 4 |
-| `b.hyphen-not-b` | `MECP/1/S01 -4pax` | pax | null | 4 |
-| `b.underscore-not-b` | `MECP/1/S01 _4pax` | pax | null | 4 |
-| `b.plus-not-b` | `MECP/1/S01 +4pax` | pax | null | 4 |
-| `b.vt-not-b` | `MECP/1/S01 4pax\u000bwater` | pax | null | 4 |
-
-## 6.1 Timestamp (7)
+### 6.1 Timestamp (7)
 
 | Case | Input | Field | Expected | Got |
 |---|---|---|---|---|
@@ -109,29 +76,7 @@ Each row is one vector. *Expected* is written by hand from the protocol brief (c
 | `ts.trailing-comma` | `MECP/2/T05 @1430,` | timestamp | "14:30" | null |
 | `ts.glued-left` | `MECP/2/T05 meet@1430` | timestamp | null | "14:30" |
 
-## upstream: Message (7)
-
-| Case | Input | Field | Expected | Got |
-|---|---|---|---|---|
-| `up.55` Message: a trailing space is invalid | `MECP/1/T05 ` | valid | false | true |
-| `up.56` Message: a lowercase first code is not a code, so the message has no codes and is invalid | `MECP/1/t05 x` | valid | false | true |
-| `up.60` Message: no codes after the severity is invalid | `MECP/0/` | valid | false | true |
-| `up.61` Message: a missing code section is invalid | `MECP/0` | valid | false | true |
-| `up.66` Message: an embedded LF is invalid | `MECP/1/T05 foo\nbar` | valid | false | true |
-| `up.67` Message: an embedded line separator (U+2028) is invalid | `MECP/1/T05 foo\u2028bar` | valid | false | true |
-| `up.68` Message: an embedded form feed is invalid | `MECP/1/T05 foo\fbar` | valid | false | true |
-
-## upstream: Pax (5)
-
-| Case | Input | Field | Expected | Got |
-|---|---|---|---|---|
-| `up.16` Pax: letters after the unit prevent a match | `MECP/1/S01 3paxmore` | pax | null | 3 |
-| `up.17` Pax: zero fails validation and the next value is used | `MECP/1/S01 0pax 2pax` | pax | 2 | 0 |
-| `up.20` Pax: the unit is case-insensitive and a trailing period is a boundary | `MECP/1/S01 4Pax.` | pax | 4 | null |
-| `up.22` Pax: a vertical tab (U+000B) is not a boundary | `MECP/1/S01 4pax\u000bwater` | pax | null | 4 |
-| `up.24` Pax: an asterisk is not a boundary | `MECP/1/S01 3pax*` | pax | null | 3 |
-
-## upstream: Timestamp (5)
+### upstream: Timestamp (5)
 
 | Case | Input | Field | Expected | Got |
 |---|---|---|---|---|
@@ -141,41 +86,14 @@ Each row is one vector. *Expected* is written by hand from the protocol brief (c
 | `up.04` Timestamp: a sigil inside a word is not decoded | `MECP/2/T05 meet@1430` | timestamp | null | "14:30" |
 | `up.05` Timestamp: an equals sign is not a boundary | `MECP/3/L06 eta=@1430` | timestamp | null | "14:30" |
 
-## 6.1 Person count (4)
-
-| Case | Input | Field | Expected | Got |
-|---|---|---|---|---|
-| `pax.space` | `MECP/1/S01 4 pax` | pax | 4 | null |
-| `pax.upper` | `MECP/1/S01 4PAX` | pax | 4 | null |
-| `pax.zero-skipped` | `MECP/1/S01 0pax 2pax` | pax | 2 | 0 |
-| `pax.two-spaces` | `MECP/1/S01 4  pax` | freetext | "4  pax" | "4 pax" |
-
-## 6.1 (1)
+### 6.1 (1)
 
 | Case | Input | Field | Expected | Got |
 |---|---|---|---|---|
 | `mix.everything` | `MECP/0/M01 M07 R03 3pax 48.8566,2.3522 @1430 @en ~OK1ABC #base 20min` | duration | 20 | null |
 
-## 6.1 Codes 3 (1)
-
-| Case | Input | Field | Expected | Got |
-|---|---|---|---|---|
-| `env.lowercase-first-code` | `MECP/1/t05 x` | valid | false | true |
-
-## 6.1 GPS coordinates (1)
-
-| Case | Input | Field | Expected | Got |
-|---|---|---|---|---|
-| `gps.two-spaces-after-comma` | `MECP/0/M01 48.65,  20.13` | freetext | "48.65,  20.13" | "48.65, 20.13" |
-
-## 6.1 Optional Freetext 6 (1)
+### 6.1 Optional Freetext 6 (1)
 
 | Case | Input | Field | Expected | Got |
 |---|---|---|---|---|
 | `dur.zero-then-ok` | `MECP/2/R03 0min 5min` | duration | 5 | null |
-
-## 6.1 Severity (1)
-
-| Case | Input | Field | Expected | Got |
-|---|---|---|---|---|
-| `env.sev-two-digits` | `MECP/01/M01` | valid | false | true |

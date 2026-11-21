@@ -1,5 +1,5 @@
 {
-  "spec": "MECP 1.4.0, MECP_Comprehensive_Brief.md §6.1",
+  "spec": "MECP 1.4.1, MECP_Comprehensive_Brief.md §6.1",
   "kind": "decode",
   "generated_by": "conformance/vectors/build.py (hand-written; do not edit the JSON)",
   "fields": [
@@ -1188,7 +1188,7 @@
         "reference": null,
         "duration": null
       },
-      "proposed": "Not in the 1.4.0 brief: proposed on Blake-Latchford/MECP branch spec-clarifications (2026-11-16)",
+      "proposed": "Not in the 1.4.1 brief: proposed on Blake-Latchford/MECP branch spec-clarifications (2026-11-16)",
       "note": "Must decode without failing; the value SHOULD be clamped, so it is not compared."
     },
     {
@@ -3101,7 +3101,7 @@
         "callsign": null,
         "reference": null
       },
-      "proposed": "Not in the 1.4.0 brief: proposed on Blake-Latchford/MECP branch spec-clarifications (2026-11-16)",
+      "proposed": "Not in the 1.4.1 brief: proposed on Blake-Latchford/MECP branch spec-clarifications (2026-11-16)",
       "note": "Must decode without failing; the value SHOULD be clamped, so it is not compared."
     },
     {

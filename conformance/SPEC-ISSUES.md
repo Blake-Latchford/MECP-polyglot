@@ -35,5 +35,4 @@ inputs. The upstream checker's structure will be reworked once the bug list is s
 
 | # | Item |
 |---|---|
-| U2 | `@mecp/engine` implements 1.1 (118 of 249 cases pass), yet the README calls it the reference implementation. Plan: PR to mecp-app based on [findings/mecp-app.md](findings/mecp-app.md), starting from mesh-client's port, which now passes every case. |
 | U3 | `check-freetext.mjs` slices the string between searches, so `^` can match mid-text after a fallback resume. It gives the same results today, because a resume always lands on a boundary character and no pattern starts with one. To be reworked once the bug list is settled. |

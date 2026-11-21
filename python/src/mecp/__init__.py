@@ -162,13 +162,31 @@ def _minutes(kind: str, m: re.Match) -> int:
     return a  # min, bare
 
 
+_DIGITS = "0123456789"
+
+
+def _decimal_mark(text: str, i: int) -> bool:
+    """True if text[i] is `.` or `,` between two ASCII digits."""
+    return (0 < i < len(text) - 1 and text[i] in ".,"
+            and text[i - 1] in _DIGITS and text[i + 1] in _DIGITS)
+
+
+def _duration_ok(kind: str, m: re.Match) -> bool:
+    if _minutes(kind, m) <= 0:
+        return False
+    if kind == "bare":
+        # Group 2 absent, and a decimal mark taken as the boundary also fails.
+        return m[2] is None and not _decimal_mark(m.string, m.end(1))
+    # Not the fractional part of a decimal.
+    return not _decimal_mark(m.string, m.start(1) - 1)
+
+
 def _duration(text: str) -> Optional[int]:
     best: Optional[tuple[int, int]] = None  # (match start, minutes)
     for kind, rx in zip(_KINDS, _DURATION):
         if kind == "bare" and best:
             break  # the bare number is only a fallback
-        m = _first_valid(rx, text, lambda m, k=kind: _minutes(k, m) > 0
-                         and (k != "bare" or m[2] is None))
+        m = _first_valid(rx, text, lambda m, k=kind: _duration_ok(k, m))
         # First by position; on a tie the earlier pattern (already in best) wins.
         if m and (best is None or m.start() < best[0]):
             best = (m.start(), _minutes(kind, m))

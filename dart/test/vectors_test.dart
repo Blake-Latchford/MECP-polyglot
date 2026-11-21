@@ -57,7 +57,7 @@ void main() {
 
   group('upstream freetext', () {
     test('schemaVersion', () {
-      expect(readJson('upstream/freetext/manifest.json')['schemaVersion'], 1);
+      expect(readJson('upstream/freetext/manifest.json')['schemaVersion'], 2);
     });
     for (final t in readJson('upstream/freetext/tests.json') as List) {
       test(t['title'], () {
@@ -79,6 +79,6 @@ void main() {
     expect(mecp.isBeaconAck(codes), isTrue);
     expect(mecp.isBeaconCancel(codes), isTrue);
     expect(mecp.isBeacon(['M01']), isFalse);
-    expect(mecp.mecpVersion, '1.4.0');
+    expect(mecp.mecpVersion, '1.4.1');
   });
 }

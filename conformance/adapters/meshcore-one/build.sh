@@ -11,5 +11,6 @@ mkdir -p "$here/build"
 docker run --rm --user "$(id -u):$(id -g)" -e HOME=/tmp \
   -v "$here:/adapter" -v "$mc1:/mc1:ro" "${SWIFT_IMAGE:-swift:6.1-noble}" \
   swiftc -O -static-stdlib -module-name MC1Adapter \
-    "/mc1/$src/MECPDecode.swift" "/mc1/$src/MECPMessage.swift" /adapter/main.swift \
+    "/mc1/$src/MECPDecode.swift" "/mc1/$src/MECPMessage.swift" \
+    "/mc1/$src/MECPCatalog.swift" "/mc1/$src/MECPCatalog+Quantity.swift" /adapter/main.swift \
     -o /adapter/build/mc1-adapter

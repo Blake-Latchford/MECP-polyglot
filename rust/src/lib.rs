@@ -186,15 +186,36 @@ fn minutes(kind: usize, c: &Captures) -> u32 {
     }
 }
 
+/// Whether byte `i` of `text` is `.` or `,` between two ASCII digits.
+fn decimal_mark(text: &str, i: usize) -> bool {
+    let b = text.as_bytes();
+    i > 0
+        && i + 1 < b.len()
+        && matches!(b[i], b'.' | b',')
+        && b[i - 1].is_ascii_digit()
+        && b[i + 1].is_ascii_digit()
+}
+
+fn duration_ok(text: &str, kind: usize, c: &Captures) -> bool {
+    if minutes(kind, c) == 0 {
+        return false;
+    }
+    let g1 = c.get(1).unwrap();
+    if kind == BARE {
+        // Group 2 absent, and a decimal mark taken as the boundary also fails.
+        return c.get(2).is_none() && !decimal_mark(text, g1.end());
+    }
+    // Not the fractional part of a decimal.
+    !g1.start().checked_sub(1).is_some_and(|i| decimal_mark(text, i))
+}
+
 fn duration(text: &str) -> Option<u32> {
     let mut best: Option<(usize, u32)> = None; // (match start, minutes)
     for (kind, re) in res().duration.iter().enumerate() {
         if kind == BARE && best.is_some() {
             break; // the bare number is only a fallback
         }
-        let found = first_valid(re, text, |c| {
-            minutes(kind, c) > 0 && (kind != BARE || c.get(2).is_none())
-        });
+        let found = first_valid(re, text, |c| duration_ok(text, kind, c));
         if let Some(c) = found {
             let start = c.get(0).unwrap().start();
             // First by position; on a tie the earlier pattern (already in best) wins.

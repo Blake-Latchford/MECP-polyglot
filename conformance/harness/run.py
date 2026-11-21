@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
-"""Run the MECP decode conformance vectors against every client adapter.
+"""Run the MECP decode conformance vectors against every client adapter, and
+compare each client's code table with the brief's (§7).
 
   python3 conformance/harness/run.py                 # all clients in clients.json
   python3 conformance/harness/run.py --only a,b      # a subset
@@ -24,7 +25,8 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[2]
 CONF = ROOT / "conformance"
 CLIENTS = Path(os.environ.get("MECP_CLIENTS_DIR", ROOT.parent)).resolve()
-VECTORS = CONF / "vectors" / "decode-1.4.0.json"
+VECTORS = CONF / "vectors" / "decode-1.4.1.json"
+CODE_TABLE = CONF / "vectors" / "codes-1.4.1.json"
 UPSTREAM = ROOT / "upstream" / "freetext"
 EXTRACTED = ["pax", "gps", "timestamp", "language", "callsign", "reference", "duration"]
 REPORTS = CONF / "reports"
@@ -56,7 +58,7 @@ def git_info(repo: str | None) -> dict:
 
 def upstream_cases() -> list[dict]:
     """mecp-org/MECP freetext/tests.json as harness cases (validity and fields only)."""
-    if json.loads((UPSTREAM / "manifest.json").read_text())["schemaVersion"] != 1:
+    if json.loads((UPSTREAM / "manifest.json").read_text())["schemaVersion"] != 2:
         sys.exit("unsupported upstream schemaVersion")
     out = []
     for i, t in enumerate(json.loads((UPSTREAM / "tests.json").read_text(encoding="utf-8"))):
@@ -84,6 +86,53 @@ def run_adapter(client: dict, cases: list[dict]) -> tuple[dict, str | None]:
     if p.returncode != 0 or len(out) != len(cases):
         err = f"exit {p.returncode}, {len(out)}/{len(cases)} records\n{p.stderr[-2000:]}"
     return out, err
+
+
+def run_codes(client: dict, spec: list[str]) -> dict | None:
+    """The client's code table against brief §7, or None when it has no codes_cmd."""
+    if not client.get("codes_cmd"):
+        return None
+    try:
+        p = subprocess.run([expand(a) for a in client["codes_cmd"]], capture_output=True,
+                           text=True, encoding="utf-8", timeout=600)
+        got = json.loads(p.stdout)
+    except (OSError, subprocess.TimeoutExpired, ValueError) as e:
+        return {"error": f"codes_cmd failed: {e}"}
+    if p.returncode != 0 or not isinstance(got, list):
+        return {"error": f"codes_cmd exit {p.returncode}\n{p.stderr[-2000:]}"}
+    have = set(got)
+    return {"codes": got, "missing": [c for c in spec if c not in have],
+            "extra": sorted(have - set(spec))}
+
+
+def codes_cell(cmp: dict | None, spec: list[str]) -> str:
+    if cmp is None:
+        return "n/a"
+    if "error" in cmp:
+        return "error"
+    cell = f"{len(spec) - len(cmp['missing'])}/{len(spec)}"
+    return cell + (f" (+{len(cmp['extra'])} extra)" if cmp["extra"] else "")
+
+
+def codes_section(cmp: dict | None, spec: list[str]) -> list[str]:
+    lines = ["", "## Code table (§7)", ""]
+    if cmp is None:
+        return lines + ["Not checked: no `codes_cmd` (the client exposes no code table)."]
+    if "error" in cmp:
+        return lines + ["The code table could not be read:", "", "```", cmp["error"], "```"]
+    if not cmp["missing"] and not cmp["extra"]:
+        return lines + [f"All {len(spec)} codes from `conformance/vectors/codes-1.4.1.json` "
+                        "are present, and no others."]
+    lines.append("Compared with `conformance/vectors/codes-1.4.1.json`. A missing code still "
+                 "decodes (Codes rule 5) but has no label, so it reads as unknown.")
+    lines.append("")
+    if cmp["missing"]:
+        lines.append(f"- Missing ({len(cmp['missing'])}): "
+                     + " ".join(f"`{c}`" for c in cmp["missing"]))
+    if cmp["extra"]:
+        lines.append(f"- Not in §7 ({len(cmp['extra'])}): "
+                     + " ".join(f"`{c}`" for c in cmp["extra"]))
+    return lines
 
 
 def same(field, want, got) -> bool:
@@ -126,7 +175,8 @@ def show_input(s: str) -> str:
     return "`" + esc.replace("|", "\\|").replace("`", "\\`") + "`"
 
 
-def client_report(client: dict, info: dict, results: dict, cases: list[dict], meta: dict) -> str:
+def client_report(client: dict, info: dict, results: dict, cases: list[dict], meta: dict,
+                  codes: dict | None, spec_codes: list[str]) -> str:
     by_clause = defaultdict(list)
     counts = defaultdict(int)
     for c in cases:
@@ -134,7 +184,7 @@ def client_report(client: dict, info: dict, results: dict, cases: list[dict], me
         counts[status] += 1
         if status != "pass":
             by_clause[c["clause"]].append((c, status, diffs))
-    lines = [f"# {client['name']}: MECP 1.4.0 decode conformance", ""]
+    lines = [f"# {client['name']}: MECP 1.4.1 decode conformance", ""]
     lines.append(f"- Client: {client.get('description', '')}")
     if client.get("upstream"):
         lines.append(f"- Repository: {client['upstream']}")
@@ -146,11 +196,13 @@ def client_report(client: dict, info: dict, results: dict, cases: list[dict], me
     fields = client["_fields"]
     if len(fields) < len(FIELDS):
         lines.append(f"- Fields compared: {', '.join(fields)} (others not exposed by this client)")
-    lines.append(f"- Vectors: `conformance/vectors/decode-1.4.0.json` plus mecp-org/MECP "
+    lines.append(f"- Vectors: `conformance/vectors/decode-1.4.1.json` plus mecp-org/MECP "
                  f"`freetext/tests.json` ({len(cases)} cases), run {meta['date']}")
     lines.append(f"- **Result: {counts['pass']} pass, {counts['fail']} fail, "
                  f"{counts['error']} error**")
-    lines.append("")
+    lines.append(f"- **Code table: {codes_cell(codes, spec_codes)}**")
+    lines += codes_section(codes, spec_codes)
+    lines += ["", "## Decode vectors", ""]
     if not by_clause:
         lines.append("All cases pass.")
         return "\n".join(lines) + "\n"
@@ -162,7 +214,7 @@ def client_report(client: dict, info: dict, results: dict, cases: list[dict], me
                  "(clause in the heading); *Got* is what this client's decoder returned.")
     for clause in sorted(by_clause, key=lambda k: (-len(by_clause[k]), k)):
         rows = by_clause[clause]
-        lines += ["", f"## {clause} ({len(rows)})", "",
+        lines += ["", f"### {clause} ({len(rows)})", "",
                   "| Case | Input | Field | Expected | Got |", "|---|---|---|---|---|"]
         for c, status, diffs in rows:
             for i, (field, want, got) in enumerate(diffs):
@@ -229,6 +281,7 @@ def main() -> int:
 
     doc = json.loads(VECTORS.read_text(encoding="utf-8"))
     cases = doc["cases"] + upstream_cases()
+    spec_codes = json.loads(CODE_TABLE.read_text(encoding="utf-8"))["codes"]
     clients = json.loads((CONF / "clients.json").read_text())["clients"]
     if args.only:
         wanted = set(args.only.split(","))
@@ -236,7 +289,7 @@ def main() -> int:
     meta = {"date": date.today().isoformat(), "vectors": len(cases)}
     REPORTS.mkdir(exist_ok=True)
 
-    raw, results, infos = {}, {}, {}
+    raw, results, infos, codes = {}, {}, {}, {}
     for client in clients:
         name = client["name"]
         client["_fields"] = FIELDS if client["fields"] == "all" else ["valid", *client["fields"]]
@@ -245,23 +298,32 @@ def main() -> int:
             b = subprocess.run([expand(a) for a in client["build"]], cwd=expand(
                 client.get("build_cwd", "{root}")))
             if b.returncode:
-                print(f"[{name}] build failed", file=sys.stderr)
+                # Never fall back to a binary left over from an earlier build.
+                print(f"[{name}] build failed; not running a stale adapter", file=sys.stderr)
         infos[name] = git_info(client.get("repo"))
-        raw[name], err = run_adapter(client, cases)
+        if args.build and client.get("build") and b.returncode:
+            raw[name], err = {}, "build failed"
+        else:
+            raw[name], err = run_adapter(client, cases)
         if err:
             print(f"[{name}] {err}", file=sys.stderr)
             client["_failed"] = not raw[name]
         results[name] = {c["id"]: compare(c, raw[name].get(c["id"]), client["_fields"])
                          for c in cases}
+        built = not (args.build and client.get("build") and b.returncode)
+        codes[name] = run_codes(client, spec_codes) if built else (
+            {"error": "build failed"} if client.get("codes_cmd") else None)
         (REPORTS / f"{name}.md").write_text(
-            client_report(client, infos[name], results[name], cases, meta), encoding="utf-8")
+            client_report(client, infos[name], results[name], cases, meta, codes[name],
+                          spec_codes), encoding="utf-8")
         n = sum(1 for s, _ in results[name].values() if s == "pass")
-        print(f"[{name}] {n}/{len(cases)} pass", file=sys.stderr)
+        print(f"[{name}] {n}/{len(cases)} pass, code table {codes_cell(codes[name], spec_codes)}",
+              file=sys.stderr)
 
     # Summary: clients x clauses.
     clauses = sorted({c["clause"] for c in cases})
-    lines = [f"# MECP 1.4.0 decode conformance summary ({meta['date']})", "",
-             f"{len(cases)} cases: hand-written vectors from `conformance/vectors/decode-1.4.0.json` "
+    lines = [f"# MECP 1.4.1 decode conformance summary ({meta['date']})", "",
+             f"{len(cases)} cases: hand-written vectors from `conformance/vectors/decode-1.4.1.json` "
              "and the upstream mecp-org/MECP `freetext/tests.json` (clauses `upstream: …`). "
              "Cells are passing/total cases per clause; n/a means the client does not expose "
              "the field that clause is about.", "",
@@ -277,6 +339,17 @@ def main() -> int:
     tot = [f"**{sum(s == 'pass' for s, _ in results[c['name']].values())}/{len(cases)}**"
            for c in clients]
     lines.append("| **Total** | " + " | ".join(tot) + " |")
+    lines += ["", f"## Code table (§7, {len(spec_codes)} codes)", "",
+              "Each client's own code table against `conformance/vectors/codes-1.4.1.json`. "
+              "Unknown codes still decode, so the vectors above cannot catch a missing code; "
+              "the app just cannot label it.", "",
+              "| Client | Codes | Missing | Not in §7 |", "|---|---|---|---|"]
+    for c in clients:
+        cmp = codes[c["name"]]
+        ok = cmp is not None and "error" not in cmp
+        lines.append(f"| {c['name']} | {codes_cell(cmp, spec_codes)} | "
+                     + (" ".join(cmp["missing"]) or "none" if ok else "") + " | "
+                     + (" ".join(cmp["extra"]) or "none" if ok else "") + " |")
     lines += ["", "| Client | Commit |", "|---|---|"]
     for c in clients:
         i = infos[c["name"]]
@@ -286,7 +359,8 @@ def main() -> int:
     (REPORTS / "SUMMARY.md").write_text("\n".join(lines) + "\n", encoding="utf-8")
     (REPORTS / "DISAGREEMENTS.md").write_text(disagreements(cases, clients, raw), encoding="utf-8")
     (REPORTS / "results.json").write_text(json.dumps(
-        {"meta": meta, "clients": {c["name"]: {"commit": infos[c["name"]], "results": raw[c["name"]]}
+        {"meta": meta, "clients": {c["name"]: {"commit": infos[c["name"]], "results": raw[c["name"]],
+                                               "code_table": codes[c["name"]]}
                                    for c in clients}}, ensure_ascii=False, indent=1) + "\n",
         encoding="utf-8")
     print(f"reports in {REPORTS.relative_to(ROOT)}/", file=sys.stderr)

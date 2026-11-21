@@ -6,6 +6,8 @@
 --
 --   lua5.4 adapter.lua <path/to/mecp.lua>
 --   stdin: <id>\t<hex utf-8 input>     stdout: one JSON record per line
+--   lua5.4 adapter.lua <path/to/mecp.lua> --codes
+--   stdout: JSON array of the codes in the app's CODES table
 local path = assert(arg[1], "usage: adapter.lua <mecp.lua>")
 
 local nop = function() end
@@ -14,13 +16,14 @@ wada = { ui = setmetatable({ colors = {} }, { __index = function() return nop en
          sys = stub, mesh = stub, store = stub }
 local app = assert(loadfile(path))()
 
-local decode
-for i = 1, 255 do
-  local name, value = debug.getupvalue(app.on_message, i)
-  if not name then break end
-  if name == "decode" then decode = value end
+local function upvalue(fn, wanted)
+  for i = 1, 255 do
+    local name, value = debug.getupvalue(fn, i)
+    if not name then break end
+    if name == wanted then return value end
+  end
 end
-assert(decode, "decode() not found among app.on_message upvalues")
+local decode = assert(upvalue(app.on_message, "decode"), "decode() not found among app.on_message upvalues")
 
 local function q(s)
   if s == nil then return "null" end
@@ -49,6 +52,15 @@ local function record(text)
   end
   return string.format('{"valid":true,"severity":%d,"pax":%s,"gps":%s,"timestamp":%s}',
                        sev, pax, gps, ts)
+end
+
+if arg[2] == "--codes" then
+  local codes = assert(upvalue(decode, "CODES"), "CODES not found among decode() upvalues")
+  local out = {}
+  for code in pairs(codes) do out[#out + 1] = q(code) end
+  table.sort(out)
+  io.write("[", table.concat(out, ","), "]\n")
+  os.exit(0)
 end
 
 for line in io.lines() do

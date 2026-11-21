@@ -4,17 +4,19 @@
 //
 //   tsx adapter.mts <client> <checkout-dir>
 //   stdin:  <id>\t<hex utf-8 input>     stdout: one JSON record per line
+//   tsx adapter.mts <client> <checkout-dir> --codes
+//   stdout: JSON array of the codes in the client's own code table
 import { createInterface } from 'node:readline';
 import { pathToFileURL } from 'node:url';
 import { join } from 'node:path';
 
 type Rec = Record<string, unknown>;
-const [client, dir] = process.argv.slice(2);
+const [client, dir, mode] = process.argv.slice(2);
 const hhmm = (t: string | null | undefined) =>
   !t ? null : t.includes(':') ? t : `${t.slice(0, 2)}:${t.slice(2)}`;
 const load = (rel: string) => import(pathToFileURL(join(dir, rel)).href);
 
-// @mecp/engine's ParsedMessage, shared by mecp-app and mesh-client's vendored copy.
+// @mecp/engine's ParsedMessage, as vendored by mesh-client.
 function fromEngine(p: any): Rec {
   if (!p || !p.valid) return { valid: false };
   const x = p.extracted;
@@ -27,10 +29,6 @@ function fromEngine(p: any): Rec {
 }
 
 const clients: Record<string, () => Promise<(s: string) => Rec>> = {
-  async 'mecp-app'() {
-    const m = await load('engine/src/decoder.ts');
-    return (s) => fromEngine(m.decode(s));
-  },
   async 'mesh-client'() {
     // tryParseMecp is what the app runs on inbound chat text.
     const m = await load('src/renderer/lib/mecp/mecpMessages.ts');
@@ -51,6 +49,23 @@ const clients: Record<string, () => Promise<(s: string) => Rec>> = {
     };
   },
 };
+
+// The code table each client shows labels from.
+const codeTables: Record<string, () => Promise<string[]>> = {
+  async 'mesh-client'() {
+    const m = await load('src/renderer/lib/mecp/mecpMessages.ts');
+    return Object.keys(m.getCachedMecpLanguage('en').codes);
+  },
+  async 'reticulum-mobile'() {
+    const m = await load('apps/mobile/src/utils/mecp.ts');
+    return Object.values(m.MECP_EVENT_CODES).flat().map((c: any) => c.code);
+  },
+};
+
+if (mode === '--codes') {
+  process.stdout.write(JSON.stringify(await codeTables[client]()) + '\n');
+  process.exit(0);
+}
 
 const decode = await clients[client]();
 const out: string[] = [];

@@ -108,7 +108,7 @@ def main(src, upstream, manifest, dst):
             return json.load(f)
 
     v, tests = load(src), load(upstream)
-    if load(manifest)["schemaVersion"] != 1:
+    if load(manifest)["schemaVersion"] != 2:
         sys.exit("unsupported upstream schemaVersion")
     max_codes = max(len(c["codes"]) for c in v["encode"])
     lines = [

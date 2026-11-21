@@ -1,12 +1,12 @@
-# MECP 1.4.0 decode conformance
+# MECP 1.4.1 decode conformance
 
-Test vectors for the MECP 1.4.0 message format (protocol brief §6.1), plus a
+Test vectors for the MECP 1.4.1 message format (protocol brief §6.1), plus a
 harness that runs them against several MECP clients and reports where each
 client departs from the spec, and where clients disagree with each other.
 
 ## For implementors
 
-Use [`vectors/decode-1.4.0.json`](vectors/decode-1.4.0.json) in your own test
+Use [`vectors/decode-1.4.1.json`](vectors/decode-1.4.1.json) in your own test
 suite. Each case has an `id`, the spec `clause` it tests, an `input` string and
 an `expect` record:
 
@@ -33,6 +33,13 @@ Every expectation is written by hand from the brief, never generated from a
 client. If you think a vector is wrong, open an issue and cite the clause.
 Inputs where the brief is ambiguous are left out and listed in
 [SPEC-ISSUES.md](SPEC-ISSUES.md).
+
+## Code table
+
+[`vectors/codes-1.4.1.json`](vectors/codes-1.4.1.json) lists the 109 codes of brief §7, in order.
+Unknown well-formed codes still decode (Codes rule 5), so the decode vectors cannot tell whether a
+client knows a code. A client that is missing one shows it unlabelled. Check your code table, in every
+language you ship, against this list.
 
 ## Running the harness
 
@@ -73,6 +80,9 @@ to hand to maintainers; the generated `reports/` hold the full evidence.
 build step, the adapter command, and which record fields it exposes. An
 adapter reads `id<TAB>hex(utf-8 input)` lines on stdin and writes one JSON
 object per line: `{"id": …, "result": {record}}`, or `{"id": …, "error": "…"}`.
+A client's optional `codes_cmd` prints the codes in the client's own code table as a JSON
+array. The harness compares that with `vectors/codes-1.4.1.json` and reports missing codes and
+codes that are not in §7.
 
 Adapters import each client's own decoder from its checkout, so no client code
 is copied into this MIT-licensed repository. An adapter may convert
@@ -81,7 +91,6 @@ logic, because then the harness would be testing the adapter.
 
 | Client | Adapter | Entry point |
 |---|---|---|
-| mecp-app | [ts/adapter.mts](adapters/ts/adapter.mts) | `engine/src/decoder.ts` `decode()` |
 | mesh-client | [ts/adapter.mts](adapters/ts/adapter.mts) | `mecpMessages.ts` `tryParseMecp()` |
 | reticulum-mobile | [ts/adapter.mts](adapters/ts/adapter.mts) | `apps/mobile/src/utils/mecp.ts` `decodeMecpMessage()` |
 | meshcore-tak-bridge | [meshcore-tak-bridge/](adapters/meshcore-tak-bridge/) | `Mecp.parse()` |

@@ -1,6 +1,8 @@
 // stdin:  <id>\t<hex utf-8 input>     stdout: one JSON record per line.
+// With --codes: stdout is a JSON array of the codes in MecpCodes.CODES.
 // Representation-only mapping; no protocol logic lives here.
 import org.coloradomesh.meshcore.protocol.Mecp
+import org.coloradomesh.meshcore.protocol.MecpCodes
 
 fun unhex(s: String): String =
     String(ByteArray(s.length / 2) { s.substring(it * 2, it * 2 + 2).toInt(16).toByte() }, Charsets.UTF_8)
@@ -22,7 +24,9 @@ fun record(input: String): String {
     val m = Mecp.parse(input) ?: return """{"valid":false}"""
     val gps = if (m.latitude != null && m.longitude != null)
         """{"lat":${m.latitude},"lon":${m.longitude}}""" else "null"
-    val ts = m.timeUtc?.let { if (':' in it) it else "${it.substring(0, 2)}:${it.substring(2)}" }
+    // The field is `time` since meshcore-kotlin#15 (MECP 1.4.0) and `timeUtc` before it.
+    val getter = m.javaClass.methods.first { it.name == "getTime" || it.name == "getTimeUtc" }
+    val ts = (getter.invoke(m) as String?)?.let { if (':' in it) it else "${it.substring(0, 2)}:${it.substring(2)}" }
     return buildString {
         append("""{"valid":true,"severity":${m.severity},""")
         append(""""codes":[${m.codes.joinToString(",") { q(it) }}],""")
@@ -32,7 +36,11 @@ fun record(input: String): String {
     }
 }
 
-fun main() {
+fun main(args: Array<String>) {
+    if ("--codes" in args) {
+        println(MecpCodes.CODES.keys.joinToString(",", "[", "]") { q(it) })
+        return
+    }
     val out = System.out.bufferedWriter()
     generateSequence(::readLine).filter { it.isNotEmpty() }.forEach { line ->
         val (id, hex) = line.split('\t', limit = 2)
