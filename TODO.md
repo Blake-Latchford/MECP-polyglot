@@ -1,12 +1,15 @@
 # MECP work tracker
 
-Open work across MECP clients and the spec. Last updated 2026-11-21.
+Open work across MECP clients and the spec. Last updated 2026-11-22.
 
 Polyglot and the harness follow MECP [v1.4.1](https://github.com/mecp-org/MECP/releases/tag/v1.4.1)
 (`eab9510`, 2026-11-20). Its only decode change is that R03 durations are not read from a decimal
 fraction (`R03 1.5h`). Unreleased on `main`: rule 5 claim order
-([mecp-org/MECP#53](https://github.com/mecp-org/MECP/pull/53), 2026-11-21) and the app designator.
-Nothing below depends on them yet.
+([mecp-org/MECP#53](https://github.com/mecp-org/MECP/pull/53), 2026-11-21), the app designator,
+11 new codes M17–M20, S07, D05, T18–T20, W07–W08 (109 → 120,
+[#54](https://github.com/mecp-org/MECP/pull/54), 2026-11-21), and the SPEC.md split
+([#56](https://github.com/mecp-org/MECP/pull/56), 2026-11-22). MeshCore One `dev` already applies
+#53's claim order (see #497 below); nothing else depends on them yet.
 
 ## TODO
 
@@ -47,9 +50,10 @@ Both PRs so far are merged to `dev`, not yet released (`main` is v1.7.1). Tested
 - [x] Person count has no boundaries: [#496](https://github.com/Avi0n/MeshCoreOne/pull/496) (merged 2026-11-20)
 - [ ] Timestamp accepts only `@HHMM` followed by a space (12 vectors):
   [#497](https://github.com/Avi0n/MeshCoreOne/pull/497) (open; all 12 pass, 216/249). Changes
-  requested 2026-11-21: `@6:30 pax` makes MC1's token removal trap. The owner is reworking the
-  removal code and will ping to merge it in. Only the unreleased claim order (#53) settles the
-  `@6:30 pax` overlap; under v1.4.1 it is 06:30 and 30 people.
+  requested 2026-11-21: `@6:30 pax` made MC1's token removal trap. The owner fixed the removal and
+  applied the unreleased #53 claim order on `dev` (`dc010967`); `dev` was merged into #497 with
+  overlap tests on 2026-11-22. CI green; waiting on the owner's re-review. Under v1.4.1
+  `@6:30 pax` would be 06:30 and 30 people; MC1 now gives 06:30 only.
 - [ ] R03 duration reads only a bare leading number (35 vectors, incl. 1.4.1 `R03 1.5h 45min`, `R03 hut.2h`)
 - [ ] Language packs are a stale copy: byte-identical to mecp-org/MECP `languages/` at `ee17ef3`
   (2026-02-27). They were copied on 2026-11-10, one day before M16 merged upstream. Not in #494
@@ -85,7 +89,7 @@ Tested at `6cf3db0978`. All fields are compared. [#360](https://github.com/FreeT
   - Decoded but shouldn't be: `4pax\vwater` (VT is not in B).
 - [ ] **The last match wins, and invalid matches aren't skipped.** `2pax 5pax` gives 5 (should be 2).
   `@2460 @1400 @1530` gives 15:30 (should be 14:00; timestamp only:
-  [#368](https://github.com/FreeTAKTeam/reticulum_mobile_emergency_management/pull/368), open). [The first match by position wins, and a failed
+  [#368](https://github.com/FreeTAKTeam/reticulum_mobile_emergency_management/pull/368), merged 2026-11-22). [The first match by position wins, and a failed
   match is skipped](https://github.com/mecp-org/MECP/blob/76bcc1b6cbb442cd3c0dc6c60e60e8549d4028ba/MECP_Comprehensive_Brief.md?plain=1#L338-L339).
 - [ ] **Person count:** `4 pax` isn't decoded ([pattern](https://github.com/mecp-org/MECP/blob/76bcc1b6cbb442cd3c0dc6c60e60e8549d4028ba/MECP_Comprehensive_Brief.md?plain=1#L344-L351)).
 - [ ] **GPS needs decimal points:** `48,20`, `0,0` and `2,5 km` are decoded as positions;
@@ -147,14 +151,13 @@ The app only returns rendered text, so only validity, severity, pax, GPS and tim
 | Repo | PR | Title |
 |---|---|---|
 | Avi0n/MeshCoreOne | [#497](https://github.com/Avi0n/MeshCoreOne/pull/497) | fix: Decode MECP timestamps per MECPv1.4.1 |
-| FreeTAKTeam/reticulum_mobile_emergency_management | [#368](https://github.com/FreeTAKTeam/reticulum_mobile_emergency_management/pull/368) | fix(mecp): keep the first timestamp in a message |
 | ALLFATHER-BV/wadamesh | [#894](https://github.com/ALLFATHER-BV/wadamesh/pull/894) | apps: MECP sends P05 with the codes, not after the head count |
 
 ## Open issues
 
 | Repo | Issue | Title |
 |---|---|---|
-| mecp-org/MECP | [#55](https://github.com/mecp-org/MECP/issues/55) | Documentation Structure |
+| mecp-org/MECP | [#57](https://github.com/mecp-org/MECP/issues/57) | Encoder Testing |
 | mecp-org/MECP | [#14](https://github.com/mecp-org/MECP/issues/14) | [Sug] Centralised Coordination Conversations |
 | Avi0n/MeshCoreOne | [#494](https://github.com/Avi0n/MeshCoreOne/issues/494) | MECP 1.4.0 Support |
 | MarekZegare4/MeshCore-Solo | [#63](https://github.com/MarekZegare4/MeshCore-Solo/issues/63) | [Feature Request] MECP Support |
