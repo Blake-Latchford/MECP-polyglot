@@ -1,6 +1,6 @@
 # MECP work tracker
 
-Open work across MECP clients and the spec. Last updated 2026-11-22.
+Open work across MECP clients and the spec. Last updated 2026-11-23.
 
 Polyglot and the harness follow MECP [v1.4.1](https://github.com/mecp-org/MECP/releases/tag/v1.4.1)
 (`eab9510`, 2026-11-20). Its only decode change is that R03 durations are not read from a decimal
@@ -38,9 +38,9 @@ cite read the same in v1.4.1. Every item is something the 1.4.1 brief decides. N
 
 ### MeshCore One (Avi0n/MeshCoreOne): 255/256, see [#494](https://github.com/Avi0n/MeshCoreOne/issues/494)
 
-Every section of #494 is fixed on `dev`, not yet released (`main` is v1.7.1). Tested at `dev`
-`28a771d0e7` on 2026-11-22, with all 109 codes. The adapter's `build.sh` must compile the new
-`MECPDecode+Duration.swift`.
+Every section of #494 is fixed on `dev`, not yet released (`main` is v1.7.1); #494 closed 2026-11-23.
+Tested at `dev` `28a771d0e7` on 2026-11-22, with all 109 codes; `dev` `25bd4e5f` (2026-11-23) has no
+MECP changes since. Build the adapter from a `dev` checkout; it needs `MECPDecode+Duration.swift`.
 
 - [x] Messages that aren't MECP are accepted: [#495](https://github.com/Avi0n/MeshCoreOne/pull/495) (merged 2026-11-19)
 - [x] Trailing line endings: #495
@@ -78,7 +78,8 @@ Tested at `6cf3db0978`. All fields are compared. [#360](https://github.com/FreeT
   - Decoded but shouldn't be: `4pax\vwater` (VT is not in B).
 - [ ] **The last match wins, and invalid matches aren't skipped.** `2pax 5pax` gives 5 (should be 2).
   `@2460 @1400 @1530` gives 15:30 (should be 14:00; timestamp only:
-  [#368](https://github.com/FreeTAKTeam/reticulum_mobile_emergency_management/pull/368), merged 2026-11-22). [The first match by position wins, and a failed
+  [#368](https://github.com/FreeTAKTeam/reticulum_mobile_emergency_management/pull/368), merged 2026-11-22;
+  GPS and language hint: [#373](https://github.com/FreeTAKTeam/reticulum_mobile_emergency_management/pull/373), open). [The first match by position wins, and a failed
   match is skipped](https://github.com/mecp-org/MECP/blob/76bcc1b6cbb442cd3c0dc6c60e60e8549d4028ba/MECP_Comprehensive_Brief.md?plain=1#L338-L339).
 - [ ] **Person count:** `4 pax` isn't decoded ([pattern](https://github.com/mecp-org/MECP/blob/76bcc1b6cbb442cd3c0dc6c60e60e8549d4028ba/MECP_Comprehensive_Brief.md?plain=1#L344-L351)).
 - [ ] **GPS needs decimal points:** `48,20`, `0,0` and `2,5 km` are decoded as positions;
@@ -127,7 +128,7 @@ The app only returns rendered text, so only validity, severity, pax, GPS and tim
 
 ### Nothing to fix
 
-- **mesh-client** (Colorado-Mesh/mesh-client, `a9165a9906`, re-run 2026-11-21): 256/256, and all 109 codes.
+- **mesh-client** (Colorado-Mesh/mesh-client, `6d8f329d8c`, re-run 2026-11-23): 256/256, and all 109 codes.
 - **meshcore-tak-bridge** (Colorado-Mesh/meshcore-tak-bridge `08a3a4d`, meshcore-kotlin `0207e42`,
   re-run 2026-11-21): 256/256, and all 109 codes. The maintainer moved `Mecp.kt` to MECP 1.4.1
   (meshcore-kotlin#17), which fixed all 18 earlier failures.
@@ -140,13 +141,13 @@ The app only returns rendered text, so only validity, severity, pax, GPS and tim
 | Repo | PR | Title |
 |---|---|---|
 | ALLFATHER-BV/wadamesh | [#894](https://github.com/ALLFATHER-BV/wadamesh/pull/894) | apps: MECP sends P05 with the codes, not after the head count |
+| FreeTAKTeam/reticulum_mobile_emergency_management | [#373](https://github.com/FreeTAKTeam/reticulum_mobile_emergency_management/pull/373) | fix(mecp): keep the first position and language hint in a message |
 
 ## Open issues
 
 | Repo | Issue | Title |
 |---|---|---|
-| mecp-org/MECP | [#57](https://github.com/mecp-org/MECP/issues/57) | Encoder Testing |
+| mecp-org/MECP | [#57](https://github.com/mecp-org/MECP/issues/57) | Testing Improvements |
 | mecp-org/MECP | [#14](https://github.com/mecp-org/MECP/issues/14) | [Sug] Centralised Coordination Conversations |
-| Avi0n/MeshCoreOne | [#494](https://github.com/Avi0n/MeshCoreOne/issues/494) | MECP 1.4.0 Support |
 | MarekZegare4/MeshCore-Solo | [#63](https://github.com/MarekZegare4/MeshCore-Solo/issues/63) | [Feature Request] MECP Support |
 | zjs81/meshcore-open | [#659](https://github.com/zjs81/meshcore-open/issues/659) | Feature Request: Add MECP Support |
