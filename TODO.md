@@ -26,6 +26,18 @@ fraction (`R03 1.5h`). Unreleased on `main`: rule 5 claim order
   - [ ] wadamesh ([ALLFATHER-BV/wadamesh](https://github.com/ALLFATHER-BV/wadamesh)): missing
     from `CODES` in `deploy/apps/mecp/1.0/mecp.lua`; shown as a bare "M16" and can't be picked when
     composing. There are no Lua app tests to add a check to.
+- [ ] **Meshcore-Solo sends MECP, and reads C08 as a waypoint** (plan on
+  [#63](https://github.com/MarekZegare4/MeshCore-Solo/issues/63)). The encoder from #66 is merged but
+  nothing calls it yet. Receiving SOS (B01, or MAYDAY without D01/D02) and P05 already works on `dev`.
+  - [ ] First: set up a full system test (two Solo nodes, sending and receiving over the air) so
+    the changes below can be checked end to end, not just built.
+  - [ ] Send `[SOS]` as MECP.
+  - [ ] Send a one-shot location as `MECP/3/P05 <lat>,<lon>`. Periodic auto `[LOC]` stays.
+  - [ ] Send `[WAY]` as C08 (Rendezvous at).
+  - [ ] Receive C08 as a waypoint. Today `geo::parseLatLon` only finds its coordinates as a bare
+    `lat,lon`. The Save label is the sender's name, not the C08 freetext the way a `[WAY]` label
+    is. Could go in with C08 sending.
+  - [ ] Ask Marek on #63 whether he wants PRs for these or will do them himself, as he did receiving.
 
 ## Fixes by client
 
