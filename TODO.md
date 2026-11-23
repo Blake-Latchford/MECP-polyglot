@@ -132,8 +132,9 @@ The app only returns rendered text, so only validity, severity, pax, GPS and tim
 - **meshcore-tak-bridge** (Colorado-Mesh/meshcore-tak-bridge `08a3a4d`, meshcore-kotlin `0207e42`,
   re-run 2026-11-21): 256/256, and all 109 codes. The maintainer moved `Mecp.kt` to MECP 1.4.1
   (meshcore-kotlin#17), which fixed all 18 earlier failures.
-- **Meshcore-Solo:** the decoder is your own PR
-  [#64](https://github.com/MarekZegare4/MeshCore-Solo/pull/64) (merged 2026-11-20); it isn't in the harness.
+- **Meshcore-Solo:** the decoder and encoder are your own PRs
+  [#64](https://github.com/MarekZegare4/MeshCore-Solo/pull/64) (merged 2026-11-20) and
+  [#66](https://github.com/MarekZegare4/MeshCore-Solo/pull/66) (merged 2026-11-23); they aren't in the harness.
 - **meshcore-open:** has no MECP support yet; see [#659](https://github.com/zjs81/meshcore-open/issues/659).
 
 ## Open pull requests
