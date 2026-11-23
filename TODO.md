@@ -30,7 +30,7 @@ fraction (`R03 1.5h`). Unreleased on `main`: rule 5 claim order
   MECP `main`, unreleased) has the same person-count slot as H07, but `MECPCatalog.fillingSlots`
   only fills it for H07 (`shelterCode`), so `MECP/2/S07 3pax` shows a literal `[N]pax`. Fix: fill it
   for S07 too, with a test like `H07 replaces the N slot with the person count`. Follows the pack
-  update in [#502](https://github.com/Avi0n/MeshCoreOne/pull/502). Catalog tests with a pax count
+  update in [#503](https://github.com/Avi0n/MeshCoreOne/pull/503). Catalog tests with a pax count
   crash on Linux (Foundation `localizedString`), so check on macOS CI or call `phrase(for:)` directly.
 - [ ] **Meshcore-Solo sends MECP, and reads C08 as a waypoint** (plan on
   [#63](https://github.com/MarekZegare4/MeshCore-Solo/issues/63)). The encoder from #66 is merged but
@@ -160,7 +160,7 @@ The app only returns rendered text, so only validity, severity, pax, GPS and tim
 | Repo | PR | Title |
 |---|---|---|
 | ALLFATHER-BV/wadamesh | [#894](https://github.com/ALLFATHER-BV/wadamesh/pull/894) | apps: MECP sends P05 with the codes, not after the head count |
-| Avi0n/MeshCoreOne | [#502](https://github.com/Avi0n/MeshCoreOne/pull/502) | feat: label the 11 MECP codes added on main |
+| Avi0n/MeshCoreOne | [#503](https://github.com/Avi0n/MeshCoreOne/pull/503) | feat: label the 11 MECP codes added on main |
 | FreeTAKTeam/reticulum_mobile_emergency_management | [#373](https://github.com/FreeTAKTeam/reticulum_mobile_emergency_management/pull/373) | fix(mecp): keep the first position and language hint in a message |
 
 ## Open issues
