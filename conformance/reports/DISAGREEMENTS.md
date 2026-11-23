@@ -2,33 +2,6 @@
 
 Cases where at least two clients return different values for the same field. These are the inconsistencies a user sees when the same message is read on different apps, whatever the spec says. `n/a` = field not exposed.
 
-## 6.1 Duration: duration (22 cases)
-
-| Case | Input | Field | Spec | meshcore-tak-bridge | mesh-client | reticulum-mobile | wadamesh | meshcore-one |
-|---|---|---|---|---|---|---|---|---|
-| `dur.min` | `MECP/2/R03 45min` | duration | 45 | 45 | 45 | 45 | n/a | null |
-| `dur.eta-min` | `MECP/2/R03 ETA 45min` | duration | 45 | 45 | 45 | 45 | n/a | null |
-| `dur.eta-glued` | `MECP/2/R03 ETA45min` | duration | 45 | 45 | 45 | null | n/a | null |
-| `dur.eta-bare` | `MECP/2/R03 ETA 45` | duration | 45 | 45 | 45 | 45 | n/a | null |
-| `dur.h` | `MECP/2/R03 2h` | duration | 120 | 120 | 120 | null | n/a | null |
-| `dur.hm` | `MECP/2/R03 1h30min` | duration | 90 | 90 | 90 | null | n/a | null |
-| `dur.h-space-m` | `MECP/2/R03 1h 30min` | duration | 90 | 90 | 90 | 30 | n/a | null |
-| `dur.d` | `MECP/2/R03 1d` | duration | 1440 | 1440 | 1440 | null | n/a | null |
-| `dur.with-codes-before` | `MECP/2/C01 R03 P05 47.3769,12.1048 45min` | duration | 45 | 45 | 45 | 45 | n/a | null |
-| `dur.example` | `MECP/2/C01 R03 45min @en` | duration | 45 | 45 | 45 | 45 | n/a | null |
-| `dur.bare-not-first` | `MECP/2/C01 R03 1pax 45` | duration | null | null | null | 45 | n/a | null |
-| `dur.bare-after-ts` | `MECP/2/R03 @1430 45` | duration | null | null | null | 45 | n/a | null |
-| `dur.2d` | `MECP/2/R03 2d` | duration | 2880 | 2880 | 2880 | null | n/a | null |
-| `dur.48h` | `MECP/2/R03 48h` | duration | 2880 | 2880 | 2880 | null | n/a | null |
-| `dur.2880min` | `MECP/2/R03 2880min` | duration | 2880 | 2880 | 2880 | 2880 | n/a | null |
-| `dur.week` | `MECP/2/R03 7d` | duration | 10080 | 10080 | 10080 | null | n/a | null |
-| `dur.zero` | `MECP/2/R03 0min` | duration | null | null | null | 0 | n/a | null |
-| `dur.first-by-position` | `MECP/2/R03 30min or 1h` | duration | 30 | 30 | 30 | 30 | n/a | null |
-| `dur.same-position-list-order` | `MECP/2/R03 2 h` | duration | 120 | 120 | 120 | 2 | n/a | 2 |
-| `dur.days-word` | `MECP/2/R03 in 5 days` | duration | null | null | null | 5 | n/a | null |
-| `dur.with-pax` | `MECP/2/R03 4pax 2h` | duration | 120 | 120 | 120 | null | n/a | null |
-| `dur.first-of-kind` | `MECP/2/R03 25h 3h` | duration | 1500 | 1500 | 1500 | null | n/a | null |
-
 ## 6.1 Message Format: valid (18 cases)
 
 | Case | Input | Field | Spec | meshcore-tak-bridge | mesh-client | reticulum-mobile | wadamesh | meshcore-one |
@@ -52,26 +25,25 @@ Cases where at least two clients return different values for the same field. The
 | `env.two-crlf` | `MECP/2/B03\r\n\r\n` | valid | false | false | false | true | true | false |
 | `env.nbsp-after-codes` | `MECP/0/M01\u00a0help` | valid | false | false | false | true | true | false |
 
-## upstream: Duration: duration (16 cases)
+## 6.1 Duration: duration (15 cases)
 
 | Case | Input | Field | Spec | meshcore-tak-bridge | mesh-client | reticulum-mobile | wadamesh | meshcore-one |
 |---|---|---|---|---|---|---|---|---|
-| `up.36` | `MECP/2/R03 45min` | duration | 45 | 45 | 45 | 45 | n/a | null |
-| `up.37` | `MECP/2/R03 2d` | duration | 2880 | 2880 | 2880 | null | n/a | null |
-| `up.38` | `MECP/2/R03 48h` | duration | 2880 | 2880 | 2880 | null | n/a | null |
-| `up.39` | `MECP/2/R03 2880min` | duration | 2880 | 2880 | 2880 | 2880 | n/a | null |
-| `up.40` | `MECP/2/R03 ETA 45min` | duration | 45 | 45 | 45 | 45 | n/a | null |
-| `up.42` | `MECP/2/C01 R03 P05 47.3769,12.1048 45min` | duration | 45 | 45 | 45 | 45 | n/a | null |
-| `up.44` | `MECP/2/C01 R03 1pax 45` | duration | null | null | null | 45 | n/a | null |
-| `up.46` | `MECP/2/R03 30s 45min` | duration | 45 | 45 | 45 | 45 | n/a | null |
-| `up.48` | `MECP/2/R03 45.` | duration | 45 | 45 | 45 | null | n/a | null |
-| `up.50` | `MECP/2/R03 45 2h` | duration | 120 | 120 | 120 | 45 | n/a | 45 |
-| `up.51` | `MECP/2/R03 2d 45min` | duration | 2880 | 2880 | 2880 | 45 | n/a | null |
-| `up.52` | `MECP/2/R03 45min 2h` | duration | 45 | 45 | 45 | 45 | n/a | null |
-| `up.53` | `MECP/2/R03 1h 30min` | duration | 90 | 90 | 90 | 30 | n/a | null |
-| `up.54` | `MECP/2/R03 2 h` | duration | 120 | 120 | 120 | 2 | n/a | 2 |
-| `up.60` | `MECP/2/R03 1.5h 45min` | duration | 45 | 45 | 45 | 45 | n/a | null |
-| `up.61` | `MECP/2/R03 hut.2h` | duration | 120 | 120 | 120 | null | n/a | null |
+| `dur.eta-glued` | `MECP/2/R03 ETA45min` | duration | 45 | 45 | 45 | null | n/a | 45 |
+| `dur.h` | `MECP/2/R03 2h` | duration | 120 | 120 | 120 | null | n/a | 120 |
+| `dur.hm` | `MECP/2/R03 1h30min` | duration | 90 | 90 | 90 | null | n/a | 90 |
+| `dur.h-space-m` | `MECP/2/R03 1h 30min` | duration | 90 | 90 | 90 | 30 | n/a | 90 |
+| `dur.d` | `MECP/2/R03 1d` | duration | 1440 | 1440 | 1440 | null | n/a | 1440 |
+| `dur.bare-not-first` | `MECP/2/C01 R03 1pax 45` | duration | null | null | null | 45 | n/a | null |
+| `dur.bare-after-ts` | `MECP/2/R03 @1430 45` | duration | null | null | null | 45 | n/a | null |
+| `dur.2d` | `MECP/2/R03 2d` | duration | 2880 | 2880 | 2880 | null | n/a | 2880 |
+| `dur.48h` | `MECP/2/R03 48h` | duration | 2880 | 2880 | 2880 | null | n/a | 2880 |
+| `dur.week` | `MECP/2/R03 7d` | duration | 10080 | 10080 | 10080 | null | n/a | 10080 |
+| `dur.zero` | `MECP/2/R03 0min` | duration | null | null | null | 0 | n/a | null |
+| `dur.same-position-list-order` | `MECP/2/R03 2 h` | duration | 120 | 120 | 120 | 2 | n/a | 120 |
+| `dur.days-word` | `MECP/2/R03 in 5 days` | duration | null | null | null | 5 | n/a | null |
+| `dur.with-pax` | `MECP/2/R03 4pax 2h` | duration | 120 | 120 | 120 | null | n/a | 120 |
+| `dur.first-of-kind` | `MECP/2/R03 25h 3h` | duration | 1500 | 1500 | 1500 | null | n/a | 1500 |
 
 ## 6.1 GPS coordinates: gps (10 cases)
 
@@ -88,19 +60,32 @@ Cases where at least two clients return different values for the same field. The
 | `gps.trailing-period` | `MECP/0/M01 48.65,20.13.` | gps | {"lat": 48.65, "lon": 20.13} | {"lat": 48.65, "lon": 20.13} | {"lat": 48.65, "lon": 20.13} | null | null | n/a |
 | `gps.altitude-suffix` | `MECP/0/M01 48.65,20.13,1200` | gps | {"lat": 48.65, "lon": 20.13} | {"lat": 48.65, "lon": 20.13} | {"lat": 48.65, "lon": 20.13} | null | null | n/a |
 
-## 6.1 Timestamp: timestamp (9 cases)
+## upstream: Duration: duration (9 cases)
 
 | Case | Input | Field | Spec | meshcore-tak-bridge | mesh-client | reticulum-mobile | wadamesh | meshcore-one |
 |---|---|---|---|---|---|---|---|---|
-| `ts.three-digit` | `MECP/2/T01 @630` | timestamp | "06:30" | "06:30" | "06:30" | null | null | null |
-| `ts.colon-one-digit` | `MECP/2/T01 @6:30` | timestamp | "06:30" | "06:30" | "06:30" | null | null | null |
-| `ts.colon` | `MECP/2/T01 @06:30` | timestamp | "06:30" | "06:30" | "06:30" | null | null | null |
-| `ts.hmm` | `MECP/3/L01 @123` | timestamp | "01:23" | "01:23" | "01:23" | null | null | null |
-| `ts.skip-invalid` | `MECP/3/L06 @2460 @1400 @1530` | timestamp | "14:00" | "14:00" | "14:00" | "15:30" | "24:60" | null |
+| `up.37` | `MECP/2/R03 2d` | duration | 2880 | 2880 | 2880 | null | n/a | 2880 |
+| `up.38` | `MECP/2/R03 48h` | duration | 2880 | 2880 | 2880 | null | n/a | 2880 |
+| `up.44` | `MECP/2/C01 R03 1pax 45` | duration | null | null | null | 45 | n/a | null |
+| `up.48` | `MECP/2/R03 45.` | duration | 45 | 45 | 45 | null | n/a | 45 |
+| `up.50` | `MECP/2/R03 45 2h` | duration | 120 | 120 | 120 | 45 | n/a | 120 |
+| `up.51` | `MECP/2/R03 2d 45min` | duration | 2880 | 2880 | 2880 | 45 | n/a | 2880 |
+| `up.53` | `MECP/2/R03 1h 30min` | duration | 90 | 90 | 90 | 30 | n/a | 90 |
+| `up.54` | `MECP/2/R03 2 h` | duration | 120 | 120 | 120 | 2 | n/a | 120 |
+| `up.61` | `MECP/2/R03 hut.2h` | duration | 120 | 120 | 120 | null | n/a | 120 |
+
+## 6.1 Timestamp: timestamp (8 cases)
+
+| Case | Input | Field | Spec | meshcore-tak-bridge | mesh-client | reticulum-mobile | wadamesh | meshcore-one |
+|---|---|---|---|---|---|---|---|---|
+| `ts.three-digit` | `MECP/2/T01 @630` | timestamp | "06:30" | "06:30" | "06:30" | null | null | "06:30" |
+| `ts.colon-one-digit` | `MECP/2/T01 @6:30` | timestamp | "06:30" | "06:30" | "06:30" | null | null | "06:30" |
+| `ts.colon` | `MECP/2/T01 @06:30` | timestamp | "06:30" | "06:30" | "06:30" | null | null | "06:30" |
+| `ts.hmm` | `MECP/3/L01 @123` | timestamp | "01:23" | "01:23" | "01:23" | null | null | "01:23" |
+| `ts.skip-invalid` | `MECP/3/L06 @2460 @1400 @1530` | timestamp | "14:00" | "14:00" | "14:00" | "15:30" | "24:60" | "14:00" |
 | `ts.2400` | `MECP/3/L06 @2400` | timestamp | null | null | null | null | "24:00" | null |
 | `ts.9999` | `MECP/3/L06 @9999` | timestamp | null | null | null | null | "99:99" | null |
-| `ts.trailing-comma` | `MECP/2/T05 @1430,` | timestamp | "14:30" | "14:30" | "14:30" | null | null | null |
-| `ts.glued-left` | `MECP/2/T05 meet@1430` | timestamp | null | null | null | null | null | "14:30" |
+| `ts.trailing-comma` | `MECP/2/T05 @1430,` | timestamp | "14:30" | "14:30" | "14:30" | null | null | "14:30" |
 
 ## upstream: Message: valid (7 cases)
 
@@ -136,17 +121,6 @@ Cases where at least two clients return different values for the same field. The
 | `up.12` | `MECP/2/C08 #hut、ok` | reference | "hut" | "hut" | "hut" | null | n/a | n/a |
 | `up.13` | `MECP/2/C08 #hut，ok` | reference | "hut" | "hut" | "hut" | null | n/a | n/a |
 
-## upstream: Timestamp: timestamp (6 cases)
-
-| Case | Input | Field | Spec | meshcore-tak-bridge | mesh-client | reticulum-mobile | wadamesh | meshcore-one |
-|---|---|---|---|---|---|---|---|---|
-| `up.00` | `MECP/3/L06 @2460 @1400 @1530` | timestamp | "14:00" | "14:00" | "14:00" | "15:30" | "24:60" | null |
-| `up.01` | `MECP/3/L06 @9999` | timestamp | null | null | null | null | "99:99" | null |
-| `up.02` | `MECP/3/L01 @123` | timestamp | "01:23" | "01:23" | "01:23" | null | null | null |
-| `up.03` | `MECP/2/T05 @1430,` | timestamp | "14:30" | "14:30" | "14:30" | null | null | null |
-| `up.04` | `MECP/2/T05 meet@1430` | timestamp | null | null | null | null | null | "14:30" |
-| `up.05` | `MECP/3/L06 eta=@1430` | timestamp | null | null | null | null | null | "14:30" |
-
 ## 6.1 Language hint: language (5 cases)
 
 | Case | Input | Field | Spec | meshcore-tak-bridge | mesh-client | reticulum-mobile | wadamesh | meshcore-one |
@@ -175,7 +149,7 @@ Cases where at least two clients return different values for the same field. The
 | `pax.upper` | `MECP/1/S01 4PAX` | pax | 4 | 4 | 4 | 4 | null | 4 |
 | `pax.zero-skipped` | `MECP/1/S01 0pax 2pax` | pax | 2 | 2 | 2 | 2 | 0 | 2 |
 | `pax.first-wins` | `MECP/1/S01 2pax 5pax` | pax | 2 | 2 | 2 | 5 | 2 | 2 |
-| `pax.after-decimal` | `MECP/1/S01 1.5pax` | pax | 5 | 5 | 5 | null | null | 5 |
+| `pax.after-decimal` | `MECP/1/S01 1.5pax` | pax | 5 | 5 | 5 | null | null | null |
 
 ## upstream: GPS: gps (4 cases)
 
@@ -194,6 +168,15 @@ Cases where at least two clients return different values for the same field. The
 | `up.19` | `MECP/1/S01 (4pax)` | pax | 4 | 4 | 4 | null | null | 4 |
 | `up.20` | `MECP/1/S01 4Pax.` | pax | 4 | 4 | 4 | null | null | 4 |
 | `up.23` | `MECP/1/S01 2pax 5pax` | pax | 2 | 2 | 2 | 5 | 2 | 2 |
+
+## upstream: Timestamp: timestamp (4 cases)
+
+| Case | Input | Field | Spec | meshcore-tak-bridge | mesh-client | reticulum-mobile | wadamesh | meshcore-one |
+|---|---|---|---|---|---|---|---|---|
+| `up.00` | `MECP/3/L06 @2460 @1400 @1530` | timestamp | "14:00" | "14:00" | "14:00" | "15:30" | "24:60" | "14:00" |
+| `up.01` | `MECP/3/L06 @9999` | timestamp | null | null | null | null | "99:99" | null |
+| `up.02` | `MECP/3/L01 @123` | timestamp | "01:23" | "01:23" | "01:23" | null | null | "01:23" |
+| `up.03` | `MECP/2/T05 @1430,` | timestamp | "14:30" | "14:30" | "14:30" | null | null | "14:30" |
 
 ## 6.1 Codes 5: valid, severity, codes, freetext, pax, gps, timestamp, language, callsign, reference, duration (2 cases)
 
@@ -268,12 +251,6 @@ Cases where at least two clients return different values for the same field. The
 | `up.22` | `MECP/1/S01 4pax\u000bwater` | freetext | (any) | "4pax\u000bwater" | "4pax\u000bwater" | "4pax water" | n/a | "4pax\u000bwater" |
 |  |  | pax | null | null | null | 4 | 4 | null |
 
-## 6.1: duration (1 cases)
-
-| Case | Input | Field | Spec | meshcore-tak-bridge | mesh-client | reticulum-mobile | wadamesh | meshcore-one |
-|---|---|---|---|---|---|---|---|---|
-| `mix.everything` | `MECP/0/M01 M07 R03 3pax 48.8566,2.3522 @1430 @en ~OK1ABC #base 20min` | duration | 20 | 20 | 20 | 20 | n/a | null |
-
 ## 6.1 Codes 3: codes, freetext (1 cases)
 
 | Case | Input | Field | Spec | meshcore-tak-bridge | mesh-client | reticulum-mobile | wadamesh | meshcore-one |
@@ -303,7 +280,7 @@ Cases where at least two clients return different values for the same field. The
 
 | Case | Input | Field | Spec | meshcore-tak-bridge | mesh-client | reticulum-mobile | wadamesh | meshcore-one |
 |---|---|---|---|---|---|---|---|---|
-| `pax.huge` | `MECP/1/S01 99999999999999999999999pax` | pax | (any) | null | 1e+23 | null | 1e+23 | 9223372036854775807 |
+| `pax.huge` | `MECP/1/S01 99999999999999999999999pax` | pax | (any) | null | 1e+23 | null | 1e+23 | null |
 
 ## 6.1 Optional Freetext 4: gps (1 cases)
 
@@ -315,7 +292,7 @@ Cases where at least two clients return different values for the same field. The
 
 | Case | Input | Field | Spec | meshcore-tak-bridge | mesh-client | reticulum-mobile | wadamesh | meshcore-one |
 |---|---|---|---|---|---|---|---|---|
-| `dur.zero-then-ok` | `MECP/2/R03 0min 5min` | duration | 5 | 5 | 5 | 0 | n/a | null |
+| `dur.zero-then-ok` | `MECP/2/R03 0min 5min` | duration | 5 | 5 | 5 | 0 | n/a | 5 |
 
 ## 6.1 Optional Freetext 6: gps (1 cases)
 

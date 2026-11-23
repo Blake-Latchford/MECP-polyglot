@@ -4,7 +4,7 @@
 - Repository: https://github.com/FreeTAKTeam/reticulum_mobile_emergency_management
 - Commit tested: `6cf3db0978` (2026-11-21)
 - Decoder: `apps/mobile/src/utils/mecp.ts`
-- Vectors: `conformance/vectors/decode-1.4.1.json` plus mecp-org/MECP `freetext/tests.json` (256 cases), run 2026-11-21
+- Vectors: `conformance/vectors/decode-1.4.1.json` plus mecp-org/MECP `freetext/tests.json` (256 cases), run 2026-11-22
 - **Result: 146 pass, 110 fail, 0 error**
 - **Code table: 108/109 (+1 extra)**
 

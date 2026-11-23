@@ -1,6 +1,6 @@
 {
  "meta": {
-  "date": "2026-11-21",
+  "date": "2026-11-22",
   "vectors": 256
  },
  "clients": {
@@ -20307,31 +20307,31 @@
   },
   "meshcore-one": {
    "commit": {
-    "sha": "26460496febfd96049e3edbce29e954c90e19d64",
-    "date": "2026-11-20",
+    "sha": "28a771d0e7981c2c48a976883d33ae812c2dc29b",
+    "date": "2026-11-22",
     "dirty": false
    },
    "results": {
     "env.readme": {
-     "id": "env.readme",
      "result": {
-      "pax": 2,
+      "freetext": "2pax P05 48.6520,20.1305",
       "severity": 0,
+      "pax": 2,
       "valid": true,
       "codes": [
        "M01",
        "M07"
-      ],
-      "freetext": "2pax P05 48.6520,20.1305"
-     }
+      ]
+     },
+     "id": "env.readme"
     },
     "env.codes-only": {
      "result": {
       "codes": [
        "B03"
       ],
-      "valid": true,
-      "severity": 2
+      "severity": 2,
+      "valid": true
      },
      "id": "env.codes-only"
     },
@@ -20346,14 +20346,14 @@
      "id": "env.sev0"
     },
     "env.sev3": {
-     "id": "env.sev3",
      "result": {
       "severity": 3,
       "valid": true,
       "codes": [
        "L04"
       ]
-     }
+     },
+     "id": "env.sev3"
     },
     "env.repeat-code": {
      "result": {
@@ -20361,9 +20361,9 @@
        "T05",
        "T05"
       ],
-      "valid": true,
+      "freetext": "damaged",
       "severity": 1,
-      "freetext": "damaged"
+      "valid": true
      },
      "id": "env.repeat-code"
     },
@@ -20379,57 +20379,57 @@
      "id": "env.unknown-code"
     },
     "env.unknown-category-only": {
-     "id": "env.unknown-category-only",
      "result": {
       "severity": 1,
       "valid": true,
       "codes": [
        "Q42"
       ]
-     }
+     },
+     "id": "env.unknown-category-only"
     },
     "env.lowercase-ends-codes": {
      "result": {
       "codes": [
        "L01"
       ],
-      "valid": true,
+      "freetext": "l06 late",
       "severity": 3,
-      "freetext": "l06 late"
+      "valid": true
      },
      "id": "env.lowercase-ends-codes"
     },
     "env.code-after-freetext": {
      "result": {
       "valid": true,
+      "pax": 2,
       "freetext": "2pax M07",
       "severity": 0,
       "codes": [
        "M01"
-      ],
-      "pax": 2
+      ]
      },
      "id": "env.code-after-freetext"
     },
     "env.freetext-inner-spaces": {
-     "id": "env.freetext-inner-spaces",
      "result": {
+      "freetext": "see  you   there",
       "severity": 3,
       "valid": true,
       "codes": [
        "L01"
-      ],
-      "freetext": "see  you   there"
-     }
+      ]
+     },
+     "id": "env.freetext-inner-spaces"
     },
     "env.freetext-tab-inside": {
      "result": {
       "codes": [
        "L01"
       ],
-      "valid": true,
+      "freetext": "a\tb",
       "severity": 3,
-      "freetext": "a\tb"
+      "valid": true
      },
      "id": "env.freetext-tab-inside"
     },
@@ -20444,22 +20444,22 @@
      "id": "env.trailing-lf"
     },
     "env.trailing-cr": {
-     "id": "env.trailing-cr",
      "result": {
       "severity": 2,
       "valid": true,
       "codes": [
        "B03"
       ]
-     }
+     },
+     "id": "env.trailing-cr"
     },
     "env.trailing-crlf": {
      "result": {
       "codes": [
        "B03"
       ],
-      "valid": true,
-      "severity": 2
+      "severity": 2,
+      "valid": true
      },
      "id": "env.trailing-crlf"
     },
@@ -20475,15 +20475,15 @@
      "id": "env.trailing-crlf-freetext"
     },
     "env.utf8-freetext": {
-     "id": "env.utf8-freetext",
      "result": {
+      "freetext": "Gipfel erreicht 山頂",
       "severity": 3,
       "valid": true,
       "codes": [
        "L04"
-      ],
-      "freetext": "Gipfel erreicht 山頂"
-     }
+      ]
+     },
+     "id": "env.utf8-freetext"
     },
     "env.no-codes": {
      "result": {
@@ -20498,10 +20498,10 @@
      "id": "env.no-codes-no-slash"
     },
     "env.prefix-only": {
-     "id": "env.prefix-only",
      "result": {
       "valid": false
-     }
+     },
+     "id": "env.prefix-only"
     },
     "env.empty": {
      "result": {
@@ -20516,10 +20516,10 @@
      "id": "env.not-mecp"
     },
     "env.sev4": {
-     "id": "env.sev4",
      "result": {
       "valid": false
-     }
+     },
+     "id": "env.sev4"
     },
     "env.sev9": {
      "result": {
@@ -20534,10 +20534,10 @@
      "id": "env.sev-letter"
     },
     "env.sev-two-digits": {
-     "id": "env.sev-two-digits",
      "result": {
       "valid": false
-     }
+     },
+     "id": "env.sev-two-digits"
     },
     "env.sev-arabic-indic": {
      "result": {
@@ -20552,10 +20552,10 @@
      "id": "env.lowercase-prefix"
     },
     "env.leading-space": {
-     "id": "env.leading-space",
      "result": {
       "valid": false
-     }
+     },
+     "id": "env.leading-space"
     },
     "env.channel-prefix": {
      "result": {
@@ -20570,10 +20570,10 @@
      "id": "env.no-prefix-compact"
     },
     "env.lowercase-first-code": {
-     "id": "env.lowercase-first-code",
      "result": {
       "valid": false
-     }
+     },
+     "id": "env.lowercase-first-code"
     },
     "env.four-char-code": {
      "result": {
@@ -20588,10 +20588,10 @@
      "id": "env.trailing-space"
     },
     "env.trailing-space-after-text": {
-     "id": "env.trailing-space-after-text",
      "result": {
       "valid": false
-     }
+     },
+     "id": "env.trailing-space-after-text"
     },
     "env.double-space-before-freetext": {
      "result": {
@@ -20606,10 +20606,10 @@
      "id": "env.double-space-between-codes"
     },
     "env.tab-after-codes": {
-     "id": "env.tab-after-codes",
      "result": {
       "valid": false
-     }
+     },
+     "id": "env.tab-after-codes"
     },
     "env.embedded-lf": {
      "result": {
@@ -20624,10 +20624,10 @@
      "id": "env.embedded-cr"
     },
     "env.line-separator": {
-     "id": "env.line-separator",
      "result": {
       "valid": false
-     }
+     },
+     "id": "env.line-separator"
     },
     "env.nel": {
      "result": {
@@ -20642,10 +20642,10 @@
      "id": "env.two-trailing-lf"
     },
     "env.lfcr": {
-     "id": "env.lfcr",
      "result": {
       "valid": false
-     }
+     },
+     "id": "env.lfcr"
     },
     "env.two-crlf": {
      "result": {
@@ -20660,25 +20660,25 @@
      "id": "env.nbsp-after-codes"
     },
     "b.paren": {
-     "id": "b.paren",
      "result": {
-      "pax": 4,
+      "freetext": "(4pax)",
       "severity": 1,
+      "pax": 4,
       "valid": true,
       "codes": [
        "S01"
-      ],
-      "freetext": "(4pax)"
-     }
+      ]
+     },
+     "id": "b.paren"
     },
     "b.period": {
      "result": {
       "codes": [
        "S01"
       ],
-      "valid": true,
-      "severity": 1,
       "freetext": "4Pax.",
+      "severity": 1,
+      "valid": true,
       "pax": 4
      },
      "id": "b.period"
@@ -20686,69 +20686,69 @@
     "b.comma-run": {
      "result": {
       "valid": true,
+      "pax": 4,
       "freetext": "4pax,3pax",
       "severity": 1,
       "codes": [
        "S01"
-      ],
-      "pax": 4
+      ]
      },
      "id": "b.comma-run"
     },
     "b.asterisk": {
-     "id": "b.asterisk",
      "result": {
+      "freetext": "*4pax*",
       "severity": 1,
       "valid": true,
       "codes": [
        "S01"
-      ],
-      "freetext": "*4pax*"
-     }
+      ]
+     },
+     "id": "b.asterisk"
     },
     "b.slash": {
      "result": {
       "codes": [
        "S01"
       ],
-      "valid": true,
+      "freetext": "4pax/3",
       "severity": 1,
-      "freetext": "4pax/3"
+      "valid": true
      },
      "id": "b.slash"
     },
     "b.ideographic-comma": {
      "result": {
       "valid": true,
+      "pax": 4,
       "freetext": "4pax、水",
       "severity": 1,
       "codes": [
        "S01"
-      ],
-      "pax": 4
+      ]
      },
      "id": "b.ideographic-comma"
     },
     "b.corner-brackets": {
-     "id": "b.corner-brackets",
      "result": {
-      "pax": 4,
+      "freetext": "「4pax」",
       "severity": 1,
+      "pax": 4,
       "valid": true,
       "codes": [
        "S01"
-      ],
-      "freetext": "「4pax」"
-     }
+      ]
+     },
+     "id": "b.corner-brackets"
     },
     "b.nbsp": {
      "result": {
       "codes": [
        "S01"
       ],
-      "valid": true,
-      "severity": 1,
       "freetext": "4pax water",
+      "severity": 1,
+      "valid": true,
       "pax": 4
      },
      "id": "b.nbsp"
@@ -20765,24 +20765,24 @@
      "id": "b.arabic-comma"
     },
     "b.letter-left": {
-     "id": "b.letter-left",
      "result": {
+      "freetext": "x4pax",
       "severity": 1,
       "valid": true,
       "codes": [
        "S01"
-      ],
-      "freetext": "x4pax"
-     }
+      ]
+     },
+     "id": "b.letter-left"
     },
     "b.letter-right": {
      "result": {
       "codes": [
        "S01"
       ],
-      "valid": true,
+      "freetext": "3paxmore",
       "severity": 1,
-      "freetext": "3paxmore"
+      "valid": true
      },
      "id": "b.letter-right"
     },
@@ -20798,24 +20798,24 @@
      "id": "b.hash-not-b"
     },
     "b.hyphen-not-b": {
-     "id": "b.hyphen-not-b",
      "result": {
+      "freetext": "-4pax",
       "severity": 1,
       "valid": true,
       "codes": [
        "S01"
-      ],
-      "freetext": "-4pax"
-     }
+      ]
+     },
+     "id": "b.hyphen-not-b"
     },
     "b.underscore-not-b": {
      "result": {
       "codes": [
        "S01"
       ],
-      "valid": true,
+      "freetext": "_4pax",
       "severity": 1,
-      "freetext": "_4pax"
+      "valid": true
      },
      "id": "b.underscore-not-b"
     },
@@ -20831,24 +20831,24 @@
      "id": "b.plus-not-b"
     },
     "b.vt-not-b": {
-     "id": "b.vt-not-b",
      "result": {
+      "freetext": "4pax\u000bwater",
       "severity": 1,
       "valid": true,
       "codes": [
        "S01"
-      ],
-      "freetext": "4pax\u000bwater"
-     }
+      ]
+     },
+     "id": "b.vt-not-b"
     },
     "pax.canonical": {
      "result": {
       "codes": [
        "S01"
       ],
-      "valid": true,
-      "severity": 1,
       "freetext": "4pax",
+      "severity": 1,
+      "valid": true,
       "pax": 4
      },
      "id": "pax.canonical"
@@ -20856,35 +20856,35 @@
     "pax.space": {
      "result": {
       "valid": true,
+      "pax": 4,
       "freetext": "4 pax",
       "severity": 1,
       "codes": [
        "S01"
-      ],
-      "pax": 4
+      ]
      },
      "id": "pax.space"
     },
     "pax.upper": {
-     "id": "pax.upper",
      "result": {
-      "pax": 4,
+      "freetext": "4PAX",
       "severity": 1,
+      "pax": 4,
       "valid": true,
       "codes": [
        "S01"
-      ],
-      "freetext": "4PAX"
-     }
+      ]
+     },
+     "id": "pax.upper"
     },
     "pax.leading-zero": {
      "result": {
       "codes": [
        "S01"
       ],
-      "valid": true,
-      "severity": 1,
       "freetext": "04pax",
+      "severity": 1,
+      "valid": true,
       "pax": 4
      },
      "id": "pax.leading-zero"
@@ -20892,35 +20892,35 @@
     "pax.zero-skipped": {
      "result": {
       "valid": true,
+      "pax": 2,
       "freetext": "0pax 2pax",
       "severity": 1,
       "codes": [
        "S01"
-      ],
-      "pax": 2
+      ]
      },
      "id": "pax.zero-skipped"
     },
     "pax.first-wins": {
-     "id": "pax.first-wins",
      "result": {
-      "pax": 2,
+      "freetext": "2pax 5pax",
       "severity": 1,
+      "pax": 2,
       "valid": true,
       "codes": [
        "S01"
-      ],
-      "freetext": "2pax 5pax"
-     }
+      ]
+     },
+     "id": "pax.first-wins"
     },
     "pax.multi-digit": {
      "result": {
       "codes": [
        "H07"
       ],
-      "valid": true,
-      "severity": 2,
       "freetext": "120pax",
+      "severity": 2,
+      "valid": true,
       "pax": 120
      },
      "id": "pax.multi-digit"
@@ -20937,24 +20937,24 @@
      "id": "pax.localised-word"
     },
     "pax.german-word": {
-     "id": "pax.german-word",
      "result": {
+      "freetext": "4 Personen",
       "severity": 1,
       "valid": true,
       "codes": [
        "S01"
-      ],
-      "freetext": "4 Personen"
-     }
+      ]
+     },
+     "id": "pax.german-word"
     },
     "pax.arabic-indic-digit": {
      "result": {
       "codes": [
        "S01"
       ],
-      "valid": true,
+      "freetext": "٤pax",
       "severity": 1,
-      "freetext": "٤pax"
+      "valid": true
      },
      "id": "pax.arabic-indic-digit"
     },
@@ -20970,25 +20970,24 @@
      "id": "pax.fullwidth-digit"
     },
     "pax.two-spaces": {
-     "id": "pax.two-spaces",
      "result": {
+      "freetext": "4  pax",
       "severity": 1,
       "valid": true,
       "codes": [
        "S01"
-      ],
-      "freetext": "4  pax"
-     }
+      ]
+     },
+     "id": "pax.two-spaces"
     },
     "pax.after-decimal": {
      "result": {
       "codes": [
        "S01"
       ],
-      "valid": true,
-      "severity": 1,
       "freetext": "1.5pax",
-      "pax": 5
+      "severity": 1,
+      "valid": true
      },
      "id": "pax.after-decimal"
     },
@@ -20999,31 +20998,30 @@
       "severity": 1,
       "codes": [
        "S01"
-      ],
-      "pax": 9223372036854775807
+      ]
      },
      "id": "pax.huge"
     },
     "gps.canonical": {
-     "id": "gps.canonical",
      "result": {
+      "freetext": "-41.2865,174.7762",
       "severity": 0,
       "valid": true,
       "codes": [
        "M04",
        "P05"
-      ],
-      "freetext": "-41.2865,174.7762"
-     }
+      ]
+     },
+     "id": "gps.canonical"
     },
     "gps.plus-and-space": {
      "result": {
       "codes": [
        "M04"
       ],
-      "valid": true,
+      "freetext": "+48.8566, 2.3522",
       "severity": 0,
-      "freetext": "+48.8566, 2.3522"
+      "valid": true
      },
      "id": "gps.plus-and-space"
     },
@@ -21039,24 +21037,24 @@
      "id": "gps.high-precision"
     },
     "gps.limits": {
-     "id": "gps.limits",
      "result": {
+      "freetext": "90.0,180.0",
       "severity": 0,
       "valid": true,
       "codes": [
        "M04"
-      ],
-      "freetext": "90.0,180.0"
-     }
+      ]
+     },
+     "id": "gps.limits"
     },
     "gps.neg-limits": {
      "result": {
       "codes": [
        "M04"
       ],
-      "valid": true,
+      "freetext": "-90.0,-180.0",
       "severity": 0,
-      "freetext": "-90.0,-180.0"
+      "valid": true
      },
      "id": "gps.neg-limits"
     },
@@ -21072,24 +21070,24 @@
      "id": "gps.lat-out-of-range"
     },
     "gps.resume-after-invalid": {
-     "id": "gps.resume-after-invalid",
      "result": {
+      "freetext": "95.0,200.0 47.3,8.5",
       "severity": 3,
       "valid": true,
       "codes": [
        "L06"
-      ],
-      "freetext": "95.0,200.0 47.3,8.5"
-     }
+      ]
+     },
+     "id": "gps.resume-after-invalid"
     },
     "gps.integers": {
      "result": {
       "codes": [
        "M04"
       ],
-      "valid": true,
+      "freetext": "48,20",
       "severity": 0,
-      "freetext": "48,20"
+      "valid": true
      },
      "id": "gps.integers"
     },
@@ -21105,24 +21103,24 @@
      "id": "gps.zero-zero"
     },
     "gps.decimal-comma": {
-     "id": "gps.decimal-comma",
      "result": {
+      "freetext": "2,5 km",
       "severity": 3,
       "valid": true,
       "codes": [
        "L02"
-      ],
-      "freetext": "2,5 km"
-     }
+      ]
+     },
+     "id": "gps.decimal-comma"
     },
     "gps.colon-left": {
      "result": {
       "codes": [
        "M01"
       ],
-      "valid": true,
+      "freetext": "at:48.65,20.13",
       "severity": 0,
-      "freetext": "at:48.65,20.13"
+      "valid": true
      },
      "id": "gps.colon-left"
     },
@@ -21138,24 +21136,24 @@
      "id": "gps.trailing-period"
     },
     "gps.letter-left": {
-     "id": "gps.letter-left",
      "result": {
+      "freetext": "x48.65,20.13",
       "severity": 0,
       "valid": true,
       "codes": [
        "M01"
-      ],
-      "freetext": "x48.65,20.13"
-     }
+      ]
+     },
+     "id": "gps.letter-left"
     },
     "gps.space-before-comma": {
      "result": {
       "codes": [
        "M01"
       ],
-      "valid": true,
+      "freetext": "48.65 ,20.13",
       "severity": 0,
-      "freetext": "48.65 ,20.13"
+      "valid": true
      },
      "id": "gps.space-before-comma"
     },
@@ -21171,15 +21169,15 @@
      "id": "gps.altitude-suffix"
     },
     "gps.two-spaces-after-comma": {
-     "id": "gps.two-spaces-after-comma",
      "result": {
+      "freetext": "48.65,  20.13",
       "severity": 0,
       "valid": true,
       "codes": [
        "M01"
-      ],
-      "freetext": "48.65,  20.13"
-     }
+      ]
+     },
+     "id": "gps.two-spaces-after-comma"
     },
     "gps.after-codes-later": {
      "result": {
@@ -21187,45 +21185,47 @@
        "M01",
        "M07"
       ],
-      "valid": true,
-      "severity": 0,
+      "timestamp": "14:30",
       "freetext": "2pax P05 48.65,20.13 @1430",
-      "pax": 2,
-      "timestamp": "14:30"
+      "severity": 0,
+      "valid": true,
+      "pax": 2
      },
      "id": "gps.after-codes-later"
     },
     "ts.canonical": {
      "result": {
-      "timestamp": "06:30",
       "valid": true,
       "freetext": "@0630",
       "severity": 2,
       "codes": [
        "T01"
-      ]
+      ],
+      "timestamp": "06:30"
      },
      "id": "ts.canonical"
     },
     "ts.three-digit": {
-     "id": "ts.three-digit",
      "result": {
+      "freetext": "@630",
+      "timestamp": "06:30",
       "severity": 2,
       "valid": true,
       "codes": [
        "T01"
-      ],
-      "freetext": "@630"
-     }
+      ]
+     },
+     "id": "ts.three-digit"
     },
     "ts.colon-one-digit": {
      "result": {
       "codes": [
        "T01"
       ],
-      "valid": true,
+      "timestamp": "06:30",
+      "freetext": "@6:30",
       "severity": 2,
-      "freetext": "@6:30"
+      "valid": true
      },
      "id": "ts.colon-one-digit"
     },
@@ -21236,64 +21236,67 @@
       "severity": 2,
       "codes": [
        "T01"
-      ]
+      ],
+      "timestamp": "06:30"
      },
      "id": "ts.colon"
     },
     "ts.hmm": {
-     "id": "ts.hmm",
      "result": {
+      "freetext": "@123",
+      "timestamp": "01:23",
       "severity": 3,
       "valid": true,
       "codes": [
        "L01"
-      ],
-      "freetext": "@123"
-     }
+      ]
+     },
+     "id": "ts.hmm"
     },
     "ts.midnight": {
      "result": {
       "codes": [
        "L01"
       ],
-      "valid": true,
-      "severity": 3,
+      "timestamp": "00:00",
       "freetext": "@0000",
-      "timestamp": "00:00"
+      "severity": 3,
+      "valid": true
      },
      "id": "ts.midnight"
     },
     "ts.2359": {
      "result": {
-      "timestamp": "23:59",
       "valid": true,
       "freetext": "@2359",
       "severity": 3,
       "codes": [
        "L01"
-      ]
+      ],
+      "timestamp": "23:59"
      },
      "id": "ts.2359"
     },
     "ts.skip-invalid": {
-     "id": "ts.skip-invalid",
      "result": {
+      "freetext": "@2460 @1400 @1530",
+      "timestamp": "14:00",
       "severity": 3,
       "valid": true,
       "codes": [
        "L06"
-      ],
-      "freetext": "@2460 @1400 @1530"
-     }
+      ]
+     },
+     "id": "ts.skip-invalid"
     },
     "ts.2400": {
      "result": {
       "codes": [
        "L06"
       ],
-      "valid": true,
+      "freetext": "@2400",
       "severity": 3,
-      "freetext": "@2400"
+      "valid": true
      },
      "id": "ts.2400"
     },
@@ -21309,25 +21312,25 @@
      "id": "ts.9999"
     },
     "ts.trailing-comma": {
-     "id": "ts.trailing-comma",
      "result": {
+      "freetext": "@1430,",
+      "timestamp": "14:30",
       "severity": 2,
       "valid": true,
       "codes": [
        "T05"
-      ],
-      "freetext": "@1430,"
-     }
+      ]
+     },
+     "id": "ts.trailing-comma"
     },
     "ts.glued-left": {
      "result": {
       "codes": [
        "T05"
       ],
-      "valid": true,
-      "severity": 2,
       "freetext": "meet@1430",
-      "timestamp": "14:30"
+      "severity": 2,
+      "valid": true
      },
      "id": "ts.glued-left"
     },
@@ -21343,25 +21346,25 @@
      "id": "ts.zulu-suffix"
     },
     "ts.five-digits": {
-     "id": "ts.five-digits",
      "result": {
+      "freetext": "@14300",
       "severity": 2,
       "valid": true,
       "codes": [
        "T05"
-      ],
-      "freetext": "@14300"
-     }
+      ]
+     },
+     "id": "ts.five-digits"
     },
     "ts.with-language": {
      "result": {
       "codes": [
        "M01"
       ],
-      "valid": true,
-      "severity": 0,
+      "timestamp": "14:30",
       "freetext": "@1430 @en",
-      "timestamp": "14:30"
+      "severity": 0,
+      "valid": true
      },
      "id": "ts.with-language"
     },
@@ -21377,24 +21380,24 @@
      "id": "ts.arabic-indic"
     },
     "lang.canonical": {
-     "id": "lang.canonical",
      "result": {
+      "freetext": "Gipfel erreicht @de",
       "severity": 3,
       "valid": true,
       "codes": [
        "L04"
-      ],
-      "freetext": "Gipfel erreicht @de"
-     }
+      ]
+     },
+     "id": "lang.canonical"
     },
     "lang.upper": {
      "result": {
       "codes": [
        "L04"
       ],
-      "valid": true,
+      "freetext": "@DE",
       "severity": 3,
-      "freetext": "@DE"
+      "valid": true
      },
      "id": "lang.upper"
     },
@@ -21410,24 +21413,24 @@
      "id": "lang.underscore"
     },
     "lang.region": {
-     "id": "lang.region",
      "result": {
+      "freetext": "@zh-TW",
       "severity": 3,
       "valid": true,
       "codes": [
        "L04"
-      ],
-      "freetext": "@zh-TW"
-     }
+      ]
+     },
+     "id": "lang.region"
     },
     "lang.script-region": {
      "result": {
       "codes": [
        "L04"
       ],
-      "valid": true,
+      "freetext": "@zh-Hans-CN",
       "severity": 3,
-      "freetext": "@zh-Hans-CN"
+      "valid": true
      },
      "id": "lang.script-region"
     },
@@ -21443,24 +21446,24 @@
      "id": "lang.sr-latn"
     },
     "lang.three-letter": {
-     "id": "lang.three-letter",
      "result": {
+      "freetext": "@fil",
       "severity": 3,
       "valid": true,
       "codes": [
        "L04"
-      ],
-      "freetext": "@fil"
-     }
+      ]
+     },
+     "id": "lang.three-letter"
     },
     "lang.four-letter": {
      "result": {
       "codes": [
        "L04"
       ],
-      "valid": true,
+      "freetext": "@abcd",
       "severity": 3,
-      "freetext": "@abcd"
+      "valid": true
      },
      "id": "lang.four-letter"
     },
@@ -21476,24 +21479,24 @@
      "id": "lang.email"
     },
     "lang.period": {
-     "id": "lang.period",
      "result": {
+      "freetext": "@en.",
       "severity": 3,
       "valid": true,
       "codes": [
        "L04"
-      ],
-      "freetext": "@en."
-     }
+      ]
+     },
+     "id": "lang.period"
     },
     "lang.turkish-i": {
      "result": {
       "codes": [
        "L04"
       ],
-      "valid": true,
+      "freetext": "@TR",
       "severity": 3,
-      "freetext": "@TR"
+      "valid": true
      },
      "id": "lang.turkish-i"
     },
@@ -21509,24 +21512,24 @@
      "id": "cs.portable"
     },
     "cs.lower": {
-     "id": "cs.lower",
      "result": {
+      "freetext": "~vk2/ok1abc/p",
       "severity": 3,
       "valid": true,
       "codes": [
        "L20"
-      ],
-      "freetext": "~vk2/ok1abc/p"
-     }
+      ]
+     },
+     "id": "cs.lower"
     },
     "cs.prefix": {
      "result": {
       "codes": [
        "L20"
       ],
-      "valid": true,
+      "freetext": "~DL/OK1ABC",
       "severity": 3,
-      "freetext": "~DL/OK1ABC"
+      "valid": true
      },
      "id": "cs.prefix"
     },
@@ -21542,24 +21545,24 @@
      "id": "cs.simple"
     },
     "cs.twelve": {
-     "id": "cs.twelve",
      "result": {
+      "freetext": "~ABCDEFGHIJKL",
       "severity": 3,
       "valid": true,
       "codes": [
        "L20"
-      ],
-      "freetext": "~ABCDEFGHIJKL"
-     }
+      ]
+     },
+     "id": "cs.twelve"
     },
     "cs.thirteen-skipped": {
      "result": {
       "codes": [
        "L20"
       ],
-      "valid": true,
+      "freetext": "~ABCDEFGHIJKLM ~OK1ABC",
       "severity": 3,
-      "freetext": "~ABCDEFGHIJKLM ~OK1ABC"
+      "valid": true
      },
      "id": "cs.thirteen-skipped"
     },
@@ -21575,24 +21578,24 @@
      "id": "cs.comma"
     },
     "cs.ssid": {
-     "id": "cs.ssid",
      "result": {
+      "freetext": "~OK1ABC-7",
       "severity": 3,
       "valid": true,
       "codes": [
        "L20"
-      ],
-      "freetext": "~OK1ABC-7"
-     }
+      ]
+     },
+     "id": "cs.ssid"
     },
     "cs.aprs-ssid": {
      "result": {
       "codes": [
        "L20"
       ],
-      "valid": true,
+      "freetext": "~W1AW-9",
       "severity": 3,
-      "freetext": "~W1AW-9"
+      "valid": true
      },
      "id": "cs.aprs-ssid"
     },
@@ -21608,24 +21611,24 @@
      "id": "cs.portable-ssid"
     },
     "cs.glued-left": {
-     "id": "cs.glued-left",
      "result": {
+      "freetext": "de~OK1ABC",
       "severity": 3,
       "valid": true,
       "codes": [
        "L20"
-      ],
-      "freetext": "de~OK1ABC"
-     }
+      ]
+     },
+     "id": "cs.glued-left"
     },
     "ref.basecamp": {
      "result": {
       "codes": [
        "C08"
       ],
-      "valid": true,
+      "freetext": "#basecamp",
       "severity": 2,
-      "freetext": "#basecamp"
+      "valid": true
      },
      "id": "ref.basecamp"
     },
@@ -21641,24 +21644,24 @@
      "id": "ref.hyphen"
     },
     "ref.underscore": {
-     "id": "ref.underscore",
      "result": {
+      "freetext": "#base_camp",
       "severity": 2,
       "valid": true,
       "codes": [
        "C08"
-      ],
-      "freetext": "#base_camp"
-     }
+      ]
+     },
+     "id": "ref.underscore"
     },
     "ref.upper": {
      "result": {
       "codes": [
        "C08"
       ],
-      "valid": true,
+      "freetext": "#BaseCamp",
       "severity": 2,
-      "freetext": "#BaseCamp"
+      "valid": true
      },
      "id": "ref.upper"
     },
@@ -21674,24 +21677,24 @@
      "id": "ref.paren"
     },
     "ref.digits": {
-     "id": "ref.digits",
      "result": {
+      "freetext": "#2026a",
       "severity": 2,
       "valid": true,
       "codes": [
        "C08"
-      ],
-      "freetext": "#2026a"
-     }
+      ]
+     },
+     "id": "ref.digits"
     },
     "ref.long": {
      "result": {
       "codes": [
        "C08"
       ],
-      "valid": true,
+      "freetext": "#flood-sector-north-7",
       "severity": 2,
-      "freetext": "#flood-sector-north-7"
+      "valid": true
      },
      "id": "ref.long"
     },
@@ -21707,24 +21710,24 @@
      "id": "ref.cjk"
     },
     "ref.cyrillic": {
-     "id": "ref.cyrillic",
      "result": {
+      "freetext": "#база",
       "severity": 2,
       "valid": true,
       "codes": [
        "C08"
-      ],
-      "freetext": "#база"
-     }
+      ]
+     },
+     "id": "ref.cyrillic"
     },
     "ref.accent": {
      "result": {
       "codes": [
        "C08"
       ],
-      "valid": true,
+      "freetext": "#café",
       "severity": 2,
-      "freetext": "#café"
+      "valid": true
      },
      "id": "ref.accent"
     },
@@ -21740,24 +21743,26 @@
      "id": "ref.glued-left"
     },
     "dur.min": {
-     "id": "dur.min",
      "result": {
+      "freetext": "45min",
+      "duration": 45,
       "severity": 2,
       "valid": true,
       "codes": [
        "R03"
-      ],
-      "freetext": "45min"
-     }
+      ]
+     },
+     "id": "dur.min"
     },
     "dur.eta-min": {
      "result": {
       "codes": [
        "R03"
       ],
-      "valid": true,
+      "duration": 45,
+      "freetext": "ETA 45min",
       "severity": 2,
-      "freetext": "ETA 45min"
+      "valid": true
      },
      "id": "dur.eta-min"
     },
@@ -21768,31 +21773,32 @@
       "severity": 2,
       "codes": [
        "R03"
-      ]
+      ],
+      "duration": 45
      },
      "id": "dur.eta-glued"
     },
     "dur.space-min": {
-     "id": "dur.space-min",
      "result": {
+      "freetext": "45 min",
+      "duration": 45,
       "severity": 2,
       "valid": true,
       "codes": [
        "R03"
-      ],
-      "duration": 45,
-      "freetext": "45 min"
-     }
+      ]
+     },
+     "id": "dur.space-min"
     },
     "dur.bare": {
      "result": {
       "codes": [
        "R03"
       ],
-      "valid": true,
-      "severity": 2,
+      "duration": 45,
       "freetext": "45",
-      "duration": 45
+      "severity": 2,
+      "valid": true
      },
      "id": "dur.bare"
     },
@@ -21803,29 +21809,32 @@
       "severity": 2,
       "codes": [
        "R03"
-      ]
+      ],
+      "duration": 45
      },
      "id": "dur.eta-bare"
     },
     "dur.h": {
-     "id": "dur.h",
      "result": {
+      "freetext": "2h",
+      "duration": 120,
       "severity": 2,
       "valid": true,
       "codes": [
        "R03"
-      ],
-      "freetext": "2h"
-     }
+      ]
+     },
+     "id": "dur.h"
     },
     "dur.hm": {
      "result": {
       "codes": [
        "R03"
       ],
-      "valid": true,
+      "duration": 90,
+      "freetext": "1h30min",
       "severity": 2,
-      "freetext": "1h30min"
+      "valid": true
      },
      "id": "dur.hm"
     },
@@ -21836,29 +21845,31 @@
       "severity": 2,
       "codes": [
        "R03"
-      ]
+      ],
+      "duration": 90
      },
      "id": "dur.h-space-m"
     },
     "dur.d": {
-     "id": "dur.d",
      "result": {
+      "freetext": "1d",
+      "duration": 1440,
       "severity": 2,
       "valid": true,
       "codes": [
        "R03"
-      ],
-      "freetext": "1d"
-     }
+      ]
+     },
+     "id": "dur.d"
     },
     "dur.s": {
      "result": {
       "codes": [
        "R03"
       ],
-      "valid": true,
+      "freetext": "120s",
       "severity": 2,
-      "freetext": "120s"
+      "valid": true
      },
      "id": "dur.s"
     },
@@ -21871,30 +21882,32 @@
        "C01",
        "R03",
        "P05"
-      ]
+      ],
+      "duration": 45
      },
      "id": "dur.with-codes-before"
     },
     "dur.example": {
-     "id": "dur.example",
      "result": {
+      "freetext": "45min @en",
+      "duration": 45,
       "severity": 2,
       "valid": true,
       "codes": [
        "C01",
        "R03"
-      ],
-      "freetext": "45min @en"
-     }
+      ]
+     },
+     "id": "dur.example"
     },
     "dur.unscoped-min": {
      "result": {
       "codes": [
        "L06"
       ],
-      "valid": true,
+      "freetext": "45min",
       "severity": 3,
-      "freetext": "45min"
+      "valid": true
      },
      "id": "dur.unscoped-min"
     },
@@ -21910,60 +21923,62 @@
      "id": "dur.unscoped-bare"
     },
     "dur.bare-not-first": {
-     "id": "dur.bare-not-first",
      "result": {
-      "pax": 1,
+      "freetext": "1pax 45",
       "severity": 2,
+      "pax": 1,
       "valid": true,
       "codes": [
        "C01",
        "R03"
-      ],
-      "freetext": "1pax 45"
-     }
+      ]
+     },
+     "id": "dur.bare-not-first"
     },
     "dur.bare-latitude": {
      "result": {
       "codes": [
        "R03"
       ],
-      "valid": true,
+      "freetext": "47.3769,12.1048",
       "severity": 2,
-      "freetext": "47.3769,12.1048"
+      "valid": true
      },
      "id": "dur.bare-latitude"
     },
     "dur.bare-after-ts": {
      "result": {
-      "timestamp": "14:30",
       "valid": true,
       "freetext": "@1430 45",
       "severity": 2,
       "codes": [
        "R03"
-      ]
+      ],
+      "timestamp": "14:30"
      },
      "id": "dur.bare-after-ts"
     },
     "dur.2d": {
-     "id": "dur.2d",
      "result": {
+      "freetext": "2d",
+      "duration": 2880,
       "severity": 2,
       "valid": true,
       "codes": [
        "R03"
-      ],
-      "freetext": "2d"
-     }
+      ]
+     },
+     "id": "dur.2d"
     },
     "dur.48h": {
      "result": {
       "codes": [
        "R03"
       ],
-      "valid": true,
+      "duration": 2880,
+      "freetext": "48h",
       "severity": 2,
-      "freetext": "48h"
+      "valid": true
      },
      "id": "dur.48h"
     },
@@ -21974,29 +21989,31 @@
       "severity": 2,
       "codes": [
        "R03"
-      ]
+      ],
+      "duration": 2880
      },
      "id": "dur.2880min"
     },
     "dur.week": {
-     "id": "dur.week",
      "result": {
+      "freetext": "7d",
+      "duration": 10080,
       "severity": 2,
       "valid": true,
       "codes": [
        "R03"
-      ],
-      "freetext": "7d"
-     }
+      ]
+     },
+     "id": "dur.week"
     },
     "dur.zero": {
      "result": {
       "codes": [
        "R03"
       ],
-      "valid": true,
+      "freetext": "0min",
       "severity": 2,
-      "freetext": "0min"
+      "valid": true
      },
      "id": "dur.zero"
     },
@@ -22007,30 +22024,31 @@
       "severity": 2,
       "codes": [
        "R03"
-      ]
+      ],
+      "duration": 30
      },
      "id": "dur.first-by-position"
     },
     "dur.same-position-list-order": {
-     "id": "dur.same-position-list-order",
      "result": {
+      "freetext": "2 h",
+      "duration": 120,
       "severity": 2,
       "valid": true,
       "codes": [
        "R03"
-      ],
-      "duration": 2,
-      "freetext": "2 h"
-     }
+      ]
+     },
+     "id": "dur.same-position-list-order"
     },
     "dur.zero-seconds": {
      "result": {
       "codes": [
        "R03"
       ],
-      "valid": true,
+      "freetext": "0s",
       "severity": 2,
-      "freetext": "0s"
+      "valid": true
      },
      "id": "dur.zero-seconds"
     },
@@ -22046,58 +22064,60 @@
      "id": "dur.huge"
     },
     "dur.h-then-digits": {
-     "id": "dur.h-then-digits",
      "result": {
+      "freetext": "1h30",
       "severity": 2,
       "valid": true,
       "codes": [
        "R03"
-      ],
-      "freetext": "1h30"
-     }
+      ]
+     },
+     "id": "dur.h-then-digits"
     },
     "dur.days-word": {
      "result": {
       "codes": [
        "R03"
       ],
-      "valid": true,
+      "freetext": "in 5 days",
       "severity": 2,
-      "freetext": "in 5 days"
+      "valid": true
      },
      "id": "dur.days-word"
     },
     "dur.with-pax": {
      "result": {
       "valid": true,
+      "pax": 4,
       "freetext": "4pax 2h",
       "severity": 2,
       "codes": [
        "R03"
       ],
-      "pax": 4
+      "duration": 120
      },
      "id": "dur.with-pax"
     },
     "dur.localised": {
-     "id": "dur.localised",
      "result": {
+      "freetext": "45分",
       "severity": 2,
       "valid": true,
       "codes": [
        "R03"
-      ],
-      "freetext": "45分"
-     }
+      ]
+     },
+     "id": "dur.localised"
     },
     "dur.first-of-kind": {
      "result": {
       "codes": [
        "R03"
       ],
-      "valid": true,
+      "duration": 1500,
+      "freetext": "25h 3h",
       "severity": 2,
-      "freetext": "25h 3h"
+      "valid": true
      },
      "id": "dur.first-of-kind"
     },
@@ -22108,74 +22128,76 @@
       "severity": 2,
       "codes": [
        "R03"
-      ]
+      ],
+      "duration": 5
      },
      "id": "dur.zero-then-ok"
     },
     "dur.bare-first-token-only": {
-     "id": "dur.bare-first-token-only",
      "result": {
+      "freetext": "2 sleeping bags",
+      "duration": 2,
       "severity": 2,
       "valid": true,
       "codes": [
        "R03"
-      ],
-      "duration": 2,
-      "freetext": "2 sleeping bags"
-     }
+      ]
+     },
+     "id": "dur.bare-first-token-only"
     },
     "dur.bare-not-days": {
      "result": {
       "codes": [
        "R03"
       ],
-      "valid": true,
-      "severity": 2,
+      "duration": 5,
       "freetext": "5 days",
-      "duration": 5
+      "severity": 2,
+      "valid": true
      },
      "id": "dur.bare-not-days"
     },
     "mix.everything": {
      "result": {
-      "timestamp": "14:30",
       "valid": true,
-      "freetext": "3pax 48.8566,2.3522 @1430 @en ~OK1ABC #base 20min",
+      "timestamp": "14:30",
+      "pax": 3,
       "severity": 0,
       "codes": [
        "M01",
        "M07",
        "R03"
       ],
-      "pax": 3
+      "freetext": "3pax 48.8566,2.3522 @1430 @en ~OK1ABC #base 20min",
+      "duration": 20
      },
      "id": "mix.everything"
     },
     "mix.beacon": {
-     "id": "mix.beacon",
      "result": {
-      "severity": 0,
-      "valid": true,
       "codes": [
        "B01",
        "M01",
        "P05"
       ],
       "timestamp": "14:30",
-      "freetext": "48.65,20.13 @1430"
-     }
+      "freetext": "48.65,20.13 @1430",
+      "severity": 0,
+      "valid": true
+     },
+     "id": "mix.beacon"
     },
     "mix.drill": {
      "result": {
+      "freetext": "2pax P05 48.65,20.13",
+      "severity": 0,
+      "pax": 2,
+      "valid": true,
       "codes": [
        "D01",
        "M01",
        "M07"
-      ],
-      "valid": true,
-      "severity": 0,
-      "freetext": "2pax P05 48.65,20.13",
-      "pax": 2
+      ]
      },
      "id": "mix.drill"
     },
@@ -22186,29 +22208,31 @@
       "severity": 3,
       "codes": [
        "L06"
-      ]
+      ],
+      "timestamp": "14:00"
      },
      "id": "up.00"
     },
     "up.01": {
-     "id": "up.01",
      "result": {
-      "severity": 3,
-      "valid": true,
       "codes": [
        "L06"
       ],
-      "freetext": "@9999"
-     }
+      "freetext": "@9999",
+      "severity": 3,
+      "valid": true
+     },
+     "id": "up.01"
     },
     "up.02": {
      "result": {
+      "freetext": "@123",
+      "timestamp": "01:23",
+      "severity": 3,
+      "valid": true,
       "codes": [
        "L01"
-      ],
-      "valid": true,
-      "severity": 3,
-      "freetext": "@123"
+      ]
      },
      "id": "up.02"
     },
@@ -22219,31 +22243,30 @@
       "severity": 2,
       "codes": [
        "T05"
-      ]
+      ],
+      "timestamp": "14:30"
      },
      "id": "up.03"
     },
     "up.04": {
-     "id": "up.04",
      "result": {
-      "severity": 2,
-      "valid": true,
       "codes": [
        "T05"
       ],
-      "timestamp": "14:30",
-      "freetext": "meet@1430"
-     }
+      "freetext": "meet@1430",
+      "severity": 2,
+      "valid": true
+     },
+     "id": "up.04"
     },
     "up.05": {
      "result": {
+      "freetext": "eta=@1430",
+      "severity": 3,
+      "valid": true,
       "codes": [
        "L06"
-      ],
-      "valid": true,
-      "severity": 3,
-      "freetext": "eta=@1430",
-      "timestamp": "14:30"
+      ]
      },
      "id": "up.05"
     },
@@ -22259,24 +22282,24 @@
      "id": "up.06"
     },
     "up.07": {
-     "id": "up.07",
      "result": {
-      "severity": 2,
-      "valid": true,
       "codes": [
        "C08"
       ],
-      "freetext": "(#tag)"
-     }
+      "freetext": "(#tag)",
+      "severity": 2,
+      "valid": true
+     },
+     "id": "up.07"
     },
     "up.08": {
      "result": {
+      "freetext": "#basecamp",
+      "severity": 2,
+      "valid": true,
       "codes": [
        "C08"
-      ],
-      "valid": true,
-      "severity": 2,
-      "freetext": "#basecamp"
+      ]
      },
      "id": "up.08"
     },
@@ -22292,24 +22315,24 @@
      "id": "up.09"
     },
     "up.10": {
-     "id": "up.10",
      "result": {
-      "severity": 2,
-      "valid": true,
       "codes": [
        "C08"
       ],
-      "freetext": "#hut،ok"
-     }
+      "freetext": "#hut،ok",
+      "severity": 2,
+      "valid": true
+     },
+     "id": "up.10"
     },
     "up.11": {
      "result": {
+      "freetext": "#hut”ok",
+      "severity": 2,
+      "valid": true,
       "codes": [
        "C08"
-      ],
-      "valid": true,
-      "severity": 2,
-      "freetext": "#hut”ok"
+      ]
      },
      "id": "up.11"
     },
@@ -22325,24 +22348,24 @@
      "id": "up.12"
     },
     "up.13": {
-     "id": "up.13",
      "result": {
-      "severity": 2,
-      "valid": true,
       "codes": [
        "C08"
       ],
-      "freetext": "#hut，ok"
-     }
+      "freetext": "#hut，ok",
+      "severity": 2,
+      "valid": true
+     },
+     "id": "up.13"
     },
     "up.14": {
      "result": {
+      "freetext": "#hut2/basecamp",
+      "severity": 2,
+      "valid": true,
       "codes": [
        "C08"
-      ],
-      "valid": true,
-      "severity": 2,
-      "freetext": "#hut2/basecamp"
+      ]
      },
      "id": "up.14"
     },
@@ -22358,96 +22381,96 @@
      "id": "up.15"
     },
     "up.16": {
-     "id": "up.16",
      "result": {
-      "severity": 1,
-      "valid": true,
       "codes": [
        "S01"
       ],
-      "freetext": "3paxmore"
-     }
+      "freetext": "3paxmore",
+      "severity": 1,
+      "valid": true
+     },
+     "id": "up.16"
     },
     "up.17": {
      "result": {
+      "freetext": "0pax 2pax",
+      "severity": 1,
+      "pax": 2,
+      "valid": true,
       "codes": [
        "S01"
-      ],
-      "valid": true,
-      "severity": 1,
-      "freetext": "0pax 2pax",
-      "pax": 2
+      ]
      },
      "id": "up.17"
     },
     "up.18": {
      "result": {
       "valid": true,
+      "pax": 4,
       "freetext": "04pax",
       "severity": 1,
       "codes": [
        "S01"
-      ],
-      "pax": 4
+      ]
      },
      "id": "up.18"
     },
     "up.19": {
-     "id": "up.19",
      "result": {
-      "pax": 4,
-      "severity": 1,
-      "valid": true,
       "codes": [
        "S01"
       ],
-      "freetext": "(4pax)"
-     }
+      "freetext": "(4pax)",
+      "severity": 1,
+      "valid": true,
+      "pax": 4
+     },
+     "id": "up.19"
     },
     "up.20": {
      "result": {
+      "freetext": "4Pax.",
+      "severity": 1,
+      "pax": 4,
+      "valid": true,
       "codes": [
        "S01"
-      ],
-      "valid": true,
-      "severity": 1,
-      "freetext": "4Pax.",
-      "pax": 4
+      ]
      },
      "id": "up.20"
     },
     "up.21": {
      "result": {
       "valid": true,
+      "pax": 4,
       "freetext": "4pax water",
       "severity": 1,
       "codes": [
        "S01"
-      ],
-      "pax": 4
+      ]
      },
      "id": "up.21"
     },
     "up.22": {
-     "id": "up.22",
      "result": {
-      "severity": 1,
-      "valid": true,
       "codes": [
        "S01"
       ],
-      "freetext": "4pax\u000bwater"
-     }
+      "freetext": "4pax\u000bwater",
+      "severity": 1,
+      "valid": true
+     },
+     "id": "up.22"
     },
     "up.23": {
      "result": {
+      "freetext": "2pax 5pax",
+      "severity": 1,
+      "pax": 2,
+      "valid": true,
       "codes": [
        "S01"
-      ],
-      "valid": true,
-      "severity": 1,
-      "freetext": "2pax 5pax",
-      "pax": 2
+      ]
      },
      "id": "up.23"
     },
@@ -22463,24 +22486,24 @@
      "id": "up.24"
     },
     "up.25": {
-     "id": "up.25",
      "result": {
-      "severity": 3,
-      "valid": true,
       "codes": [
        "L06"
       ],
-      "freetext": "95.0,200.0 47.3,8.5"
-     }
+      "freetext": "95.0,200.0 47.3,8.5",
+      "severity": 3,
+      "valid": true
+     },
+     "id": "up.25"
     },
     "up.26": {
      "result": {
+      "freetext": "2,5 km",
+      "severity": 3,
+      "valid": true,
       "codes": [
        "L02"
-      ],
-      "valid": true,
-      "severity": 3,
-      "freetext": "2,5 km"
+      ]
      },
      "id": "up.26"
     },
@@ -22496,24 +22519,24 @@
      "id": "up.27"
     },
     "up.28": {
-     "id": "up.28",
      "result": {
-      "severity": 0,
-      "valid": true,
       "codes": [
        "M04"
       ],
-      "freetext": "90.0001,0.0"
-     }
+      "freetext": "90.0001,0.0",
+      "severity": 0,
+      "valid": true
+     },
+     "id": "up.28"
     },
     "up.29": {
      "result": {
+      "freetext": "x48.65,20.13",
+      "severity": 0,
+      "valid": true,
       "codes": [
        "M01"
-      ],
-      "valid": true,
-      "severity": 0,
-      "freetext": "x48.65,20.13"
+      ]
      },
      "id": "up.29"
     },
@@ -22529,24 +22552,24 @@
      "id": "up.30"
     },
     "up.31": {
-     "id": "up.31",
      "result": {
-      "severity": 3,
-      "valid": true,
       "codes": [
        "L20"
       ],
-      "freetext": "~ABCDEFGHIJKLM ~OK1ABC"
-     }
+      "freetext": "~ABCDEFGHIJKLM ~OK1ABC",
+      "severity": 3,
+      "valid": true
+     },
+     "id": "up.31"
     },
     "up.32": {
      "result": {
+      "freetext": "~ABCDEFGHIJKL",
+      "severity": 3,
+      "valid": true,
       "codes": [
        "L20"
-      ],
-      "valid": true,
-      "severity": 3,
-      "freetext": "~ABCDEFGHIJKL"
+      ]
      },
      "id": "up.32"
     },
@@ -22562,24 +22585,24 @@
      "id": "up.33"
     },
     "up.34": {
-     "id": "up.34",
      "result": {
-      "severity": 3,
-      "valid": true,
       "codes": [
        "L04"
       ],
-      "freetext": "@zh_CN"
-     }
+      "freetext": "@zh_CN",
+      "severity": 3,
+      "valid": true
+     },
+     "id": "up.34"
     },
     "up.35": {
      "result": {
+      "freetext": "@DE",
+      "severity": 3,
+      "valid": true,
       "codes": [
        "L04"
-      ],
-      "valid": true,
-      "severity": 3,
-      "freetext": "@DE"
+      ]
      },
      "id": "up.35"
     },
@@ -22590,29 +22613,32 @@
       "severity": 2,
       "codes": [
        "R03"
-      ]
+      ],
+      "duration": 45
      },
      "id": "up.36"
     },
     "up.37": {
-     "id": "up.37",
      "result": {
-      "severity": 2,
-      "valid": true,
       "codes": [
        "R03"
       ],
-      "freetext": "2d"
-     }
+      "duration": 2880,
+      "freetext": "2d",
+      "severity": 2,
+      "valid": true
+     },
+     "id": "up.37"
     },
     "up.38": {
      "result": {
+      "freetext": "48h",
+      "duration": 2880,
+      "severity": 2,
+      "valid": true,
       "codes": [
        "R03"
-      ],
-      "valid": true,
-      "severity": 2,
-      "freetext": "48h"
+      ]
      },
      "id": "up.38"
     },
@@ -22623,30 +22649,32 @@
       "severity": 2,
       "codes": [
        "R03"
-      ]
+      ],
+      "duration": 2880
      },
      "id": "up.39"
     },
     "up.40": {
-     "id": "up.40",
      "result": {
-      "severity": 2,
-      "valid": true,
       "codes": [
        "R03"
       ],
-      "freetext": "ETA 45min"
-     }
+      "duration": 45,
+      "freetext": "ETA 45min",
+      "severity": 2,
+      "valid": true
+     },
+     "id": "up.40"
     },
     "up.41": {
      "result": {
+      "freetext": "45",
+      "duration": 45,
+      "severity": 2,
+      "valid": true,
       "codes": [
        "R03"
-      ],
-      "valid": true,
-      "severity": 2,
-      "freetext": "45",
-      "duration": 45
+      ]
      },
      "id": "up.41"
     },
@@ -22659,31 +22687,32 @@
        "C01",
        "R03",
        "P05"
-      ]
+      ],
+      "duration": 45
      },
      "id": "up.42"
     },
     "up.43": {
-     "id": "up.43",
      "result": {
-      "severity": 3,
-      "valid": true,
       "codes": [
        "L06"
       ],
-      "freetext": "45min"
-     }
+      "freetext": "45min",
+      "severity": 3,
+      "valid": true
+     },
+     "id": "up.43"
     },
     "up.44": {
      "result": {
+      "freetext": "1pax 45",
+      "severity": 2,
+      "pax": 1,
+      "valid": true,
       "codes": [
        "C01",
        "R03"
-      ],
-      "valid": true,
-      "severity": 2,
-      "freetext": "1pax 45",
-      "pax": 1
+      ]
      },
      "id": "up.44"
     },
@@ -22699,24 +22728,25 @@
      "id": "up.45"
     },
     "up.46": {
-     "id": "up.46",
      "result": {
-      "severity": 2,
-      "valid": true,
       "codes": [
        "R03"
       ],
-      "freetext": "30s 45min"
-     }
+      "duration": 45,
+      "freetext": "30s 45min",
+      "severity": 2,
+      "valid": true
+     },
+     "id": "up.46"
     },
     "up.47": {
      "result": {
+      "freetext": "47.3769,12.1048",
+      "severity": 2,
+      "valid": true,
       "codes": [
        "R03"
-      ],
-      "valid": true,
-      "severity": 2,
-      "freetext": "47.3769,12.1048"
+      ]
      },
      "id": "up.47"
     },
@@ -22727,31 +22757,32 @@
       "severity": 2,
       "codes": [
        "R03"
-      ]
+      ],
+      "duration": 45
      },
      "id": "up.48"
     },
     "up.49": {
-     "id": "up.49",
      "result": {
-      "severity": 2,
-      "valid": true,
       "codes": [
        "R03"
       ],
       "duration": 45,
-      "freetext": "45 0h"
-     }
+      "freetext": "45 0h",
+      "severity": 2,
+      "valid": true
+     },
+     "id": "up.49"
     },
     "up.50": {
      "result": {
+      "freetext": "45 2h",
+      "duration": 120,
+      "severity": 2,
+      "valid": true,
       "codes": [
        "R03"
-      ],
-      "valid": true,
-      "severity": 2,
-      "freetext": "45 2h",
-      "duration": 45
+      ]
      },
      "id": "up.50"
     },
@@ -22762,29 +22793,32 @@
       "severity": 2,
       "codes": [
        "R03"
-      ]
+      ],
+      "duration": 2880
      },
      "id": "up.51"
     },
     "up.52": {
-     "id": "up.52",
      "result": {
-      "severity": 2,
-      "valid": true,
       "codes": [
        "R03"
       ],
-      "freetext": "45min 2h"
-     }
+      "duration": 45,
+      "freetext": "45min 2h",
+      "severity": 2,
+      "valid": true
+     },
+     "id": "up.52"
     },
     "up.53": {
      "result": {
+      "freetext": "1h 30min",
+      "duration": 90,
+      "severity": 2,
+      "valid": true,
       "codes": [
        "R03"
-      ],
-      "valid": true,
-      "severity": 2,
-      "freetext": "1h 30min"
+      ]
      },
      "id": "up.53"
     },
@@ -22796,29 +22830,29 @@
       "codes": [
        "R03"
       ],
-      "duration": 2
+      "duration": 120
      },
      "id": "up.54"
     },
     "up.55": {
-     "id": "up.55",
      "result": {
-      "severity": 2,
-      "valid": true,
       "codes": [
        "R03"
       ],
-      "freetext": "1.5h"
-     }
+      "freetext": "1.5h",
+      "severity": 2,
+      "valid": true
+     },
+     "id": "up.55"
     },
     "up.56": {
      "result": {
+      "freetext": "2,5h",
+      "severity": 2,
+      "valid": true,
       "codes": [
        "R03"
-      ],
-      "valid": true,
-      "severity": 2,
-      "freetext": "2,5h"
+      ]
      },
      "id": "up.56"
     },
@@ -22834,24 +22868,24 @@
      "id": "up.57"
     },
     "up.58": {
-     "id": "up.58",
      "result": {
-      "severity": 2,
-      "valid": true,
       "codes": [
        "R03"
       ],
-      "freetext": "1.25d"
-     }
+      "freetext": "1.25d",
+      "severity": 2,
+      "valid": true
+     },
+     "id": "up.58"
     },
     "up.59": {
      "result": {
+      "freetext": "2.5min",
+      "severity": 2,
+      "valid": true,
       "codes": [
        "R03"
-      ],
-      "valid": true,
-      "severity": 2,
-      "freetext": "2.5min"
+      ]
      },
      "id": "up.59"
     },
@@ -22862,20 +22896,22 @@
       "severity": 2,
       "codes": [
        "R03"
-      ]
+      ],
+      "duration": 45
      },
      "id": "up.60"
     },
     "up.61": {
-     "id": "up.61",
      "result": {
-      "severity": 2,
-      "valid": true,
       "codes": [
        "R03"
       ],
-      "freetext": "hut.2h"
-     }
+      "duration": 120,
+      "freetext": "hut.2h",
+      "severity": 2,
+      "valid": true
+     },
+     "id": "up.61"
     },
     "up.62": {
      "result": {
@@ -22890,25 +22926,25 @@
      "id": "up.63"
     },
     "up.64": {
-     "id": "up.64",
      "result": {
-      "severity": 1,
-      "valid": true,
       "codes": [
        "T05",
        "T05"
       ],
-      "freetext": "damaged"
-     }
+      "freetext": "damaged",
+      "severity": 1,
+      "valid": true
+     },
+     "id": "up.64"
     },
     "up.65": {
      "result": {
+      "freetext": "hello",
+      "severity": 3,
+      "valid": true,
       "codes": [
        "Z99"
-      ],
-      "valid": true,
-      "severity": 3,
-      "freetext": "hello"
+      ]
      },
      "id": "up.65"
     },
@@ -22924,10 +22960,10 @@
      "id": "up.66"
     },
     "up.67": {
-     "id": "up.67",
      "result": {
       "valid": false
-     }
+     },
+     "id": "up.67"
     },
     "up.68": {
      "result": {
@@ -22942,26 +22978,26 @@
      "id": "up.69"
     },
     "up.70": {
-     "id": "up.70",
      "result": {
-      "severity": 1,
-      "valid": true,
       "codes": [
        "T05",
        "T05"
       ],
-      "freetext": "damaged"
-     }
+      "freetext": "damaged",
+      "severity": 1,
+      "valid": true
+     },
+     "id": "up.70"
     },
     "up.71": {
      "result": {
+      "freetext": "damaged",
+      "severity": 1,
+      "valid": true,
       "codes": [
        "T05",
        "T05"
-      ],
-      "valid": true,
-      "severity": 1,
-      "freetext": "damaged"
+      ]
      },
      "id": "up.71"
     },
@@ -22978,10 +23014,10 @@
      "id": "up.72"
     },
     "up.73": {
-     "id": "up.73",
      "result": {
       "valid": false
-     }
+     },
+     "id": "up.73"
     },
     "up.74": {
      "result": {
@@ -22996,15 +23032,15 @@
      "id": "up.75"
     },
     "up.76": {
-     "id": "up.76",
      "result": {
-      "severity": 0,
-      "valid": true,
       "codes": [
        "M01"
       ],
-      "freetext": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
-     }
+      "freetext": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+      "severity": 0,
+      "valid": true
+     },
+     "id": "up.76"
     }
    },
    "code_table": {
@@ -23067,6 +23103,7 @@
      "M13",
      "M14",
      "M15",
+     "M16",
      "P01",
      "P02",
      "P03",
@@ -23118,9 +23155,7 @@
      "X06",
      "X07"
     ],
-    "missing": [
-     "M16"
-    ],
+    "missing": [],
     "extra": []
    }
   }

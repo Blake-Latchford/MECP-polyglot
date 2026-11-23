@@ -5,7 +5,7 @@
 - Commit tested: `3411a8fb3b` (2026-11-16)
 - Decoder: `deploy/apps/mecp/1.0/mecp.lua`
 - Fields compared: valid, severity, pax, gps, timestamp (others not exposed by this client)
-- Vectors: `conformance/vectors/decode-1.4.1.json` plus mecp-org/MECP `freetext/tests.json` (256 cases), run 2026-11-21
+- Vectors: `conformance/vectors/decode-1.4.1.json` plus mecp-org/MECP `freetext/tests.json` (256 cases), run 2026-11-22
 - **Result: 187 pass, 69 fail, 0 error**
 - **Code table: 108/109**
 

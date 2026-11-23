@@ -9,7 +9,7 @@ fraction (`R03 1.5h`). Unreleased on `main`: rule 5 claim order
 11 new codes M17–M20, S07, D05, T18–T20, W07–W08 (109 → 120,
 [#54](https://github.com/mecp-org/MECP/pull/54), 2026-11-21), and the SPEC.md split
 ([#56](https://github.com/mecp-org/MECP/pull/56), 2026-11-22). MeshCore One `dev` already applies
-#53's claim order (see #497 below); nothing else depends on them yet.
+#53 (see below); nothing else depends on them yet.
 
 ## TODO
 
@@ -17,9 +17,8 @@ fraction (`R03 1.5h`). Unreleased on `main`: rule 5 claim order
   in MECP 1.2.0 (brief §7). M16 messages still decode, but these apps can't label the code.
   Found by the code-table check in [conformance/](conformance/README.md#code-table). No issue or PR
   exists yet in any of the three repos (checked 2026-11-20).
-  - [ ] MeshCore One ([Avi0n/MeshCoreOne](https://github.com/Avi0n/MeshCoreOne)): missing from all
-    11 packs in `MC1Services/Sources/MC1Services/MECP/Languages/`; shown as "M16: Unknown code".
-    Add a test to `MECPCatalogTests.swift` that checks every pack against the §7 list.
+  - [x] MeshCore One ([Avi0n/MeshCoreOne](https://github.com/Avi0n/MeshCoreOne)): the owner synced
+    the packs to 1.4.1 on `dev` (`28a771d0`, 2026-11-22); all 109 codes present.
   - [ ] reticulum-mobile
     ([FreeTAKTeam/reticulum_mobile_emergency_management](https://github.com/FreeTAKTeam/reticulum_mobile_emergency_management)):
     missing from `MECP_EVENT_CODES` in `apps/mobile/src/utils/mecp.ts`; shown as a bare "M16".
@@ -37,32 +36,22 @@ is meant to be one small PR. The spec links are pinned to the commit #494 uses; 
 cite read the same in v1.4.1. Every item is something the 1.4.1 brief decides. Nothing here depends on the proposed
 `spec-clarifications` changes.
 
-### MeshCore One (Avi0n/MeshCoreOne): 209/256, see [#494](https://github.com/Avi0n/MeshCoreOne/issues/494)
+### MeshCore One (Avi0n/MeshCoreOne): 255/256, see [#494](https://github.com/Avi0n/MeshCoreOne/issues/494)
 
-The owner has agreed to take one PR per section of #494.
-
-Both PRs so far are merged to `dev`, not yet released (`main` is v1.7.1). Tested at `dev`
-`26460496fe`. All 47 remaining failures are in the timestamp and R03 sections.
+Every section of #494 is fixed on `dev`, not yet released (`main` is v1.7.1). Tested at `dev`
+`28a771d0e7` on 2026-11-22, with all 109 codes. The adapter's `build.sh` must compile the new
+`MECPDecode+Duration.swift`.
 
 - [x] Messages that aren't MECP are accepted: [#495](https://github.com/Avi0n/MeshCoreOne/pull/495) (merged 2026-11-19)
 - [x] Trailing line endings: #495
 - [x] Free text is changed: #495
 - [x] Person count has no boundaries: [#496](https://github.com/Avi0n/MeshCoreOne/pull/496) (merged 2026-11-20)
-- [ ] Timestamp accepts only `@HHMM` followed by a space (12 vectors):
-  [#497](https://github.com/Avi0n/MeshCoreOne/pull/497) (open; all 12 pass, 216/249). Changes
-  requested 2026-11-21: `@6:30 pax` made MC1's token removal trap. The owner fixed the removal and
-  applied the unreleased #53 claim order on `dev` (`dc010967`); `dev` was merged into #497 with
-  overlap tests on 2026-11-22. CI green; waiting on the owner's re-review. Under v1.4.1
-  `@6:30 pax` would be 06:30 and 30 people; MC1 now gives 06:30 only.
-- [ ] R03 duration reads only a bare leading number (35 vectors, incl. 1.4.1 `R03 1.5h 45min`, `R03 hut.2h`)
-- [ ] Language packs are a stale copy: byte-identical to mecp-org/MECP `languages/` at `ee17ef3`
-  (2026-02-27). They were copied on 2026-11-10, one day before M16 merged upstream. Not in #494
-  yet. Gaps that MC1 reads:
-  - M16 missing from all 11 packs (see TODO above)
-  - R03 text is now `ETA [time]` (was `[minutes]`). MC1 uses the bracket word as the unit, so
-    copying the new packs gives "ETA 15 time"; `fillingSlots` and `MECPCatalogTests` need
-    changing too. Best done with the R03 duration PR.
-  - `@HHMM` is the sender's local time in 1.4.0, but `MECPCatalog.clockLine` hard-codes " UTC"
+- [x] Timestamp accepts only `@HHMM` followed by a space: [#497](https://github.com/Avi0n/MeshCoreOne/pull/497)
+  (merged 2026-11-22). MC1 uses the unreleased #53 claim order, so `@6:30 pax` gives 06:30 only.
+- [x] R03 duration, language packs (M16, `ETA [time]`) and the hard-coded " UTC": fixed by the owner
+  in `28a771d0` (2026-11-22).
+- The one failure, `pax.after-decimal` (`1.5pax`: 5 under v1.4.1), is deliberate. MC1 follows `main`,
+  where a decimal fraction is not a person count. The vector goes stale at the next release.
 
 ### reticulum-mobile (FreeTAKTeam/reticulum_mobile_emergency_management): 146/256
 
@@ -150,7 +139,6 @@ The app only returns rendered text, so only validity, severity, pax, GPS and tim
 
 | Repo | PR | Title |
 |---|---|---|
-| Avi0n/MeshCoreOne | [#497](https://github.com/Avi0n/MeshCoreOne/pull/497) | fix: Decode MECP timestamps per MECPv1.4.1 |
 | ALLFATHER-BV/wadamesh | [#894](https://github.com/ALLFATHER-BV/wadamesh/pull/894) | apps: MECP sends P05 with the codes, not after the head count |
 
 ## Open issues
