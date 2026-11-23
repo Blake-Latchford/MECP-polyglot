@@ -26,6 +26,12 @@ fraction (`R03 1.5h`). Unreleased on `main`: rule 5 claim order
   - [ ] wadamesh ([ALLFATHER-BV/wadamesh](https://github.com/ALLFATHER-BV/wadamesh)): missing
     from `CODES` in `deploy/apps/mecp/1.0/mecp.lua`; shown as a bare "M16" and can't be picked when
     composing. There are no Lua app tests to add a check to.
+- [ ] **MeshCore One leaves S07's `[N]` slot unfilled.** S07 "Need shelter / space for [N]pax" (on
+  MECP `main`, unreleased) has the same person-count slot as H07, but `MECPCatalog.fillingSlots`
+  only fills it for H07 (`shelterCode`), so `MECP/2/S07 3pax` shows a literal `[N]pax`. Fix: fill it
+  for S07 too, with a test like `H07 replaces the N slot with the person count`. Follows the pack
+  update in [#502](https://github.com/Avi0n/MeshCoreOne/pull/502). Catalog tests with a pax count
+  crash on Linux (Foundation `localizedString`), so check on macOS CI or call `phrase(for:)` directly.
 - [ ] **Meshcore-Solo sends MECP, and reads C08 as a waypoint** (plan on
   [#63](https://github.com/MarekZegare4/MeshCore-Solo/issues/63)). The encoder from #66 is merged but
   nothing calls it yet. Receiving SOS (B01, or MAYDAY without D01/D02) and P05 already works on `dev`.
@@ -154,6 +160,7 @@ The app only returns rendered text, so only validity, severity, pax, GPS and tim
 | Repo | PR | Title |
 |---|---|---|
 | ALLFATHER-BV/wadamesh | [#894](https://github.com/ALLFATHER-BV/wadamesh/pull/894) | apps: MECP sends P05 with the codes, not after the head count |
+| Avi0n/MeshCoreOne | [#502](https://github.com/Avi0n/MeshCoreOne/pull/502) | feat: label the 11 MECP codes added on main |
 | FreeTAKTeam/reticulum_mobile_emergency_management | [#373](https://github.com/FreeTAKTeam/reticulum_mobile_emergency_management/pull/373) | fix(mecp): keep the first position and language hint in a message |
 
 ## Open issues
