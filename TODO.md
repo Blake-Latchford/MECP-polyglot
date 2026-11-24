@@ -117,6 +117,12 @@ Tested at `6cf3db0978`. All fields are compared. [#360](https://github.com/FreeT
   - Zero isn't a duration: `0min` gives 0, and `0min 5min` gives 0 (should be 5).
 - [ ] **Code table:** M16 is missing (TODO above). B04 isn't an MECP code:
   [mecp-org/MECP#50](https://github.com/mecp-org/MECP/issues/50) closed 2026-11-20, rejected in ADR 0006.
+- [ ] **Open a REM issue: community status still sends `MECP/2/B04 REMCS1:…`**
+  (`COMMUNITY_PREFIX` in `crates/reticulum_mobile/src/node/community.rs`). Propose moving it to Private
+  Use, e.g. `MECP/2/U04 rem REMCS1:…`, per
+  [ADR 0006](https://github.com/mecp-org/MECP/blob/main/docs/adr/0006-private-use-and-b04.md). Wait
+  until the REM work in flight has cleared and MECP has released `U` and the app designator (only on
+  `main` as of 2026-11-23). No REM issue mentions B04 yet (checked 2026-11-23).
 
 ### wadamesh (ALLFATHER-BV/wadamesh): 187/256
 
