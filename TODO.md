@@ -44,6 +44,21 @@ fraction (`R03 1.5h`). Unreleased on `main`: rule 5 claim order
     `lat,lon`. The Save label is the sender's name, not the C08 freetext the way a `[WAY]` label
     is. Could go in with C08 sending.
   - [ ] Ask Marek on #63 whether he wants PRs for these or will do them himself, as he did receiving.
+- [ ] **Reticulum-Telemetry-Hub has its own pre-1.2 MECP code**
+  ([FreeTAKTeam/Reticulum-Telemetry-Hub](https://github.com/FreeTAKTeam/Reticulum-Telemetry-Hub),
+  `70a70f6`, 2026-11-23). It's the hub REM reports to, with the same maintainer (brothercorvo), who
+  merges outside PRs. It has two separate decoders and one encoder:
+  `crates/r3akt-profile-rch/src/mecp.rs` (Rust), `ui/src/utils/mecp-display.ts` and
+  `ui/src/utils/mecp-compose.ts`. Wait until the REM work in flight has cleared, then follow the REM
+  playbook:
+  - [ ] Add a Rust adapter (`decode_mecp_message`) to `conformance/` and run the harness.
+  - [ ] Open a PR that runs the upstream vectors as a test, like REM's #360.
+  - [ ] Small fixes, one root cause each. From reading the Rust decoder, not yet run: codes are
+    uppercased; input is trimmed and split on whitespace; an unknown category invalidates the message
+    (so every `U` code will be rejected); M16 and the 1.4.x labels are missing; the last match wins;
+    values match only as whole tokens; the timestamp has no range check; the language hint only takes
+    2–3 letters; R03's bare number is read from any position. The encoder uppercases codes and
+    doesn't check severity.
 
 ## Fixes by client
 
